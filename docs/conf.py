@@ -19,12 +19,12 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
-project = u'win-nic'
+project = u'exif'
 copyright = u'2018, Tyler N. Thieding'
 author = u'Tyler N. Thieding'
 
 # The short X.Y version
-version = u'1.1.0'
+version = u'0.1.0'
 # The full version, including alpha/beta/rc tags
 release = version
 
@@ -101,7 +101,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'win-nicdoc'
+htmlhelp_basename = 'exifdoc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -128,7 +128,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'win-nic.tex', u'win-nic Documentation',
+    (master_doc, 'exif.tex', u'exif Documentation',
      u'Tyler N. Thieding', 'manual'),
 ]
 
@@ -138,7 +138,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'win-nic', u'win-nic Documentation',
+    (master_doc, 'exif', u'exif Documentation',
      [author], 1)
 ]
 
@@ -149,8 +149,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'win-nic', u'win-nic Documentation',
-     author, 'win-nic', 'One line description of project.',
+    (master_doc, 'exif', u'exif Documentation',
+     author, 'exif', 'One line description of project.',
      'Miscellaneous'),
 ]
 

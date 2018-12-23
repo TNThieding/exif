@@ -10,25 +10,32 @@ from exif import Image
 
 class TestReadExif(unittest.TestCase):
 
+    """Test cases for reading EXIF attributes."""
+
     def setUp(self):
+        """Open sample image file in binary mode for use in test cases."""
         grand_canyon = os.path.join(os.path.dirname(__file__), 'grand_canyon.jpg')
         with open(grand_canyon, 'rb') as image_file:
             self.image = Image(image_file)
 
     def test_handle_bad_attribute(self):
+        """Verify that accessing a nonexistent attribute raises an AttributeError."""
         with self.assertRaisesRegexp(AttributeError, "unknown image attribute fake_attribute"):
-            self.image.fake_attribute
+            self.image.fake_attribute  # pylint: disable=pointless-statement
 
     def test_handle_unset_attribute(self):
+        """Verify that accessing an attribute not present in an image raises an AttributeError."""
         with self.assertRaisesRegexp(AttributeError, "image does not have attribute light_source"):
-            self.image.light_source
+            self.image.light_source  # pylint: disable=pointless-statement
 
     def test_read_ascii(self):
+        """Test reading ASCII tags and compare to known baseline values."""
         self.assertEqual(self.image.datetime, Baseline("""2018:03:12 10:12:07"""))
         self.assertEqual(self.image.make, Baseline("""Apple"""))
         self.assertEqual(self.image.model, Baseline("""iPhone 7"""))
 
     def test_read_rational(self):
+        """Test reading RATIONAL tags and compare to known baseline values."""
         self.assertEqual(str(self.image.gps_altitude)[:13], Baseline("""2189.98969072"""))
         self.assertEqual(str(self.image.gps_latitude), Baseline("""(36.0, 3.0, 11.08)"""))
         self.assertEqual(str(self.image.gps_longitude), Baseline("""(112.0, 5.0, 4.18)"""))
@@ -36,8 +43,9 @@ class TestReadExif(unittest.TestCase):
         self.assertEqual(str(self.image.y_resolution), Baseline("""72.0"""))
 
     def test_read_short(self):
+        """Test reading a SHORT tag and compare to a known baseline value."""
         self.assertEqual(str(self.image.metering_mode), Baseline("""5"""))
 
     def test_read_srational(self):
+        """Test reading a SRATIONAL tag and compare to a known baseline value."""
         self.assertEqual(str(self.image.brightness_value)[:13], Baseline("""11.3644957983"""))
-
