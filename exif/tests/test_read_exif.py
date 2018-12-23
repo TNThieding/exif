@@ -29,7 +29,7 @@ class TestReadExif(unittest.TestCase):
         self.assertEqual(self.image.model, Baseline("""iPhone 7"""))
 
     def test_read_rational(self):
-        self.assertEqual(str(self.image.gps_altitude), Baseline("""2189.98969072"""))
+        self.assertEqual(str(self.image.gps_altitude)[:13], Baseline("""2189.98969072"""))
         self.assertEqual(str(self.image.gps_latitude), Baseline("""(36.0, 3.0, 11.08)"""))
         self.assertEqual(str(self.image.gps_longitude), Baseline("""(112.0, 5.0, 4.18)"""))
         self.assertEqual(str(self.image.x_resolution), Baseline("""72.0"""))
@@ -39,4 +39,5 @@ class TestReadExif(unittest.TestCase):
         self.assertEqual(str(self.image.metering_mode), Baseline("""5"""))
 
     def test_read_srational(self):
-        self.assertEqual(str(self.image.brightness_value), Baseline("""11.3644957983"""))
+        self.assertEqual(str(self.image.brightness_value)[:13], Baseline("""11.3644957983"""))
+

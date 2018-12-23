@@ -6,7 +6,6 @@ from exif._image import Image
 # TODO: Comments
 # TODO: Docstrings
 # TODO: Docs
-# TODO: Tests
+# TODO: Tests (better assertions)
 # TODO: Pylint conformance
 # TODO: Cleanup and simplify code
-# TODO: Add Python 3 support and re-enable in Travis CI.

@@ -1,5 +1,6 @@
 import binascii
 import struct
+import sys
 from fractions import Fraction
 
 from exif._constants import ATTRIBUTE_ID_MAP, ExifTypes, HEX_PER_BYTE
@@ -107,12 +108,16 @@ class App1MetaData(object):
                     fraction = Fraction(value[i]).limit_denominator()
                     new_member_bits = struct.pack(ifd_tag.endian_prefix + "LL", fraction.numerator, fraction.denominator)
                     new_member_hex = binascii.hexlify(new_member_bits)
+                    if sys.version_info[0] == 3:  # pragma: no cover
+                        new_member_hex = new_member_hex.decode("utf8")
                     self.segment_hex = self.segment_hex[:cursor] + new_member_hex + self.segment_hex[cursor + 8 * HEX_PER_BYTE:]
                     cursor += 8 * HEX_PER_BYTE
                 elif ifd_tag.dtype == ExifTypes.SRATIONAL:
                     fraction = Fraction(value[i]).limit_denominator()
                     new_member_bits = struct.pack(ifd_tag.endian_prefix + "ll", fraction.numerator, fraction.denominator)
                     new_member_hex = binascii.hexlify(new_member_bits)
+                    if sys.version_info[0] == 3:  # pragma: no cover
+                        new_member_hex = new_member_hex.decode("utf8")
                     self.segment_hex = self.segment_hex[:cursor] + new_member_hex + self.segment_hex[cursor + 8 * HEX_PER_BYTE:]
                     cursor += 8 * HEX_PER_BYTE
                 else:

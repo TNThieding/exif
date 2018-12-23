@@ -2,6 +2,7 @@
 
 import binascii
 import os
+import sys
 import textwrap
 import unittest
 
@@ -270,4 +271,6 @@ class TestGetFile(unittest.TestCase):
     def test_get_file(self):
         self.image.software = "Python"
         file_hex = binascii.hexlify(self.image.get_file())
+        if sys.version_info[0] == 3:
+            file_hex = file_hex.decode("utf8")
         self.assertEqual('\n'.join(textwrap.wrap(file_hex, 90)), modified_noise_file)

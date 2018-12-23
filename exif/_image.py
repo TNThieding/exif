@@ -1,4 +1,5 @@
 import binascii
+import sys
 
 from exif._constants import ATTRIBUTE_ID_MAP, ExifMarkers, HEX_PER_BYTE
 from exif._app1_metadata import App1MetaData
@@ -18,6 +19,8 @@ class Image(object):
         # Traverse hexadecimal string until EXIF APP1 segment found.
         while img_hex[cursor:cursor+4] != ExifMarkers.APP1:
             cursor += HEX_PER_BYTE
+            if cursor > len(img_hex):
+                raise RuntimeError("EXIF APP1 segment not found")
         self._segments['preceding'] = img_hex[:cursor]
 
         # Instantiate an App1 segment object.
@@ -31,7 +34,11 @@ class Image(object):
     def __init__(self, img_file):
         self._segments = {}
 
-        self._parse_segments(binascii.hexlify(img_file.read()).upper())
+        img_hex = binascii.hexlify(img_file.read()).upper()
+        if sys.version_info[0] == 3:  # pragma: no cover
+            img_hex = img_hex.decode("utf8")
+
+        self._parse_segments(img_hex)
 
     def __getattr__(self, item):
         return getattr(self._segments['APP1'], item)
