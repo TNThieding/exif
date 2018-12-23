@@ -9,3 +9,4 @@ from exif._image import Image
 # TODO: Tests
 # TODO: Pylint conformance
 # TODO: Cleanup and simplify code
+# TODO: Add Python 3 support and re-enable in Travis CI.
