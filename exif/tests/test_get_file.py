@@ -2,6 +2,7 @@
 
 import binascii
 import os
+import sys
 import textwrap
 import unittest
 
@@ -9,7 +10,7 @@ from baseline import Baseline
 
 from exif import Image
 
-modified_noise_file = Baseline("""
+MODIFIED_NOISE_STYLE = Baseline("""
     ffd8ffe000104a46494600010201004800480000ffe103a94578696600004d4d002a0000000800070112000300
     00000100010000011a00050000000100000062011b0005000000010000006a0128000300000001000200000131
     00020000001c0000007201320002000000140000008e8769000400000001000000a4000000d0000afc80000027
@@ -262,12 +263,22 @@ modified_noise_file = Baseline("""
 
 class TestGetFile(unittest.TestCase):
 
+    """Test cases for modifying EXIF attributes and getting new file contents."""
+
     def setUp(self):
+        """Open sample image file in binary mode for use in test cases."""
         noise = os.path.join(os.path.dirname(__file__), 'noise.jpg')
         with open(noise, 'rb') as image_file:
             self.image = Image(image_file)
 
     def test_get_file(self):
+        """Verify that an image is writable to a file after modifying its EXIF metadata.
+
+        Assert the produced file is equivalent to a known baseline.
+
+        """
         self.image.software = "Python"
         file_hex = binascii.hexlify(self.image.get_file())
-        self.assertEqual('\n'.join(textwrap.wrap(file_hex, 90)), modified_noise_file)
+        if sys.version_info[0] == 3:
+            file_hex = file_hex.decode("utf8")
+        self.assertEqual('\n'.join(textwrap.wrap(file_hex, 90)), MODIFIED_NOISE_STYLE)

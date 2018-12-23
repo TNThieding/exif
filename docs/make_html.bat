@@ -9,7 +9,7 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=.
 set BUILDDIR=_build
-set SPHINXPROJ=win-nic
+set SPHINXPROJ=exif
 
 %SPHINXBUILD% >NUL 2>NUL
 if errorlevel 9009 (

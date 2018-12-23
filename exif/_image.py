@@ -1,4 +1,7 @@
+"""Image EXIF metadata interface module."""
+
 import binascii
+import sys
 
 from exif._constants import ATTRIBUTE_ID_MAP, ExifMarkers, HEX_PER_BYTE
 from exif._app1_metadata import App1MetaData
@@ -6,7 +9,7 @@ from exif._app1_metadata import App1MetaData
 
 class Image(object):
 
-    """Image EXIF metadata interface.
+    """Image EXIF metadata interface class.
 
     :param file img_file: image file with EXIF metadata
 
@@ -18,20 +21,26 @@ class Image(object):
         # Traverse hexadecimal string until EXIF APP1 segment found.
         while img_hex[cursor:cursor+4] != ExifMarkers.APP1:
             cursor += HEX_PER_BYTE
+            if cursor > len(img_hex):
+                raise RuntimeError("EXIF APP1 segment not found")
         self._segments['preceding'] = img_hex[:cursor]
 
-        # Instantiate an App1 segment object.
+        # Instantiate an APP1 segment object to create an EXIF tag interface.
         app1_len = int(img_hex[cursor+2*HEX_PER_BYTE:cursor+4*HEX_PER_BYTE], 16)
         self._segments['APP1'] = App1MetaData(img_hex[cursor:cursor + app1_len * HEX_PER_BYTE])
         cursor += app1_len*HEX_PER_BYTE
 
-        # Store the remainder of the image.
+        # Store the remainder of the image so that it can be reconstructed when exporting.
         self._segments['succeeding'] = img_hex[cursor:]
 
     def __init__(self, img_file):
         self._segments = {}
 
-        self._parse_segments(binascii.hexlify(img_file.read()).upper())
+        img_hex = binascii.hexlify(img_file.read()).upper()
+        if sys.version_info[0] == 3:  # pragma: no cover
+            img_hex = img_hex.decode("utf8")
+
+        self._parse_segments(img_hex)
 
     def __getattr__(self, item):
         return getattr(self._segments['APP1'], item)
@@ -51,5 +60,6 @@ class Image(object):
         :rtype: str (Python 2) or bytes (Python 3)
 
         """
-        img_hex = self._segments['preceding'] + self._segments['APP1'].segment_hex + self._segments['succeeding']
+        img_hex = (self._segments['preceding'] + self._segments['APP1'].segment_hex +
+                   self._segments['succeeding'])
         return binascii.unhexlify(img_hex)
