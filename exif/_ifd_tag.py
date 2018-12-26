@@ -11,7 +11,7 @@ class IfdTag(object):
 
     """IFD tag structure parser class."""
 
-    def __init__(self, endianess, tag_hex):
+    def __init__(self, endianess, tag_hex, section_start_address):
         self._format = None
         if endianess == EXIF_LITTLE_ENDIAN_HEADER:
             self._format = "<HHII"
@@ -22,6 +22,11 @@ class IfdTag(object):
 
         self.tag, self.dtype, self.count, self.value_offset = struct.unpack(
             self._format, binascii.unhexlify(tag_hex))
+
+        self.section_start_address = section_start_address
+
+    def __eq__(self, other):
+        return self.tag == other.tag
 
     def is_exif_pointer(self):
         """Determine if this IFD tag is an EXIF pointer.

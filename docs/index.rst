@@ -7,5 +7,6 @@
     about.rst
     api_reference.rst
     installation.rst
+    release_notes.rst
     known_limitations.rst
     usage.rst

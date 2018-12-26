@@ -45,6 +45,14 @@ class Image(object):
     def __getattr__(self, item):
         return getattr(self._segments['APP1'], item)
 
+    def __delattr__(self, item):
+        try:
+            ATTRIBUTE_ID_MAP[item]
+        except KeyError:
+            super(Image, self).__delattr__(item)
+        else:
+            delattr(self._segments['APP1'], item)
+
     def __setattr__(self, key, value):
         try:
             ATTRIBUTE_ID_MAP[key]

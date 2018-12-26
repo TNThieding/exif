@@ -5,13 +5,57 @@ import struct
 import sys
 from fractions import Fraction
 
-from exif._constants import ATTRIBUTE_ID_MAP, ExifTypes, HEX_PER_BYTE
+from exif._constants import (
+    ATTRIBUTE_ID_MAP, ExifTypes, HEX_PER_BYTE, ERROR_IMG_NO_ATTR, BYTES_PER_IFD_TAG)
 from exif._ifd_tag import IfdTag
 
 
 class App1MetaData(object):
 
     """APP1 metadata interface class for EXIF tags."""
+
+    def _delete_ifd_tag(self, ifd_tag):
+        # Get the tag count in the deletion target's IFD section.
+        delete_target = self.ifd_tags[ifd_tag.tag]
+        section_start_address = delete_target.section_start_address
+        section_tag_count = int(
+            self.segment_hex[section_start_address:section_start_address + 2 * HEX_PER_BYTE], 16)
+
+        # Decrease the tag count by 1 in the file hexadecimal.
+        self.segment_hex = (self.segment_hex[:section_start_address] +
+                            hex(section_tag_count - 1).lstrip('0x').zfill(4) +
+                            self.segment_hex[section_start_address + 2 * HEX_PER_BYTE:])
+
+        # Parse over the deletion target's IFD section and remove the tag.
+        cursor = section_start_address + 2 * HEX_PER_BYTE
+        for tag_index in range(section_tag_count):  # pylint: disable=unused-variable
+            tag = IfdTag(
+                self._endianness,
+                self.segment_hex[cursor:cursor + BYTES_PER_IFD_TAG * HEX_PER_BYTE],
+                section_start_address)
+            if delete_target == tag:
+                self.segment_hex = (
+                    self.segment_hex[:cursor] +
+                    self.segment_hex[cursor + BYTES_PER_IFD_TAG * HEX_PER_BYTE:])
+            else:
+                cursor += BYTES_PER_IFD_TAG * HEX_PER_BYTE
+
+        #  Pad ending of IFD section to preserve pointers.
+        self.segment_hex = (
+            self.segment_hex[:cursor] + '00' * BYTES_PER_IFD_TAG + self.segment_hex[cursor:])
+
+        # Overwrite pointer data with null bytes (if applicable, depending on datatype).
+        if delete_target.dtype in [ExifTypes.ASCII, ExifTypes.RATIONAL, ExifTypes.SRATIONAL]:
+            cursor = (0xA + ifd_tag.value_offset) * HEX_PER_BYTE
+            if delete_target.dtype == ExifTypes.ASCII:
+                null_data = '00' * delete_target.count
+            else:  # SRATIONAL or RATIONAL
+                null_data = '00' * 8 * delete_target.count
+            self.segment_hex = (self.segment_hex[:cursor] + null_data +
+                                self.segment_hex[cursor + len(null_data):])
+
+        # Remove tag from parser tag dictionary.
+        del self.ifd_tags[ifd_tag.tag]
 
     def _read_ascii_tag(self, ifd_tag):
         retval_chars = []
@@ -85,21 +129,14 @@ class App1MetaData(object):
             new_segment_hex += hex(ord(character)).lstrip('0x')
             cursor += 1 * HEX_PER_BYTE
         for _i in range(ifd_tag.count - 1 - len(value)):
-            new_segment_hex += ('00')
+            new_segment_hex += '00'
             cursor += 1 * HEX_PER_BYTE
 
         new_segment_hex += self.segment_hex[cursor:]
         ifd_tag.count = len(value) + 1
         self.segment_hex = new_segment_hex
 
-    def _modify_ifd_tag(self, key, value):
-        attribute_id = ATTRIBUTE_ID_MAP[key]  # no try/except since __setattr__ checks for existence
-
-        try:
-            ifd_tag = self.ifd_tags[attribute_id]
-        except KeyError:
-            raise AttributeError("image does not have attribute {0}".format(key))
-
+    def _modify_ifd_tag(self, ifd_tag, value):
         if ifd_tag.dtype == ExifTypes.ASCII:
             self._modify_ascii_tag(ifd_tag, value)
         else:
@@ -156,31 +193,35 @@ class App1MetaData(object):
         gps_offset = None
 
         # Read the endianness specified by the image.
-        endianness = self.segment_hex[cursor:cursor+2*HEX_PER_BYTE]
+        self._endianness = self.segment_hex[cursor:cursor+2*HEX_PER_BYTE]
         cursor += 2 * HEX_PER_BYTE
 
         # Skip over fixed 0x002A bytes.
         cursor += 2 * HEX_PER_BYTE
 
-        # Determine the location of the first IFD tag relative to the start of the APP1 section.
-        first_ifd_offset = self.segment_hex[cursor:cursor+4*HEX_PER_BYTE]
+        # Determine the location of the first IFD section relative to the start of the APP1 section.
+        first_ifd_offset = self.segment_hex[cursor:cursor + 4 * HEX_PER_BYTE]
         # 0xA is IFD section offset from start of APP1.
         cursor = (0xA + int(first_ifd_offset, 16)) * HEX_PER_BYTE
 
         # Read each IFD section.
         current_ifd = 0
         while cursor != 0xA*HEX_PER_BYTE:
+            section_start_address = cursor
             num_ifd_tags = int(self.segment_hex[cursor:cursor+2*HEX_PER_BYTE], 16)
             cursor += 2 * HEX_PER_BYTE
 
             for tag_index in range(num_ifd_tags):  # pylint: disable=unused-variable
-                tag = IfdTag(endianness, self.segment_hex[cursor:cursor+12*HEX_PER_BYTE])
+                tag = IfdTag(
+                    self._endianness,
+                    self.segment_hex[cursor:cursor + BYTES_PER_IFD_TAG * HEX_PER_BYTE],
+                    section_start_address)
                 self.ifd_tags[tag.tag] = tag
                 if tag.is_exif_pointer():
                     exif_offset = tag.value_offset
                 if tag.is_gps_pointer():
                     gps_offset = tag.value_offset
-                cursor += 12*HEX_PER_BYTE
+                cursor += BYTES_PER_IFD_TAG * HEX_PER_BYTE
 
             cursor = (0xA + int(self.segment_hex[cursor:cursor+4*HEX_PER_BYTE], 16)) * HEX_PER_BYTE
             current_ifd += 1
@@ -188,30 +229,56 @@ class App1MetaData(object):
         # If an EXIF section pointer exists, read EXIF IFD tags.
         if exif_offset:
             cursor = (0xA + exif_offset) * HEX_PER_BYTE
-            num_ifd_tags = int(self.segment_hex[cursor:cursor+2*HEX_PER_BYTE], 16)
-            cursor += 2 * HEX_PER_BYTE
-
-            for tag_index in range(num_ifd_tags):  # pylint: disable=unused-variable
-                tag = IfdTag(endianness, self.segment_hex[cursor:cursor+12*HEX_PER_BYTE])
-                self.ifd_tags[tag.tag] = tag
-                cursor += 12*HEX_PER_BYTE
-
-        # If an GPS section pointer exists, read GPS IFD tags.
-        if gps_offset:
-            cursor = (0xA + gps_offset) * HEX_PER_BYTE
+            section_start_address = cursor
             num_ifd_tags = int(self.segment_hex[cursor:cursor + 2 * HEX_PER_BYTE], 16)
             cursor += 2 * HEX_PER_BYTE
 
             for tag_index in range(num_ifd_tags):  # pylint: disable=unused-variable
-                tag = IfdTag(endianness, self.segment_hex[cursor:cursor + 12 * HEX_PER_BYTE])
+                tag = IfdTag(
+                    self._endianness,
+                    self.segment_hex[cursor:cursor + BYTES_PER_IFD_TAG * HEX_PER_BYTE],
+                    section_start_address)
                 self.ifd_tags[tag.tag] = tag
-                cursor += 12 * HEX_PER_BYTE
+                cursor += BYTES_PER_IFD_TAG * HEX_PER_BYTE
+
+        # If an GPS section pointer exists, read GPS IFD tags.
+        if gps_offset:
+            cursor = (0xA + gps_offset) * HEX_PER_BYTE
+            section_start_address = cursor
+            num_ifd_tags = int(self.segment_hex[cursor:cursor + 2 * HEX_PER_BYTE], 16)
+            cursor += 2 * HEX_PER_BYTE
+
+            for tag_index in range(num_ifd_tags):  # pylint: disable=unused-variable
+                tag = IfdTag(
+                    self._endianness,
+                    self.segment_hex[cursor:cursor + BYTES_PER_IFD_TAG * HEX_PER_BYTE],
+                    section_start_address)
+                self.ifd_tags[tag.tag] = tag
+                cursor += BYTES_PER_IFD_TAG * HEX_PER_BYTE
 
     def __init__(self, segment_hex):
+        self._endianness = None
         self.segment_hex = segment_hex
         self.ifd_tags = {}
 
         self._unpack_ifd_tags()
+
+    def __delattr__(self, item):
+        try:
+            # Determine if attribute is an IFD tag accessor.
+            attribute_id = ATTRIBUTE_ID_MAP[item]
+        except KeyError:  # pragma: no cover
+            # Coverage and behavior tested by Image class.
+            # Attribute is a class member. Delete natively.
+            super(App1MetaData, self).__delattr__(item)
+        else:
+            # Attribute is not a class member. Delete EXIF tag value.
+            try:
+                ifd_tag = self.ifd_tags[attribute_id]
+            except KeyError:
+                raise AttributeError(ERROR_IMG_NO_ATTR.format(item))
+
+            self._delete_ifd_tag(ifd_tag)
 
     def __getattr__(self, item):
         """If attribute is not a class member, get the value of the EXIF tag of the same name."""
@@ -223,17 +290,21 @@ class App1MetaData(object):
         try:
             ifd_tag = self.ifd_tags[attribute_id]
         except KeyError:
-            raise AttributeError("image does not have attribute {0}".format(item))
+            raise AttributeError(ERROR_IMG_NO_ATTR.format(item))
 
         return self._read_ifd_tag(ifd_tag)
 
     def __setattr__(self, key, value):
         try:
             # Determine if attribute is an IFD tag accessor.
-            attribute_id = ATTRIBUTE_ID_MAP[key]  # pylint: disable=unused-variable
+            attribute_id = ATTRIBUTE_ID_MAP[key]
         except KeyError:
             # Attribute is a class member. Set natively.
             super(App1MetaData, self).__setattr__(key, value)
         else:
-            # Attribute is not a class member. Update EXIF tag value.
-            self._modify_ifd_tag(key, value)
+            try:
+                ifd_tag = self.ifd_tags[attribute_id]
+            except KeyError:
+                raise AttributeError(ERROR_IMG_NO_ATTR.format(key))
+
+            self._modify_ifd_tag(ifd_tag, value)
