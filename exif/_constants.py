@@ -188,7 +188,7 @@ ATTRIBUTE_ID_MAP = {
     "gps_timestamp": 7,
     "gps_satellites": 8,
     "gps_status": 9,
-    "gps_measur_emode": 10,
+    "gps_measure_mode": 10,
     "gps_dop": 11,
     "gps_speed_ref": 12,
     "gps_speed": 13,
@@ -210,7 +210,13 @@ ATTRIBUTE_ID_MAP = {
     "gps_datestamp": 29,
     "gps_differential": 30,
     "gps_horizontal_positioning_error": 31,
+    # EXIF-specific IFDs (for __dir__ Display)
+    "_exif_ifd_pointer": 34665,
+    "_gps_ifd_pointer": 34853,
+    "_interoperability_ifd_Pointer": 40965,
 }
+
+ATTRIBUTE_NAME_MAP = {value: key for key, value in ATTRIBUTE_ID_MAP.items()}
 
 BYTES_PER_IFD_TAG = 12
 

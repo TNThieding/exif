@@ -6,7 +6,8 @@ import sys
 from fractions import Fraction
 
 from exif._constants import (
-    ATTRIBUTE_ID_MAP, ExifTypes, HEX_PER_BYTE, ERROR_IMG_NO_ATTR, BYTES_PER_IFD_TAG)
+    ATTRIBUTE_ID_MAP, ExifTypes, HEX_PER_BYTE, ERROR_IMG_NO_ATTR, BYTES_PER_IFD_TAG,
+    ATTRIBUTE_NAME_MAP)
 from exif._ifd_tag import IfdTag
 
 
@@ -56,6 +57,16 @@ class App1MetaData(object):
 
         # Remove tag from parser tag dictionary.
         del self.ifd_tags[ifd_tag.tag]
+
+    def get_tag_list(self):
+        """Get a list of EXIF tag attributes present in the image objec.
+
+        :returns: image EXIF tag names
+        :rtype: list of str
+
+        """
+        return [ATTRIBUTE_NAME_MAP.get(key, "<unknown EXIF tag {0}>".format(key))
+                for key in self.ifd_tags]
 
     def _read_ascii_tag(self, ifd_tag):
         retval_chars = []

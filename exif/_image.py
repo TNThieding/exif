@@ -42,6 +42,9 @@ class Image(object):
 
         self._parse_segments(img_hex)
 
+    def __dir__(self):
+        return ['get_file', '_segments'] + self._segments['APP1'].get_tag_list()
+
     def __getattr__(self, item):
         return getattr(self._segments['APP1'], item)
 
