@@ -212,6 +212,10 @@ ATTRIBUTE_ID_MAP = {
     "gps_horizontal_positioning_error": 31,
 }
 
+BYTES_PER_IFD_TAG = 12
+
+ERROR_IMG_NO_ATTR = "image does not have attribute {0}"
+
 EXIF_BIG_ENDIAN_HEADER = "4D4D"
 
 EXIF_LITTLE_ENDIAN_HEADER = "4949"

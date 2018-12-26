@@ -27,13 +27,22 @@ binary mode flag is set. Pass this image file object into the ``exif.Image`` cla
     ...     my_image = Image(image_file)
     ...
 
-Access EXIF metadata using Python attribute notation::
+Access EXIF metadata tags using Python attribute notation::
 
+    >>> # Read tags with Python "get" notation.
     >>> my_image.gps_latitude
     (36.0, 3.0, 11.08)
+    >>> my_image.gps_longitude
+    (112.0, 5.0, 4.18)
     >>> my_image.model
     'iPhone 7'
+    >>>
+    >>> # Modify tags with Python "set" notation.
     >>> my_image.model = "Python"
+    >>>
+    >>> # Delete tags with Python "del" notation.
+    >>> del my_image.gps_latitude
+    >>> del my_image.gps_longitude
 
 Write the image with modified EXIF metadata to an image file using ``open`` in binary
 write mode::
