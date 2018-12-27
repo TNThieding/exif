@@ -10,6 +10,7 @@ Implement mechanism for listing EXIF tags in an image using ``dir()``.
 
 This release includes the following under-the-hood changes:
 
+- Modularize hexadecimal string interface into an internal class.
 - More robust test coverage and verification of hexadecimal data.
 
 ********************************************

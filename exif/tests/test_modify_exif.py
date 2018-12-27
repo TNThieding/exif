@@ -39,7 +39,7 @@ class TestModifyExif(unittest.TestCase):
         self.image.model = "MyCamera"
         self.assertEqual(self.image.model, Baseline("""MyCamera"""))
 
-        segment_hex = self.image._segments['APP1'].segment_hex
+        segment_hex = self.image._segments['APP1'].get_segment_hex()
         self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
                          MODIFY_ASCII_SAME_LEN_HEX_BASELINE)
 
@@ -48,7 +48,7 @@ class TestModifyExif(unittest.TestCase):
         self.image.model = "MyCam"
         self.assertEqual(self.image.model, Baseline("""MyCam"""))
 
-        segment_hex = self.image._segments['APP1'].segment_hex
+        segment_hex = self.image._segments['APP1'].get_segment_hex()
         self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
                          MODIFY_ASCII_SHORTER_HEX_BASELINE)
 
@@ -59,7 +59,7 @@ class TestModifyExif(unittest.TestCase):
         self.image.gps_latitude = (41.0, 36.0, 33.786)
         self.assertEqual(str(self.image.gps_latitude), Baseline("""(41.0, 36.0, 33.786)"""))
 
-        segment_hex = self.image._segments['APP1'].segment_hex
+        segment_hex = self.image._segments['APP1'].get_segment_hex()
         self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
                          MODIFY_RATIONAL_HEX_BASELINE)
 
@@ -68,6 +68,6 @@ class TestModifyExif(unittest.TestCase):
         self.image.brightness_value = -2.468
         self.assertEqual(str(self.image.brightness_value), Baseline("""-2.468"""))
 
-        segment_hex = self.image._segments['APP1'].segment_hex
+        segment_hex = self.image._segments['APP1'].get_segment_hex()
         self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
                          MODIFY_SRATIONAL_HEX_BASELINE)

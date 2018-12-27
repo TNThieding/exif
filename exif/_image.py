@@ -19,16 +19,16 @@ class Image(object):
         cursor = 0
 
         # Traverse hexadecimal string until EXIF APP1 segment found.
-        while img_hex[cursor:cursor+4] != ExifMarkers.APP1:
+        while img_hex[cursor:cursor + 4] != ExifMarkers.APP1:
             cursor += HEX_PER_BYTE
             if cursor > len(img_hex):
                 raise RuntimeError("EXIF APP1 segment not found")
         self._segments['preceding'] = img_hex[:cursor]
 
         # Instantiate an APP1 segment object to create an EXIF tag interface.
-        app1_len = int(img_hex[cursor+2*HEX_PER_BYTE:cursor+4*HEX_PER_BYTE], 16)
+        app1_len = int(img_hex[cursor + 2 * HEX_PER_BYTE:cursor + 4 * HEX_PER_BYTE], 16)
         self._segments['APP1'] = App1MetaData(img_hex[cursor:cursor + app1_len * HEX_PER_BYTE])
-        cursor += app1_len*HEX_PER_BYTE
+        cursor += app1_len * HEX_PER_BYTE
 
         # Store the remainder of the image so that it can be reconstructed when exporting.
         self._segments['succeeding'] = img_hex[cursor:]
@@ -71,6 +71,6 @@ class Image(object):
         :rtype: str (Python 2) or bytes (Python 3)
 
         """
-        img_hex = (self._segments['preceding'] + self._segments['APP1'].segment_hex +
+        img_hex = (self._segments['preceding'] + self._segments['APP1'].get_segment_hex() +
                    self._segments['succeeding'])
         return binascii.unhexlify(img_hex)
