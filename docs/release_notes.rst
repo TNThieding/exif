@@ -3,6 +3,17 @@ Release Notes
 #############
 
 ********************************************
+[0.3.0] Add dunder dir support. (2018-12-26)
+********************************************
+
+Implement mechanism for listing EXIF tags in an image using ``dir()``.
+
+This release includes the following under-the-hood changes:
+
+- Modularize hexadecimal string interface into an internal class.
+- More robust test coverage and verification of hexadecimal data.
+
+********************************************
 [0.2.0] Add tag delete support. (2018-12-25)
 ********************************************
 

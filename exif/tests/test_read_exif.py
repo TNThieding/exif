@@ -7,6 +7,8 @@ from baseline import Baseline
 
 from exif import Image
 
+# pylint: disable=pointless-statement
+
 
 class TestReadExif(unittest.TestCase):
 
@@ -21,12 +23,12 @@ class TestReadExif(unittest.TestCase):
     def test_handle_bad_attribute(self):
         """Verify that accessing a nonexistent attribute raises an AttributeError."""
         with self.assertRaisesRegexp(AttributeError, "unknown image attribute fake_attribute"):
-            self.image.fake_attribute  # pylint: disable=pointless-statement
+            self.image.fake_attribute
 
     def test_handle_unset_attribute(self):
         """Verify that accessing an attribute not present in an image raises an AttributeError."""
         with self.assertRaisesRegexp(AttributeError, "image does not have attribute light_source"):
-            self.image.light_source  # pylint: disable=pointless-statement
+            self.image.light_source
 
     def test_read_ascii(self):
         """Test reading ASCII tags and compare to known baseline values."""

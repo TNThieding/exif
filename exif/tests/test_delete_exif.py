@@ -31,7 +31,7 @@ class TestModifyExif(unittest.TestCase):
         with self.assertRaisesRegexp(AttributeError, "image does not have attribute model"):
             self.image.model
 
-        segment_hex = self.image._segments['APP1'].segment_hex
+        segment_hex = self.image._segments['APP1'].get_segment_hex()
         self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)), DELETE_ASCII_TAGS_HEX_BASELINE)
 
     def test_delete_gps_tags(self):
@@ -47,7 +47,7 @@ class TestModifyExif(unittest.TestCase):
         with self.assertRaisesRegexp(AttributeError, "image does not have attribute gps_altitude"):
             self.image.gps_altitude
 
-        segment_hex = self.image._segments['APP1'].segment_hex
+        segment_hex = self.image._segments['APP1'].get_segment_hex()
         self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)), DELETE_GEOTAG_HEX_BASELINE)
 
     def test_handle_unset_attribute(self):
