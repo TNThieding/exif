@@ -1,6 +1,6 @@
-######
-[exif]
-######
+##############
+[exif] Package
+##############
 
 .. image:: https://travis-ci.org/TNThieding/exif.svg?branch=master
     :target: https://travis-ci.org/TNThieding/exif

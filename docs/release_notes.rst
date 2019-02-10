@@ -18,9 +18,9 @@ This release includes the following under-the-hood changes:
 
 See https://github.com/TNThieding/exif/issues/5 for more information.
 
-*******************************************
-[0.3.0] Add ``dir()`` support. (2018-12-26)
-*******************************************
+************************************************
+[0.3.0] Add attribute list support. (2018-12-26)
+************************************************
 
 Implement mechanism for listing EXIF tags in an image using ``dir()``.
 
