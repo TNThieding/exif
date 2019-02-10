@@ -36,6 +36,15 @@ class TestReadExif(unittest.TestCase):
         self.assertEqual(self.image.make, Baseline("""Apple"""))
         self.assertEqual(self.image.model, Baseline("""iPhone 7"""))
 
+    def test_read_byte(self):
+        """Test reading BYTE tags and compare to known baseline values."""
+        self.assertEqual(str(self.image.gps_altitude_ref), Baseline("""0"""))
+
+    def test_read_long(self):
+        """Test reading LONG tags and compare to known baseline values."""
+        self.assertEqual(str(self.image.jpeg_interchange_format), Baseline("""6410"""))
+        self.assertEqual(str(self.image.jpeg_interchange_format_length), Baseline("""4507"""))
+
     def test_read_rational(self):
         """Test reading RATIONAL tags and compare to known baseline values."""
         self.assertEqual(str(self.image.gps_altitude)[:13], Baseline("""2189.98969072"""))
