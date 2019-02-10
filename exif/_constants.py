@@ -4,6 +4,16 @@
 from enum import IntEnum
 
 
+class ColorSpace(IntEnum):
+    """Color space specifier."""
+
+    SRGB = 1
+    "sRBG"
+
+    UNCALIBRATED = 0xFFFF
+    "Uncalibrated or Other"
+
+
 class ExifMarkers(object):
     """EXIF marker segments bytes."""
 
@@ -61,6 +71,32 @@ class ExifTypes(IntEnum):
 
     SRATIONAL = 10
     """Two (Numerator and Denominator) SLONGs"""
+
+
+class Saturation(IntEnum):
+    """Saturation processing applied by camera."""
+
+    NORMAL = 0
+    """Normal Saturation"""
+
+    LOW = 1
+    """Low Saturation"""
+
+    HIGH = 2
+    """High Saturation"""
+
+
+class Sharpness(IntEnum):
+    """Sharpness processing applied by camera."""
+
+    NORMAL = 0
+    """Normal"""
+
+    SOFT = 1
+    """Soft"""
+
+    HARD = 2
+    """Hard"""
 
 
 ATTRIBUTE_ID_MAP = {
@@ -218,7 +254,18 @@ ATTRIBUTE_ID_MAP = {
 
 ATTRIBUTE_NAME_MAP = {value: key for key, value in ATTRIBUTE_ID_MAP.items()}
 
-BYTES_PER_IFD_TAG = 12
+BYTES_PER_IFD_TAG_ID = 2
+
+BYTES_PER_IFD_TAG_TYPE = 2
+
+BYTES_PER_IFD_TAG_COUNT = 4
+
+BYTES_PER_IFD_TAG_VALUE_OFFSET = 4
+
+BYTES_PER_IFD_TAG_TOTAL = (
+    BYTES_PER_IFD_TAG_ID + BYTES_PER_IFD_TAG_TYPE + BYTES_PER_IFD_TAG_COUNT +
+    BYTES_PER_IFD_TAG_VALUE_OFFSET
+)
 
 ERROR_IMG_NO_ATTR = "image does not have attribute {0}"
 

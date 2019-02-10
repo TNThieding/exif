@@ -11,13 +11,38 @@ API Reference
 Classes
 *******
 
+Image
+=====
+
 .. autoclass:: exif.Image
 
     .. automethod:: exif.Image.get_file
 
-**********
-Attributes
-**********
+************
+Enumerations
+************
+
+ColorSpace
+==========
+
+.. autoclass:: exif.ColorSpace
+    :members:
+
+Saturation
+==========
+
+.. autoclass:: exif.Saturation
+    :members:
+
+Sharpness
+=========
+
+.. autoclass:: exif.Sharpness
+    :members:
+
+****************
+Image Attributes
+****************
 
 The ``exif.Image`` interface provides access to the following EXIF tags as Python attributes:
 

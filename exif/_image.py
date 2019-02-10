@@ -22,13 +22,21 @@ class Image(object):
         while img_hex[cursor:cursor + 4] != ExifMarkers.APP1:
             cursor += HEX_PER_BYTE
             if cursor > len(img_hex):
-                raise RuntimeError("EXIF APP1 segment not found")
+                raise IOError("EXIF APP1 segment not found")
         self._segments['preceding'] = img_hex[:cursor]
 
-        # Instantiate an APP1 segment object to create an EXIF tag interface.
-        app1_len = int(img_hex[cursor + 2 * HEX_PER_BYTE:cursor + 4 * HEX_PER_BYTE], 16)
-        self._segments['APP1'] = App1MetaData(img_hex[cursor:cursor + app1_len * HEX_PER_BYTE])
+        # Determine the expected length of the APP1 segment.
+        app1_start_index = cursor
+        app1_len = int(
+            img_hex[app1_start_index + 2 * HEX_PER_BYTE:app1_start_index + 4 * HEX_PER_BYTE], 16)
         cursor += app1_len * HEX_PER_BYTE
+
+        # If the expected length stops early, keep traversing until another section prefix is found.
+        while img_hex[cursor - 2:cursor] != ExifMarkers.SEG_PREFIX:
+            cursor += 2
+
+        # Instantiate an APP1 segment object to create an EXIF tag interface.
+        self._segments['APP1'] = App1MetaData(img_hex[app1_start_index:cursor])
 
         # Store the remainder of the image so that it can be reconstructed when exporting.
         self._segments['succeeding'] = img_hex[cursor:]
