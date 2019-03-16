@@ -16,6 +16,7 @@ Image
 
 .. autoclass:: exif.Image
 
+    .. automethod:: exif.Image.get
     .. automethod:: exif.Image.get_file
 
 ************

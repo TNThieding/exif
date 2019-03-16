@@ -52,6 +52,12 @@ Access EXIF metadata tags using Python attribute notation::
     >>> my_image.model
     'iPhone 7'
     >>>
+    >>> # Alternatively, read tags by leveraging the dictionary-style "get()" method.
+    >>> my_image.get("color_space")
+    <ColorSpace.UNCALIBRATED: 65535>
+    >>> my_image.get("nonexistent_tag")
+    None
+    >>>
     >>> # Modify tags with Python "set" notation.
     >>> my_image.model = "Python"
     >>>

@@ -2,6 +2,16 @@
 Release Notes
 #############
 
+******************************************
+[0.4.0] Add ``get()`` method. (2019-03-16)
+******************************************
+
+Previously, this package did not offer a mechanism to return a default value when attempting to access a missing tag,
+causing users to rely heavily on try-except statements. Now, the ``Image`` class offers a ``get()`` method. This method
+accepts a ``default=None`` keyword argument specifying the return value if the target attribute does not exist.
+
+See https://github.com/TNThieding/exif/issues/7 for more information.
+
 ***********************************************
 [0.3.1] Fix little endian support. (2018-02-10)
 ***********************************************

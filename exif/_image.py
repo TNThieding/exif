@@ -51,7 +51,7 @@ class Image(object):
         self._parse_segments(img_hex)
 
     def __dir__(self):
-        return ['get_file', '_segments'] + self._segments['APP1'].get_tag_list()
+        return ['get', 'get_file', '_segments'] + self._segments['APP1'].get_tag_list()
 
     def __getattr__(self, item):
         return getattr(self._segments['APP1'], item)
@@ -71,6 +71,25 @@ class Image(object):
             super(Image, self).__setattr__(key, value)
         else:
             setattr(self._segments['APP1'], key, value)
+
+    def get(self, attribute, default=None):
+        """Return the value of the specified attribute.
+
+        If the attribute is not available or set, return the value specified by the ``default``
+        keyword argument.
+
+        :param str attribute: image attribute name
+        :param default: return value if attribute does not exist
+        :returns: tag value if present, ``default`` otherwise
+        :rtype: corresponding Python type
+
+        """
+        try:
+            retval = self.__getattr__(attribute)
+        except AttributeError:
+            retval = default
+
+        return retval
 
     def get_file(self):
         """Generate equivalent binary file contents.
