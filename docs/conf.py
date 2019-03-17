@@ -20,11 +20,11 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = u'exif'
-copyright = u'2018, Tyler N. Thieding'
+copyright = u'2019, Tyler N. Thieding'
 author = u'Tyler N. Thieding'
 
 # The short X.Y version
-version = u'0.3.1'
+version = u'0.4.0'
 # The full version, including alpha/beta/rc tags
 release = version
 

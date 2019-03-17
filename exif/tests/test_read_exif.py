@@ -20,6 +20,12 @@ class TestReadExif(unittest.TestCase):
         with open(grand_canyon, 'rb') as image_file:
             self.image = Image(image_file)
 
+    def test_get_method(self):
+        """Test behavior when accessing tags using the ``get()`` method."""
+        assert not self.image.get('fake_attribute')  # assert returns None
+        assert self.image.get('light_source', default=-1) == -1  # light_source tag not in image
+        assert self.image.get('make') == Baseline("""Apple""")
+
     def test_handle_bad_attribute(self):
         """Verify that accessing a nonexistent attribute raises an AttributeError."""
         with self.assertRaisesRegexp(AttributeError, "unknown image attribute fake_attribute"):
