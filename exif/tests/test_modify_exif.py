@@ -34,6 +34,11 @@ class TestModifyExif(unittest.TestCase):
         with self.assertRaisesRegexp(ValueError, "string must be no longer than original"):
             self.image.model = "MyArtificiallySetCameraAttribute"
 
+    def test_index_modifier(self):
+        """Test modifying attributes using index syntax."""
+        self.image["model"] = "MyCamera"
+        self.assertEqual(self.image.model, Baseline("""MyCamera"""))
+
     def test_modify_ascii_same_len(self):
         """Verify that writing a same length string to an ASCII tag updates the tag."""
         self.image.model = "MyCamera"
@@ -71,3 +76,8 @@ class TestModifyExif(unittest.TestCase):
         segment_hex = self.image._segments['APP1'].get_segment_hex()
         self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
                          MODIFY_SRATIONAL_HEX_BASELINE)
+
+    def test_set_method(self):
+        """Test behavior when setting tags using the ``set()`` method."""
+        self.image.set("model", "MyCamera")
+        self.assertEqual(self.image.model, Baseline("""MyCamera"""))

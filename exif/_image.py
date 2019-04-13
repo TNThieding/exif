@@ -56,14 +56,6 @@ class Image(object):
     def __getattr__(self, item):
         return getattr(self._segments['APP1'], item)
 
-    def __delattr__(self, item):
-        try:
-            ATTRIBUTE_ID_MAP[item]
-        except KeyError:
-            super(Image, self).__delattr__(item)
-        else:
-            delattr(self._segments['APP1'], item)
-
     def __setattr__(self, key, value):
         try:
             ATTRIBUTE_ID_MAP[key]
@@ -72,13 +64,38 @@ class Image(object):
         else:
             setattr(self._segments['APP1'], key, value)
 
+    def __delattr__(self, item):
+        try:
+            ATTRIBUTE_ID_MAP[item]
+        except KeyError:
+            super(Image, self).__delattr__(item)
+        else:
+            delattr(self._segments['APP1'], item)
+
+    def __getitem__(self, item):
+        return self.__getattr__(item)
+
+    def __setitem__(self, key, value):
+        self.__setattr__(key, value)
+
+    def __delitem__(self, key):
+        self.__delattr__(key)
+
+    def delete(self, attribute):
+        """Remove the specified attribute from the image.
+
+        :param str attribute: image EXIF attribute name
+
+        """
+        self.__delattr__(attribute)
+
     def get(self, attribute, default=None):
         """Return the value of the specified attribute.
 
         If the attribute is not available or set, return the value specified by the ``default``
         keyword argument.
 
-        :param str attribute: image attribute name
+        :param str attribute: image EXIF attribute name
         :param default: return value if attribute does not exist
         :returns: tag value if present, ``default`` otherwise
         :rtype: corresponding Python type
@@ -101,3 +118,13 @@ class Image(object):
         img_hex = (self._segments['preceding'] + self._segments['APP1'].get_segment_hex() +
                    self._segments['succeeding'])
         return binascii.unhexlify(img_hex)
+
+    def set(self, attribute, value):
+        """Set the value of the specified attribute.
+
+        :param str attribute: image EXIF attribute name
+        :param value: tag value
+        :type value: corresponding Python type
+
+        """
+        self.__setattr__(attribute, value)

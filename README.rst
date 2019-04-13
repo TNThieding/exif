@@ -19,7 +19,7 @@ dependencies. For example, batch process image metadata using a Python script.
 Quick Start
 ***********
 
-Open an image with EXIF metadata using the Python ``open`` built-in function. Ensure the
+Open an image with EXIF metadata using the Python ``open()`` built-in function. Ensure the
 binary mode flag is set. Pass this image file object into the ``exif.Image`` class::
 
     >>> from exif import Image
@@ -52,22 +52,19 @@ Access EXIF metadata tags using Python attribute notation::
     >>> my_image.model
     'iPhone 7'
     >>>
-    >>> # Alternatively, read tags by leveraging the dictionary-style "get()" method.
-    >>> my_image.get("color_space")
-    <ColorSpace.UNCALIBRATED: 65535>
-    >>> my_image.get("nonexistent_tag")
-    None
-    >>>
     >>> # Modify tags with Python "set" notation.
-    >>> my_image.model = "Python"
+    >>> my_image.make = "Python"
     >>>
     >>> # Delete tags with Python "del" notation.
     >>> del my_image.gps_latitude
     >>> del my_image.gps_longitude
 
-Write the image with modified EXIF metadata to an image file using ``open`` in binary
+Write the image with modified EXIF metadata to an image file using ``open()`` in binary
 write mode::
 
     >>> with open('modified_image.jpg', 'wb') as new_image_file:
     ...     new_image_file.write(my_image.get_file())
     ...
+
+Refer to the usage page for information and examples of alternative ways to access EXIF tags (e.g.
+with index/item syntax or with methods).

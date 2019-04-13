@@ -1,12 +1,19 @@
 sudo: false
 language: python
-python:
-  - "2.7"
-  - "3.6"
-  - "3.7-dev"
+stages:
+  - prechecks
+jobs:
+  include:
+    - stage: prechecks
+      python: "3.6"
+      env: TOXENV=pylint
+    - python: "2.7"
+      env: TOXENV=py27
+    - python: "3.6"
+      env: TOXENV=py36
 install:
   - pip install tox-travis
   - pip install coveralls
-script: tox
+script: tox -e $TOXENV
 after_success:
   coveralls
