@@ -11,6 +11,9 @@ Support indexed get, set, and delete access of EXIF tags. Also, offer ``set()`` 
 This release includes the following under-the-hood changes:
 
 - Add minimum Pylint score check to tox configuration.
+- Update usage page to describe workflow and different access paradigms.
+
+See https://github.com/TNThieding/exif/issues/13 for more information.
 
 ******************************************
 [0.4.0] Add ``get()`` method. (2019-03-16)
