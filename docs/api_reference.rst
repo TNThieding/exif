@@ -16,8 +16,10 @@ Image
 
 .. autoclass:: exif.Image
 
+    .. automethod:: exif.Image.delete
     .. automethod:: exif.Image.get
     .. automethod:: exif.Image.get_file
+    .. automethod:: exif.Image.set
 
 ************
 Enumerations

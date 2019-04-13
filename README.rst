@@ -52,18 +52,24 @@ Access EXIF metadata tags using Python attribute notation::
     >>> my_image.model
     'iPhone 7'
     >>>
-    >>> # Alternatively, read tags by leveraging the dictionary-style "get()" method.
-    >>> my_image.get("color_space")
-    <ColorSpace.UNCALIBRATED: 65535>
-    >>> my_image.get("nonexistent_tag")
-    None
-    >>>
     >>> # Modify tags with Python "set" notation.
     >>> my_image.model = "Python"
     >>>
     >>> # Delete tags with Python "del" notation.
     >>> del my_image.gps_latitude
     >>> del my_image.gps_longitude
+
+Alternatively, leverage the dictionary-style ``get`` method to gracefully handle cases where
+attributes do not exist::
+
+    >>> my_image.get("color_space")
+    <ColorSpace.UNCALIBRATED: 65535>
+    >>> my_image.get("nonexistent_tag")
+    None
+
+Tags are also accessible using index notation::
+
+    >>> # TODO
 
 Write the image with modified EXIF metadata to an image file using ``open`` in binary
 write mode::

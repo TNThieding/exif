@@ -50,10 +50,24 @@ class TestModifyExif(unittest.TestCase):
         segment_hex = self.image._segments['APP1'].get_segment_hex()
         self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)), DELETE_GEOTAG_HEX_BASELINE)
 
+    def test_delete_method(self):
+        """Test behavior when setting tags using the ``delete()`` method."""
+        self.image.delete("model")
+
+        with self.assertRaisesRegexp(AttributeError, "image does not have attribute model"):
+            self.image.model
+
     def test_handle_unset_attribute(self):
         """Verify that accessing an attribute not present in an image raises an AttributeError."""
         with self.assertRaisesRegexp(AttributeError, "image does not have attribute light_source"):
             del self.image.light_source
+
+    def test_index_deleter(self):
+        """Test deleting attributes using index syntax."""
+        del self.image["model"]
+
+        with self.assertRaisesRegexp(AttributeError, "image does not have attribute model"):
+            self.image.model
 
     def test_standard_delete(self):
         """Verify that writing and deleting non-EXIF attributes behave normally."""

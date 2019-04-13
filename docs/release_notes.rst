@@ -2,6 +2,16 @@
 Release Notes
 #############
 
+***************************************************
+[0.5.0] Add index/item access support. (2019-04-13)
+***************************************************
+
+Support indexed get, set, and delete access of EXIF tags. Also, offer ``set()`` and ``delete()`` methods.
+
+This release includes the following under-the-hood changes:
+
+- Add minimum Pylint score check to tox configuration.
+
 ******************************************
 [0.4.0] Add ``get()`` method. (2019-03-16)
 ******************************************

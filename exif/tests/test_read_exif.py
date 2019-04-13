@@ -22,9 +22,9 @@ class TestReadExif(unittest.TestCase):
 
     def test_get_method(self):
         """Test behavior when accessing tags using the ``get()`` method."""
-        assert not self.image.get('fake_attribute')  # assert returns None
-        assert self.image.get('light_source', default=-1) == -1  # light_source tag not in image
-        assert self.image.get('make') == Baseline("""Apple""")
+        self.assertIsNone(self.image.get('fake_attribute'))
+        self.assertEqual(self.image.get('light_source', default=-1), -1)  # tag not in image
+        self.assertEqual(self.image.get('make'), Baseline("""Apple"""))
 
     def test_handle_bad_attribute(self):
         """Verify that accessing a nonexistent attribute raises an AttributeError."""
@@ -35,6 +35,10 @@ class TestReadExif(unittest.TestCase):
         """Verify that accessing an attribute not present in an image raises an AttributeError."""
         with self.assertRaisesRegexp(AttributeError, "image does not have attribute light_source"):
             self.image.light_source
+
+    def test_index_accessor(self):
+        """Test accessing attributes using index syntax."""
+        self.assertEqual(self.image["datetime"], Baseline("""2018:03:12 10:12:07"""))
 
     def test_read_ascii(self):
         """Test reading ASCII tags and compare to known baseline values."""
