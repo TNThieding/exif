@@ -3,7 +3,7 @@ Release Notes
 #############
 
 ********************************************************
-[0.5.1] Mid-April 2019 buxfix/patch rollup. (2019-04-13)
+[0.5.1] Mid-April 2019 buxfix/patch rollup. (2019-04-14)
 ********************************************************
 
 This patch addresses the following GitHub user issues:
