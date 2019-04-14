@@ -3,7 +3,7 @@
 from exif._constants import (
     ATTRIBUTE_ID_MAP, ATTRIBUTE_NAME_MAP, BYTES_PER_IFD_TAG_COUNT, BYTES_PER_IFD_TAG_ID,
     BYTES_PER_IFD_TAG_TYPE, BYTES_PER_IFD_TAG_VALUE_OFFSET, BYTES_PER_IFD_TAG_TOTAL,
-    ERROR_IMG_NO_ATTR, ExifTypes)
+    ERROR_IMG_NO_ATTR, ExifTypes, USER_COMMENT_CHARACTER_CODE_LEN_BYTES)
 from exif._hex_interface import HexInterface
 from exif._ifd_tag import IfdTag
 
@@ -109,6 +109,7 @@ class App1MetaData(object):
                 tag = IfdTag(tag_id, tag_type, tag_count, tag_value_offset,
                              section_start_address, self._segment_hex)
                 self.ifd_tags[tag.tag] = tag
+
                 if tag.is_exif_pointer():
                     exif_offset = tag.value_offset
                 if tag.is_gps_pointer():
@@ -144,6 +145,15 @@ class App1MetaData(object):
 
                 tag = IfdTag(tag_id, tag_type, tag_count, tag_value_offset,
                              section_start_address, self._segment_hex)
+
+                # Handle user comment data structure (see pg. 51 of EXIF specification).
+                if tag.tag == ATTRIBUTE_ID_MAP["user_comment"]:
+                    tag.dtype = ExifTypes.ASCII  # reads unicode as well
+
+                    tag.count += 1  # custom data structure does not use null terminator
+                    tag.count -= USER_COMMENT_CHARACTER_CODE_LEN_BYTES
+                    tag.value_offset += USER_COMMENT_CHARACTER_CODE_LEN_BYTES
+
                 self.ifd_tags[tag.tag] = tag
 
         # If an GPS section pointer exists, read GPS IFD tags.
