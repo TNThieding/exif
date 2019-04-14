@@ -34,6 +34,8 @@ class Image(object):
         # If the expected length stops early, keep traversing until another section prefix is found.
         while img_hex[cursor - 2:cursor] != ExifMarkers.SEG_PREFIX:
             cursor += 2
+            if cursor > len(img_hex):
+                raise IOError("no subsequent EXIF segment found, is this an EXIF-encoded JPEG?")
 
         # Instantiate an APP1 segment object to create an EXIF tag interface.
         self._segments['APP1'] = App1MetaData(img_hex[app1_start_index:cursor])

@@ -2,6 +2,21 @@
 Release Notes
 #############
 
+****************************************************
+[0.5.1] April 2019 buxfix/patch rollup. (2019-04-13)
+****************************************************
+
+This patch addresses the following GitHub user issues:
+
+- Previously, instantiating ``Image`` with an image file without a valid APP1 segment caused an
+  infinite loop if the APP1 segment marker was found in the hexadecimal of the image itself. Now,
+  the package raises an ``IOError`` indicating that the file isn't properly EXIF-encoded. (See
+  https://github.com/TNThieding/exif/issues/14 for more information.)
+- Previously, accessing an image's ``user_comment`` attribute raised an exception stating the
+  datatype was unknown. Now, the package parses the ``user_comment`` attribute's special data
+  structure as described in the EXIF specification so that users can access its value. (See
+  https://github.com/TNThieding/exif/issues/15 for more information.)
+
 ***************************************************
 [0.5.0] Add index/item access support. (2019-04-13)
 ***************************************************
