@@ -7,7 +7,7 @@ from exif._constants import ATTRIBUTE_ID_MAP, ExifMarkers, HEX_PER_BYTE
 from exif._app1_metadata import App1MetaData
 
 
-class Image(object):
+class Image:
 
     """Image EXIF metadata interface class.
 

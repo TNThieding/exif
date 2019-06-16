@@ -12,7 +12,7 @@ Contributors
 Development
 ***********
 
-:Repository: https://github.com/TNThieding/exif
+:Repository: https://www.gitlab.com/TNThieding/exif
 
 *******
 License

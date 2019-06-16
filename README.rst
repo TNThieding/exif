@@ -2,11 +2,11 @@
 [exif] Package
 ##############
 
-.. image:: https://travis-ci.org/TNThieding/exif.svg?branch=master
-    :target: https://travis-ci.org/TNThieding/exif
+.. image:: https://www.gitlab.com/TNThieding/exif/badges/master/build.svg
+    :target: https://gitlab.com/TNThieding/exif
 
-.. image:: https://coveralls.io/repos/github/TNThieding/exif/badge.svg?branch=master
-    :target: https://coveralls.io/github/TNThieding/exif?branch=master
+.. image:: https://www.gitlab.com/tnthieding/exif/badges/master/coverage.svg
+    :target: https://gitlab.com/TNThieding/exif
 
 .. image:: https://readthedocs.org/projects/exif/badge/?version=latest
     :target: https://exif.readthedocs.io/en/latest/?badge=latest

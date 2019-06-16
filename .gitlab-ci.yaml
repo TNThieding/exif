@@ -1,0 +1,68 @@
+stages:
+  - test
+  - lint
+  - build
+  - release
+
+before_script:
+  - pip install tox
+
+py36:
+  stage: test
+  image: python:3.6
+  coverage: '/TOTAL\s*\d*\s*\d*\s*(\d*)%/'
+  script:
+    - tox -vv -e py36
+  artifacts:
+    paths:
+      - .tox/py36/tmp
+    when: always
+
+py37:
+  stage: test
+  image: python:3.7
+  coverage: '/TOTAL\s*\d*\s*\d*\s*(\d*)%/'
+  script:
+    - tox -vv -e py37
+  artifacts:
+    paths:
+      - .tox/py37/tmp
+    when: always
+
+pylint:
+  stage: lint
+  image: python:3.7
+  script:
+    - tox -vv -e pylint
+
+docs:
+  stage: build
+  image: python:3.7
+  script:
+    - tox -vv -e docs
+  artifacts:
+    paths:
+      - .tox/docs/tmp
+    when: always
+
+packages:
+  stage: build
+  image: python:3.7
+  script:
+    - pip install setuptools wheel
+    - python setup.py sdist bdist_wheel
+  artifacts:
+    paths:
+      - dist
+    when: always
+
+pypi:
+  stage: release
+  image: python:3.7
+  dependencies:
+    - packages
+  script:
+    - pip install twine
+    - twine upload dist/*
+  only:
+    - master

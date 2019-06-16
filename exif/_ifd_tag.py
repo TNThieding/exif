@@ -11,7 +11,7 @@ from exif._constants import (
     GPS_POINTER_TAG_ID, Saturation, Sharpness)
 
 
-class IfdTag(object):
+class IfdTag:
 
     """IFD tag structure parser class."""
 
