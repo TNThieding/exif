@@ -8,7 +8,7 @@ from exif._hex_interface import HexInterface
 from exif._ifd_tag import IfdTag
 
 
-class App1MetaData(object):
+class App1MetaData:
 
     """APP1 metadata interface class for EXIF tags."""
 

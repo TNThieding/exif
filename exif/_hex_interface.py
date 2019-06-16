@@ -3,7 +3,7 @@
 from exif._constants import EXIF_BIG_ENDIAN_HEADER, EXIF_LITTLE_ENDIAN_HEADER, HEX_PER_BYTE
 
 
-class HexInterface(object):
+class HexInterface:
 
     """Hexadecimal string interface class."""
 

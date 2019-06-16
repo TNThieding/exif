@@ -38,8 +38,10 @@ class TestLittleEndian(unittest.TestCase):
         """Test reading tags and compare to known baseline values."""
         self.assertEqual(repr(self.image.color_space), "<ColorSpace.SRGB: 1>")
         self.assertEqual(str(self.image.datetime_original), Baseline("""2019:02:08 21:44:35"""))
-        self.assertEqual(str(self.image.gps_latitude), Baseline("""(79.0, 36.0, 54.804590935844615)"""))
-        self.assertEqual(str(self.image.gps_longitude), Baseline("""(47.0, 25.0, 34.489798675854615)"""))
+        self.assertEqual(str(self.image.gps_latitude),
+                         Baseline("""(79.0, 36.0, 54.804590935844615)"""))
+        self.assertEqual(str(self.image.gps_longitude),
+                         Baseline("""(47.0, 25.0, 34.489798675854615)"""))
         self.assertEqual(self.image.make, Baseline("""EXIF Package"""))
         self.assertEqual(self.image.model, Baseline("""Little Endian"""))
         self.assertEqual(str(self.image.resolution_unit), Baseline("""2"""))

@@ -14,7 +14,7 @@ class ColorSpace(IntEnum):
     "Uncalibrated or Other"
 
 
-class ExifMarkers(object):
+class ExifMarkers:
     """EXIF marker segments bytes."""
 
     SEG_PREFIX = "FF"

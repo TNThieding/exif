@@ -26,9 +26,9 @@ class TestModifyExif(unittest.TestCase):
         del self.image.make
         del self.image.model
 
-        with self.assertRaisesRegexp(AttributeError, "image does not have attribute make"):
+        with self.assertRaisesRegex(AttributeError, "image does not have attribute make"):
             self.image.make
-        with self.assertRaisesRegexp(AttributeError, "image does not have attribute model"):
+        with self.assertRaisesRegex(AttributeError, "image does not have attribute model"):
             self.image.model
 
         segment_hex = self.image._segments['APP1'].get_segment_hex()
@@ -40,11 +40,11 @@ class TestModifyExif(unittest.TestCase):
         del self.image.gps_longitude
         del self.image.gps_altitude
 
-        with self.assertRaisesRegexp(AttributeError, "image does not have attribute gps_latitude"):
+        with self.assertRaisesRegex(AttributeError, "image does not have attribute gps_latitude"):
             self.image.gps_latitude
-        with self.assertRaisesRegexp(AttributeError, "image does not have attribute gps_longitude"):
+        with self.assertRaisesRegex(AttributeError, "image does not have attribute gps_longitude"):
             self.image.gps_longitude
-        with self.assertRaisesRegexp(AttributeError, "image does not have attribute gps_altitude"):
+        with self.assertRaisesRegex(AttributeError, "image does not have attribute gps_altitude"):
             self.image.gps_altitude
 
         segment_hex = self.image._segments['APP1'].get_segment_hex()
@@ -54,19 +54,19 @@ class TestModifyExif(unittest.TestCase):
         """Test behavior when setting tags using the ``delete()`` method."""
         self.image.delete("model")
 
-        with self.assertRaisesRegexp(AttributeError, "image does not have attribute model"):
+        with self.assertRaisesRegex(AttributeError, "image does not have attribute model"):
             self.image.model
 
     def test_handle_unset_attribute(self):
         """Verify that accessing an attribute not present in an image raises an AttributeError."""
-        with self.assertRaisesRegexp(AttributeError, "image does not have attribute light_source"):
+        with self.assertRaisesRegex(AttributeError, "image does not have attribute light_source"):
             del self.image.light_source
 
     def test_index_deleter(self):
         """Test deleting attributes using index syntax."""
         del self.image["model"]
 
-        with self.assertRaisesRegexp(AttributeError, "image does not have attribute model"):
+        with self.assertRaisesRegex(AttributeError, "image does not have attribute model"):
             self.image.model
 
     def test_standard_delete(self):
@@ -74,5 +74,5 @@ class TestModifyExif(unittest.TestCase):
         self.image.dummy_attr = 123
         assert self.image.dummy_attr == 123
         del self.image.dummy_attr
-        with self.assertRaisesRegexp(AttributeError, "unknown image attribute dummy_attr"):
+        with self.assertRaisesRegex(AttributeError, "unknown image attribute dummy_attr"):
             self.image.dummy_attr
