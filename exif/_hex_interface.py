@@ -57,6 +57,9 @@ class HexInterface:
         :param str hex_string: bytes to overwrite with
 
         """
+        if isinstance(hex_string, bytes):
+            hex_string = hex_string.decode("utf8")
+
         if self.endianness == EXIF_LITTLE_ENDIAN_HEADER:
             hex_string = self._change_endian(hex_string)
 

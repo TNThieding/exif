@@ -31,10 +31,11 @@ class App1MetaData:
             tag_count = self._segment_hex.read(cursor, BYTES_PER_IFD_TAG_COUNT)
             cursor += BYTES_PER_IFD_TAG_COUNT
             tag_value_offset = self._segment_hex.read(cursor, BYTES_PER_IFD_TAG_VALUE_OFFSET)
+            tag_value_offset_addr = cursor
             cursor += BYTES_PER_IFD_TAG_VALUE_OFFSET
 
             tag = IfdTag(tag_id, tag_type, tag_count, tag_value_offset,
-                         section_start_address, self._segment_hex)
+                         section_start_address, self._segment_hex, tag_value_offset_addr)
 
             if delete_target == tag:
                 cursor -= BYTES_PER_IFD_TAG_TOTAL
@@ -104,10 +105,11 @@ class App1MetaData:
                 tag_count = self._segment_hex.read(cursor, BYTES_PER_IFD_TAG_COUNT)
                 cursor += BYTES_PER_IFD_TAG_COUNT
                 tag_value_offset = self._segment_hex.read(cursor, BYTES_PER_IFD_TAG_VALUE_OFFSET)
+                tag_value_offset_addr = cursor
                 cursor += BYTES_PER_IFD_TAG_VALUE_OFFSET
 
                 tag = IfdTag(tag_id, tag_type, tag_count, tag_value_offset,
-                             section_start_address, self._segment_hex)
+                             section_start_address, self._segment_hex, tag_value_offset_addr)
                 self.ifd_tags[tag.tag] = tag
 
                 if tag.is_exif_pointer():
@@ -141,10 +143,11 @@ class App1MetaData:
                 tag_count = self._segment_hex.read(cursor, BYTES_PER_IFD_TAG_COUNT)
                 cursor += BYTES_PER_IFD_TAG_COUNT
                 tag_value_offset = self._segment_hex.read(cursor, BYTES_PER_IFD_TAG_VALUE_OFFSET)
+                tag_value_offset_addr = cursor
                 cursor += BYTES_PER_IFD_TAG_VALUE_OFFSET
 
                 tag = IfdTag(tag_id, tag_type, tag_count, tag_value_offset,
-                             section_start_address, self._segment_hex)
+                             section_start_address, self._segment_hex, tag_value_offset_addr)
 
                 # Handle user comment data structure (see pg. 51 of EXIF specification).
                 if tag.tag == ATTRIBUTE_ID_MAP["user_comment"]:
@@ -171,10 +174,11 @@ class App1MetaData:
                 tag_count = self._segment_hex.read(cursor, BYTES_PER_IFD_TAG_COUNT)
                 cursor += BYTES_PER_IFD_TAG_COUNT
                 tag_value_offset = self._segment_hex.read(cursor, BYTES_PER_IFD_TAG_VALUE_OFFSET)
+                tag_value_offset_addr = cursor
                 cursor += BYTES_PER_IFD_TAG_VALUE_OFFSET
 
                 tag = IfdTag(tag_id, tag_type, tag_count, tag_value_offset,
-                             section_start_address, self._segment_hex)
+                             section_start_address, self._segment_hex, tag_value_offset_addr)
                 self.ifd_tags[tag.tag] = tag
 
     def __init__(self, segment_hex):

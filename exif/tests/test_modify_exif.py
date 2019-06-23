@@ -9,7 +9,7 @@ from baseline import Baseline
 from exif import Image
 from exif.tests.modify_exif_baselines import (
     MODIFY_ASCII_SAME_LEN_HEX_BASELINE, MODIFY_ASCII_SHORTER_HEX_BASELINE,
-    MODIFY_RATIONAL_HEX_BASELINE, MODIFY_SRATIONAL_HEX_BASELINE)
+    MODIFY_RATIONAL_HEX_BASELINE, MODIFY_SRATIONAL_HEX_BASELINE, ROTATED_GRAND_CANYON_HEX)
 
 # pylint: disable=protected-access
 
@@ -56,6 +56,18 @@ class TestModifyExif(unittest.TestCase):
         segment_hex = self.image._segments['APP1'].get_segment_hex()
         self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
                          MODIFY_ASCII_SHORTER_HEX_BASELINE)
+
+    def test_modify_orientation(self):
+        """Verify that modifying the orientation (a short tag) updates the tag value as expected."""
+        assert self.image.orientation == 1
+        assert repr(self.image.orientation) == Baseline("""<Orientation.TOP_LEFT: 1>""")
+
+        self.image.orientation = 6
+        assert self.image.orientation == 6
+
+        segment_hex = self.image._segments['APP1'].get_segment_hex()
+        self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
+                         ROTATED_GRAND_CANYON_HEX)
 
     def test_modify_rational(self):
         """Verify that modifying RATIONAL tags updates the tag values as expected."""
