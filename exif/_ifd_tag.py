@@ -2,26 +2,26 @@
 
 import binascii
 import struct
-import sys
 import warnings
 from fractions import Fraction
 
 from exif._constants import (
     ATTRIBUTE_ID_MAP, ColorSpace, EXIF_LITTLE_ENDIAN_HEADER, EXIF_POINTER_TAG_ID, ExifTypes,
-    GPS_POINTER_TAG_ID, Saturation, Sharpness)
+    GPS_POINTER_TAG_ID, Saturation, Sharpness, Orientation)
 
 
 class IfdTag:
 
     """IFD tag structure parser class."""
 
-    def __init__(self, tag, dtype, count, value_offset, section_start_address, parent_segment_hex):
+    def __init__(self, tag, dtype, count, value_offset, section_start_address, parent_segment_hex, value_offset_addr):
         self.tag = int(tag, 16)
         self.dtype = int(dtype, 16)
         self.count = int(count, 16)
         self.value_offset = int(value_offset, 16)
         self.section_start_address = section_start_address
         self.parent_segment_hex = parent_segment_hex
+        self.value_offset_addr = value_offset_addr
 
     def __eq__(self, other):
         return self.tag == other.tag
@@ -85,9 +85,18 @@ class IfdTag:
             if self.dtype == ExifTypes.BYTE:
                 # FUTURE: Be sure to support little endian in setting.
                 raise RuntimeError("this package does not yet support setting BYTE tags")
+
             elif self.dtype == ExifTypes.SHORT:
-                # FUTURE: Be sure to support little endian in setting.
-                raise RuntimeError("this package does not yet support setting SHORT tags")
+
+                if self.parent_segment_hex.endianness == EXIF_LITTLE_ENDIAN_HEADER:
+                    new_member_bits = struct.pack(">HH", 0, value[0])
+                else:
+                    new_member_bits = struct.pack(">HH", value[0], 0)
+
+                new_member_bits = binascii.hexlify(new_member_bits)
+                self.parent_segment_hex.modify_hex(self.value_offset_addr, new_member_bits)
+                self.value_offset = int(new_member_bits, 16)
+
             elif self.dtype == ExifTypes.LONG:
                 # FUTURE: Be sure to support little endian in setting.
                 raise RuntimeError("this package does not yet support setting LONG tags")
@@ -108,10 +117,9 @@ class IfdTag:
                         ">LL", fraction.numerator, fraction.denominator)
 
                 new_member_hex = binascii.hexlify(new_member_bits)
-                if sys.version_info[0] == 3:  # pragma: no cover
-                    new_member_hex = new_member_hex.decode("utf8")
                 self.parent_segment_hex.modify_hex(cursor, new_member_hex)
                 cursor += 8
+
             elif self.dtype == ExifTypes.SRATIONAL:
                 fraction = Fraction(value[member_index]).limit_denominator()
 
@@ -123,8 +131,6 @@ class IfdTag:
                         ">ll", fraction.numerator, fraction.denominator)
 
                 new_member_hex = binascii.hexlify(new_member_bits)
-                if sys.version_info[0] == 3:  # pragma: no cover
-                    new_member_hex = new_member_hex.decode("utf8")
                 self.parent_segment_hex.modify_hex(cursor, new_member_hex)
                 cursor += 8
 
@@ -226,6 +232,8 @@ class IfdTag:
 
         if self.tag == ATTRIBUTE_ID_MAP["color_space"]:
             retval = ColorSpace(read_number)
+        elif self.tag == ATTRIBUTE_ID_MAP["orientation"]:
+            retval = Orientation(read_number)
         elif self.tag == ATTRIBUTE_ID_MAP["saturation"]:
             retval = Saturation(read_number)
         elif self.tag == ATTRIBUTE_ID_MAP["sharpness"]:

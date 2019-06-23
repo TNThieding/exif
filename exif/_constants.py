@@ -73,6 +73,42 @@ class ExifTypes(IntEnum):
     """Two (Numerator and Denominator) SLONGs"""
 
 
+class Orientation(IntEnum):
+    """Image orientation in terms of rows and columns."""
+
+    TOP_LEFT = 1
+    """The 0th row is at the visual top of the image and the 0th column is the visual
+    left-hand side."""
+
+    TOP_RIGHT = 2
+    """The 0th row is at the visual top of the image and the 0th column is the visual
+    right-hand side."""
+
+    BOTTOM_RIGHT = 3
+    """The 0th row is at the visual bottom of the image and the 0th column is the visual
+    right-hand side."""
+
+    BOTTOM_LEFT = 4
+    """The 0th row is at the visual bottom of the image and the 0th column is the visual
+    left-hand side."""
+
+    LEFT_TOP = 5
+    """The 0th row is the visual left-hand side of the image and the 0th column is the
+    visual top."""
+
+    RIGHT_TOP = 6
+    """The 0th row is the visual right-hand side of the image and the 0th column is the
+    visual bottom."""
+
+    RIGHT_BOTTOM = 7
+    """The 0th row is the visual right-hand side of the image and the 0th column is the
+    visual bottom."""
+
+    LEFT_BOTTOM = 8
+    """The 0th row is the visual left-hand side of the image and the 0th column is the
+    visual bottom."""
+
+
 class Saturation(IntEnum):
     """Saturation processing applied by camera."""
 

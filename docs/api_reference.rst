@@ -31,6 +31,12 @@ ColorSpace
 .. autoclass:: exif.ColorSpace
     :members:
 
+Orientation
+===========
+
+.. autoclass:: exif.Orientation
+    :members:
+
 Saturation
 ==========
 
