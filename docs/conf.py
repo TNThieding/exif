@@ -24,7 +24,7 @@ copyright = u'2019, Tyler N. Thieding'
 author = u'Tyler N. Thieding'
 
 # The short X.Y version
-version = u'0.7.0'
+version = u'0.8.0'
 # The full version, including alpha/beta/rc tags
 release = version
 

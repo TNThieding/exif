@@ -2,6 +2,14 @@
 Release Notes
 #############
 
+************************************************
+[0.8.0] Add ``has_exif`` attribute. (2019-07-07)
+************************************************
+
+Previously, instantiating an ``Image`` with a non-EXIF file raised an ``IOError``. Now, ``Image``
+instantiation always succeeds and the ``has_exif`` attribute reports whether or not the image
+currently has EXIF metadata.
+
 ******************************************************
 [0.7.0] Support modifying image rotation. (2019-06-23)
 ******************************************************
