@@ -22,6 +22,8 @@ class TestLittleEndian(unittest.TestCase):
         with open(little_endian_img, 'rb') as image_file:
             self.image = Image(image_file)
 
+        assert self.image.has_exif
+
     def test_modify(self):
         """Verify that modifying tags updates the tag values as expected."""
         self.image.model = "Modified"

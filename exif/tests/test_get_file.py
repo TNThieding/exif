@@ -20,6 +20,8 @@ class TestGetFile(unittest.TestCase):
         with open(noise, 'rb') as image_file:
             self.image = Image(image_file)
 
+        assert self.image.has_exif
+
     def test_get_file(self):
         """Verify that an image is writable to a file after modifying its EXIF metadata.
 

@@ -10,7 +10,7 @@ setuptools.setup(
     include_package_data=True,
 
     name='exif',
-    version='0.7.0',
+    version='0.8.0',
     author='Tyler N. Thieding',
     author_email='python@thieding.com',
     maintainer='Tyler N. Thieding',

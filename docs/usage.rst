@@ -21,6 +21,11 @@ binary mode flag (i.e. ``'rb'``) is set. Pass this image file object into the ``
     ...     my_image = Image(image_file)
     ...
 
+Verify that an image has EXIF metadata by leveraging the ``has_exif`` attribute::
+
+    >>> my_image.has_exif
+    True
+
 **************
 Accessing Tags
 **************

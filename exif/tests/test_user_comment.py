@@ -20,6 +20,8 @@ class TestReadExif(unittest.TestCase):
         with open(image_path, 'rb') as image_file:
             self.image = Image(image_file)
 
+        assert self.image.has_exif
+
     def test_modify_ascii_same_len(self):
         """Verify that writing a same length string to an ASCII tag updates the tag."""
         # pylint: disable=protected-access

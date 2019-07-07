@@ -14,7 +14,8 @@ class IfdTag:
 
     """IFD tag structure parser class."""
 
-    def __init__(self, tag, dtype, count, value_offset, section_start_address, parent_segment_hex, value_offset_addr):
+    def __init__(self, tag, dtype, count, value_offset, section_start_address, parent_segment_hex,
+                 value_offset_addr):
         self.tag = int(tag, 16)
         self.dtype = int(dtype, 16)
         self.count = int(count, 16)

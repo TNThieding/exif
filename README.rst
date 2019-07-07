@@ -26,6 +26,8 @@ binary mode flag is set. Pass this image file object into the ``exif.Image`` cla
     >>> with open('grand_canyon.jpg', 'rb') as image_file:
     ...     my_image = Image(image_file)
     ...
+    >>> my_image.has_exif
+    True
 
 List EXIF attributes using the Python ``dir()`` builtin function::
 

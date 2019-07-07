@@ -24,6 +24,8 @@ class TestModifyExif(unittest.TestCase):
         with open(grand_canyon, 'rb') as image_file:
             self.image = Image(image_file)
 
+        assert self.image.has_exif
+
     def test_handle_unset_attribute(self):
         """Verify that accessing an attribute not present in an image raises an AttributeError."""
         with self.assertRaisesRegex(AttributeError, "image does not have attribute light_source"):

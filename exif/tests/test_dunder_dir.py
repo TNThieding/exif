@@ -28,7 +28,7 @@ class TestGetFile(unittest.TestCase):
             'gps_altitude_ref', 'gps_datestamp', 'gps_dest_bearing', 'gps_dest_bearing_ref',
             'gps_horizontal_positioning_error', 'gps_img_direction', 'gps_img_direction_ref',
             'gps_latitude', 'gps_latitude_ref', 'gps_longitude', 'gps_longitude_ref', 'gps_speed',
-            'gps_speed_ref', 'gps_timestamp', 'jpeg_interchange_format',
+            'gps_speed_ref', 'gps_timestamp', 'has_exif', 'jpeg_interchange_format',
             'jpeg_interchange_format_length', 'lens_make', 'lens_model', 'lens_specification', 'make',
             'maker_note', 'metering_mode', 'model', 'orientation', 'photographic_sensitivity',
             'pixel_x_dimension', 'pixel_y_dimension', 'resolution_unit', 'scene_capture_type',
@@ -44,7 +44,7 @@ class TestGetFile(unittest.TestCase):
         dunder_dir_text = '\n'.join(textwrap.wrap(repr(sorted(dir(image))), 90))
         self.assertEqual(dunder_dir_text, Baseline("""
             ['_exif_ifd_pointer', '_segments', 'color_space', 'compression', 'datetime', 'get',
-            'get_file', 'jpeg_interchange_format', 'jpeg_interchange_format_length', 'orientation',
-            'pixel_x_dimension', 'pixel_y_dimension', 'resolution_unit', 'software', 'x_resolution',
-            'y_resolution']
+            'get_file', 'has_exif', 'jpeg_interchange_format', 'jpeg_interchange_format_length',
+            'orientation', 'pixel_x_dimension', 'pixel_y_dimension', 'resolution_unit', 'software',
+            'x_resolution', 'y_resolution']
             """))

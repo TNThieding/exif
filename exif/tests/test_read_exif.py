@@ -20,6 +20,8 @@ class TestReadExif(unittest.TestCase):
         with open(grand_canyon, 'rb') as image_file:
             self.image = Image(image_file)
 
+        assert self.image.has_exif
+
     def test_get_method(self):
         """Test behavior when accessing tags using the ``get()`` method."""
         self.assertIsNone(self.image.get('fake_attribute'))

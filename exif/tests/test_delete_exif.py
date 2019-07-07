@@ -21,6 +21,8 @@ class TestModifyExif(unittest.TestCase):
         with open(grand_canyon, 'rb') as image_file:
             self.image = Image(image_file)
 
+        assert self.image.has_exif
+
     def test_delete_ascii_tags(self):
         """Verify deleting EXIF ASCII from the Image object and the hexadecimal equivalent."""
         del self.image.make
