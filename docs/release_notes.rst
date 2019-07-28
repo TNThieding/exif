@@ -2,6 +2,12 @@
 Release Notes
 #############
 
+***************************************************
+[0.8.1] Restructure tag type behavior. (2019-07-28)
+***************************************************
+
+Replace complex and duplicated ``if`` statements with polymorphic tag datatypes.
+
 ************************************************
 [0.8.0] Add ``has_exif`` attribute. (2019-07-07)
 ************************************************
