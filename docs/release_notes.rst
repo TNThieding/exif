@@ -2,6 +2,23 @@
 Release Notes
 #############
 
+*****************************************************
+[0.8.2] Early-March 2020 bug fix rollup. (2020-03-10)
+*****************************************************
+
+This patch addresses the following GitHub user issues:
+
+- Update PyPI classification to more clearly indicate that this package only supports Python 3.
+  (See https://github.com/TNThieding/exif/issues/20 for discussion.)
+- Add read-only support for Windows XP style tags. (See https://github.com/TNThieding/exif/issues/22
+  for more information.)
+- Fix a benign cursor increment bug in ``_app1_metadata.py``. (See
+  https://github.com/TNThieding/exif/issues/18 for more information.)
+
+This patch also addresses the following issues:
+
+- The ``offset_time_digitized`` was previously incorrectly mapped to ``offset_time_original``.
+
 ***************************************************
 [0.8.1] Restructure tag type behavior. (2019-07-28)
 ***************************************************
@@ -34,9 +51,9 @@ This release includes the following under-the-hood changes:
 - Migrate repository from GitHub to GitLab (including CI/CD).
 - Pylint cleanup regarding Python 3 syntax.
 
-********************************************************
-[0.5.1] Mid-April 2019 buxfix/patch rollup. (2019-04-14)
-********************************************************
+***************************************************
+[0.5.1] Mid-April 2019 bug fix rollup. (2019-04-14)
+***************************************************
 
 This patch addresses the following GitHub user issues:
 

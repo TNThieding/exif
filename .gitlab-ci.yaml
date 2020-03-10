@@ -29,6 +29,17 @@ py37:
       - .tox/py37/tmp
     when: always
 
+py38:
+  stage: test
+  image: python:3.8
+  coverage: '/TOTAL\s*\d*\s*\d*\s*(\d*)%/'
+  script:
+    - tox -vv -e py38
+  artifacts:
+    paths:
+      - .tox/py38/tmp
+    when: always
+
 pylint:
   stage: lint
   image: python:3.7

@@ -14,6 +14,7 @@ from exif._ifd_tag._rational import Rational
 from exif._ifd_tag._short import Short
 from exif._ifd_tag._slong import Slong
 from exif._ifd_tag._srational import Srational
+from exif._ifd_tag._windows_xp import WindowsXp
 
 
 class App1MetaData:
@@ -83,7 +84,10 @@ class App1MetaData:
 
     def _tag_factory(self, tag_id, tag_type, tag_count, tag_value_offset, section_start_address,
                      tag_value_offset_addr):
-        if tag_type == ExifTypes.BYTE:
+        if ATTRIBUTE_ID_MAP["xp_title"] <= int(tag_id, 16) <= ATTRIBUTE_ID_MAP["xp_subject"]:  # legacy Windows XP tags
+            tag = WindowsXp(tag_id, tag_count, tag_value_offset,
+                            section_start_address, self._segment_hex, tag_value_offset_addr)
+        elif tag_type == ExifTypes.BYTE:
             tag = Byte(tag_id, tag_count, tag_value_offset,
                        section_start_address, self._segment_hex, tag_value_offset_addr)
         elif tag_type == ExifTypes.ASCII:
@@ -136,7 +140,7 @@ class App1MetaData:
             for tag_index in range(num_ifd_tags):  # pylint: disable=unused-variable
                 tag_id = self._segment_hex.read(cursor, BYTES_PER_IFD_TAG_ID)
                 cursor += BYTES_PER_IFD_TAG_ID
-                tag_type = int(self._segment_hex.read(cursor, BYTES_PER_IFD_TAG_ID), 16)
+                tag_type = int(self._segment_hex.read(cursor, BYTES_PER_IFD_TAG_TYPE), 16)
                 cursor += BYTES_PER_IFD_TAG_TYPE
                 tag_count = self._segment_hex.read(cursor, BYTES_PER_IFD_TAG_COUNT)
                 cursor += BYTES_PER_IFD_TAG_COUNT
