@@ -10,7 +10,7 @@ setuptools.setup(
     include_package_data=True,
 
     name='exif',
-    version='0.8.1',
+    version='0.8.2',
     author='Tyler N. Thieding',
     author_email='python@thieding.com',
     maintainer='Tyler N. Thieding',
@@ -26,7 +26,8 @@ setuptools.setup(
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Operating System :: OS Independent',
-        'Programming Language :: Python',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3 :: Only',
         'Topic :: Multimedia :: Graphics :: Editors',
         ],
     license='MIT License',

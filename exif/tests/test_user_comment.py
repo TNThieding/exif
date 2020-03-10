@@ -1,4 +1,4 @@
-"""Test special behavior for  accessing user comment EXIF attribute."""
+"""Test special behavior for accessing user comment EXIF attribute."""
 
 import os
 import textwrap
@@ -10,9 +10,9 @@ from exif import Image
 from exif.tests.modify_exif_baselines import MODIFY_USER_COMMENT_BASELINE
 
 
-class TestReadExif(unittest.TestCase):
+class TestUserComment(unittest.TestCase):
 
-    """Test special behavior for  accessing user comment EXIF attribute."""
+    """Test special behavior for accessing user comment EXIF attribute."""
 
     def setUp(self):
         """Open sample image file in binary mode for use in test cases."""
