@@ -47,6 +47,8 @@ class TestReadExif(unittest.TestCase):
         self.assertEqual(self.image.datetime, Baseline("""2018:03:12 10:12:07"""))
         self.assertEqual(self.image.make, Baseline("""Apple"""))
         self.assertEqual(self.image.model, Baseline("""iPhone 7"""))
+        self.assertEqual(self.image.gps_latitude_ref, Baseline("""N"""))
+        self.assertEqual(self.image.gps_longitude_ref, Baseline("""W"""))
 
     def test_read_byte(self):
         """Test reading BYTE tags and compare to known baseline values."""
