@@ -2,6 +2,17 @@
 Release Notes
 #############
 
+***************************************************
+[0.8.3] Mid-April 2020 bug fix rollup. (2020-04-20)
+***************************************************
+
+This patch addresses the following GitHub user issues:
+
+- Fix reading ASCII tags containing 3 characters or less. (See https://github.com/TNThieding/exif/issues/12
+  for more information.)
+- Fix `gps_longitude_ref` and `gps_latitude_ref` decoding. (See https://github.com/TNThieding/exif/issues/24
+  for more information).
+
 *****************************************************
 [0.8.2] Early-March 2020 bug fix rollup. (2020-03-10)
 *****************************************************
