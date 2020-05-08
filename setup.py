@@ -4,11 +4,8 @@ with open("README.rst", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    install_requires=[
-        'enum34',
-        ],
+    python_requires='>=3.6',
     include_package_data=True,
-
     name='exif',
     version='0.8.3',
     author='Tyler N. Thieding',
