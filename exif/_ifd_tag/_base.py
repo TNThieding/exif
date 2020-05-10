@@ -25,8 +25,8 @@ class Base:
         return self.tag == other.tag
 
     def __repr__(self):
-        return (f"_ifd_tag.Base(tag={self.tag}, count={self.count}, value_offset={self.value_offset}, "
-                f"section_start_address={self.section_start_address})")
+        return "_ifd_tag.Base(tag={}, count={}, value_offset={}, section_start_address={})".format(
+            self.tag, self.count, self.value_offset, self.section_start_address)
 
     def is_exif_pointer(self):
         """Determine if this IFD tag is an EXIF pointer.
