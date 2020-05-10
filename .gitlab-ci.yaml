@@ -7,6 +7,17 @@ stages:
 before_script:
   - pip install tox
 
+py35:
+  stage: test
+  image: python:3.5
+  coverage: '/TOTAL\s*\d*\s*\d*\s*(\d*)%/'
+  script:
+    - tox -vv -e py35
+  artifacts:
+    paths:
+      - .tox/py35/tmp
+    when: always
+
 py36:
   stage: test
   image: python:3.6

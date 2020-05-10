@@ -4,13 +4,11 @@ with open("README.rst", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    install_requires=[
-        'enum34',
-        ],
+    python_requires='>=3.5',
     include_package_data=True,
 
     name='exif',
-    version='0.8.3',
+    version='0.8.4',
     author='Tyler N. Thieding',
     author_email='python@thieding.com',
     maintainer='Tyler N. Thieding',
@@ -28,6 +26,10 @@ setuptools.setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3 :: Only',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Topic :: Multimedia :: Graphics :: Editors',
         ],
     license='MIT License',

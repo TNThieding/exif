@@ -2,6 +2,17 @@
 Release Notes
 #############
 
+************************************************
+[0.8.5] Restore Python 3.5 support. (2020-05-10)
+************************************************
+
+Remove format string usage throughout package to restore Python 3.5 support. Add Python 3.5 testing to CI/CD pipeline.
+
+This patch addresses the following GitHub and GitLab user issues:
+
+* Broken Python 3.5 compatibility with Release 0.8.3. (https://gitlab.com/TNThieding/exif/-/issues/21)
+* Dependency on enum34 makes it impossible to build a conda package. (https://github.com/TNThieding/exif/issues/25)
+
 ***************************************************
 [0.8.3] Mid-April 2020 bug fix rollup. (2020-04-20)
 ***************************************************
