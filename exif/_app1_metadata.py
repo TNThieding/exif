@@ -9,6 +9,7 @@ from exif._hex_interface import HexInterface
 from exif._ifd_tag._ascii import Ascii
 from exif._ifd_tag._base import Base as BaseIfdTag
 from exif._ifd_tag._byte import Byte
+from exif._ifd_tag._exifversion import ExifVersion
 from exif._ifd_tag._long import Long
 from exif._ifd_tag._rational import Rational
 from exif._ifd_tag._short import Short
@@ -85,33 +86,27 @@ class App1MetaData:
     def _tag_factory(self, tag_id, tag_type, tag_count, tag_value_offset, section_start_address,
                      tag_value_offset_addr):
         if ATTRIBUTE_ID_MAP["xp_title"] <= int(tag_id, 16) <= ATTRIBUTE_ID_MAP["xp_subject"]:  # legacy Windows XP tags
-            tag = WindowsXp(tag_id, tag_count, tag_value_offset,
-                            section_start_address, self._segment_hex, tag_value_offset_addr)
+            cls = WindowsXp
+        elif ATTRIBUTE_ID_MAP["exif_version"] == int(tag_id, 16):  # custom ASCII encoding without termination character
+            cls = ExifVersion
         elif tag_type == ExifTypes.BYTE:
-            tag = Byte(tag_id, tag_count, tag_value_offset,
-                       section_start_address, self._segment_hex, tag_value_offset_addr)
+            cls = Byte
         elif tag_type == ExifTypes.ASCII:
-            tag = Ascii(tag_id, tag_count, tag_value_offset,
-                        section_start_address, self._segment_hex, tag_value_offset_addr)
+            cls = Ascii
         elif tag_type == ExifTypes.SHORT:
-            tag = Short(tag_id, tag_count, tag_value_offset,
-                        section_start_address, self._segment_hex, tag_value_offset_addr)
+            cls = Short
         elif tag_type == ExifTypes.LONG:
-            tag = Long(tag_id, tag_count, tag_value_offset,
-                       section_start_address, self._segment_hex, tag_value_offset_addr)
+            cls = Long
         elif tag_type == ExifTypes.RATIONAL:
-            tag = Rational(tag_id, tag_count, tag_value_offset,
-                           section_start_address, self._segment_hex, tag_value_offset_addr)
+            cls = Rational
         elif tag_type == ExifTypes.SLONG:
-            tag = Slong(tag_id, tag_count, tag_value_offset,
-                        section_start_address, self._segment_hex, tag_value_offset_addr)
+            cls = Slong
         elif tag_type == ExifTypes.SRATIONAL:
-            tag = Srational(tag_id, tag_count, tag_value_offset,
-                            section_start_address, self._segment_hex, tag_value_offset_addr)
+            cls = Srational
         else:
-            tag = BaseIfdTag(tag_id, tag_count, tag_value_offset,
-                             section_start_address, self._segment_hex, tag_value_offset_addr)
+            cls = BaseIfdTag
 
+        tag = cls(tag_id, tag_count, tag_value_offset, section_start_address, self._segment_hex, tag_value_offset_addr)
         return tag
 
     def _unpack_ifd_tags(self):

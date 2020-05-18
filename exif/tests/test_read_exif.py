@@ -54,6 +54,10 @@ class TestReadExif(unittest.TestCase):
         """Test reading BYTE tags and compare to known baseline values."""
         self.assertEqual(str(self.image.gps_altitude_ref), Baseline("""0"""))
 
+    def test_read_exif_version(self):
+        """Test reading EXIF version tag and compare to known baseline values."""
+        self.assertEqual(self.image.exif_version, Baseline("0221"))
+
     def test_read_long(self):
         """Test reading LONG tags and compare to known baseline values."""
         self.assertEqual(str(self.image.jpeg_interchange_format), Baseline("""6410"""))

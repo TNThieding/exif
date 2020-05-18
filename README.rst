@@ -2,7 +2,7 @@
 [exif] Package
 ##############
 
-.. image:: https://www.gitlab.com/TNThieding/exif/badges/master/build.svg
+.. image:: https://www.gitlab.com/TNThieding/exif/badges/master/pipeline.svg
     :target: https://gitlab.com/TNThieding/exif
 
 .. image:: https://www.gitlab.com/tnthieding/exif/badges/master/coverage.svg
