@@ -2,8 +2,18 @@
 Release Notes
 #############
 
+****************************************************
+[0.8.5] Fix ``exif_version`` attribute. (2020-05-18)
+****************************************************
+
+Add support for reading ``exif_version`` attribute.
+
+This patch addresses the following GitLab user issue:
+
+* Reading ``exif_version`` fails with ``NotImplementedError``. (https://gitlab.com/TNThieding/exif/issues/20)
+
 ************************************************
-[0.8.5] Restore Python 3.5 support. (2020-05-10)
+[0.8.4] Restore Python 3.5 support. (2020-05-10)
 ************************************************
 
 Remove format string usage throughout package to restore Python 3.5 support. Add Python 3.5 testing to CI/CD pipeline.
