@@ -3,7 +3,7 @@
 import binascii
 import sys
 
-from exif._constants import ATTRIBUTE_ID_MAP, ExifMarkers, HEX_PER_BYTE
+from exif._constants import ATTRIBUTE_ID_MAP, ExifMarkers, HEX_PER_BYTE, REMOVAL_EXIF
 from exif._app1_metadata import App1MetaData
 
 
@@ -109,6 +109,11 @@ class Image:
 
         """
         self.__delattr__(attribute)
+
+    def delete_all(self):
+        """Remove all the known EXIF tracking values, like GPS, DATETIME, and others
+        """
+        [self.__delattr__(e) for e in dir(self) if e in REMOVAL_EXIF]
 
     def get(self, attribute, default=None):
         """Return the value of the specified attribute.
