@@ -61,6 +61,9 @@ Access EXIF metadata tags using Python attribute notation::
     >>> del my_image.gps_latitude
     >>> del my_image.gps_longitude
 
+To erase all tracking EXIF values, use::
+    >>> my_image.delete_all()
+
 Write the image with modified EXIF metadata to an image file using ``open()`` in binary
 write mode::
 
