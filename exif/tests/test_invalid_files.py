@@ -49,7 +49,7 @@ class TestInvalidFiles(unittest.TestCase):
         self.assertFalse(my_image.has_exif)
 
         self.assertEqual(str(dir(my_image)), Baseline("""
-            ['_segments', 'get', 'get_file', 'has_exif']
+            ['_segments', 'get', 'get_file', 'get_thumbnail', 'has_exif']
             """))
 
         self.assertEqual('\n'.join(textwrap.wrap(str(my_image.get_file()), 90)), NO_APP1_PNG)

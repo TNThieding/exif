@@ -2,6 +2,16 @@
 Release Notes
 #############
 
+**************************************************
+[0.9.0] Add thumbnail image accessor. (2020-05-30)
+**************************************************
+
+Add ``get_thumbnail()`` method to extract bytes representing a thumbnail JPEG.
+
+This patch addresses the following GitHub user issue:
+
+* Extract thumbnail from the EXIF metadata. (https://github.com/TNThieding/exif/issues/28)
+
 *******************************************************************************
 [0.8.6] Make ``get()`` return default value if tag isn't readable. (2020-05-29)
 *******************************************************************************

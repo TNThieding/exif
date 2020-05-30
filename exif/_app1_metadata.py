@@ -3,7 +3,7 @@
 from exif._constants import (
     ATTRIBUTE_ID_MAP, ATTRIBUTE_NAME_MAP, BYTES_PER_IFD_TAG_COUNT, BYTES_PER_IFD_TAG_ID,
     BYTES_PER_IFD_TAG_TYPE, BYTES_PER_IFD_TAG_VALUE_OFFSET, BYTES_PER_IFD_TAG_TOTAL,
-    ERROR_IMG_NO_ATTR, ExifTypes, USER_COMMENT_CHARACTER_CODE_LEN_BYTES)
+    ERROR_IMG_NO_ATTR, ExifMarkers, ExifTypes, HEX_PER_BYTE, USER_COMMENT_CHARACTER_CODE_LEN_BYTES)
 from exif._hex_interface import HexInterface
 
 from exif._ifd_tag._ascii import Ascii
@@ -109,10 +109,44 @@ class App1MetaData:
         tag = cls(tag_id, tag_count, tag_value_offset, section_start_address, self._segment_hex, tag_value_offset_addr)
         return tag
 
-    def _unpack_ifd_tags(self):
+    def _unpack_ifd_tags(self, initial_cursor_position):
+        cursor = initial_cursor_position
+        num_ifd_tags = int(self._segment_hex.read(cursor, 2), 16)
+        cursor += 2
+
+        for tag_index in range(num_ifd_tags):  # pylint: disable=unused-variable
+            tag_id = self._segment_hex.read(cursor, BYTES_PER_IFD_TAG_ID)
+            cursor += BYTES_PER_IFD_TAG_ID
+            tag_type = int(self._segment_hex.read(cursor, BYTES_PER_IFD_TAG_TYPE), 16)
+            cursor += BYTES_PER_IFD_TAG_TYPE
+            tag_count = self._segment_hex.read(cursor, BYTES_PER_IFD_TAG_COUNT)
+            cursor += BYTES_PER_IFD_TAG_COUNT
+            tag_value_offset = self._segment_hex.read(cursor, BYTES_PER_IFD_TAG_VALUE_OFFSET)
+            tag_value_offset_addr = cursor
+            cursor += BYTES_PER_IFD_TAG_VALUE_OFFSET
+
+            tag = self._tag_factory(tag_id, tag_type, tag_count, tag_value_offset,
+                                    initial_cursor_position, tag_value_offset_addr)
+
+            # Handle user comment data structure (see pg. 51 of EXIF specification).
+            if tag.tag == ATTRIBUTE_ID_MAP["user_comment"]:
+                tag = Ascii(tag_id, tag_count, tag_value_offset,
+                            initial_cursor_position, self._segment_hex, tag_value_offset_addr)
+                tag.dtype = ExifTypes.ASCII  # reads unicode as well
+
+                tag.count += 1  # custom data structure does not use null terminator
+                tag.count -= USER_COMMENT_CHARACTER_CODE_LEN_BYTES
+                tag.value_offset += USER_COMMENT_CHARACTER_CODE_LEN_BYTES
+
+            self.ifd_tags[tag.tag] = tag
+
+            if tag.is_exif_pointer() or tag.is_gps_pointer():
+                self._unpack_ifd_tags(0xA + tag.value_offset)
+
+        return initial_cursor_position + 2 + num_ifd_tags * BYTES_PER_IFD_TAG_TOTAL  # 2 skips over tag count
+
+    def _parse_ifd_segments(self):
         cursor = 0xA
-        exif_offset = None
-        gps_offset = None
 
         # Read the endianness specified by the image.
         self._segment_hex.set_endianness(self._segment_hex.read(cursor, 2))
@@ -128,32 +162,18 @@ class App1MetaData:
         # Read each IFD section.
         current_ifd = 0
         while cursor != 0xA:
-            section_start_address = cursor
-            num_ifd_tags = int(self._segment_hex.read(cursor, 2), 16)
-            cursor += 2
-
-            for tag_index in range(num_ifd_tags):  # pylint: disable=unused-variable
-                tag_id = self._segment_hex.read(cursor, BYTES_PER_IFD_TAG_ID)
-                cursor += BYTES_PER_IFD_TAG_ID
-                tag_type = int(self._segment_hex.read(cursor, BYTES_PER_IFD_TAG_TYPE), 16)
-                cursor += BYTES_PER_IFD_TAG_TYPE
-                tag_count = self._segment_hex.read(cursor, BYTES_PER_IFD_TAG_COUNT)
-                cursor += BYTES_PER_IFD_TAG_COUNT
-                tag_value_offset = self._segment_hex.read(cursor, BYTES_PER_IFD_TAG_VALUE_OFFSET)
-                tag_value_offset_addr = cursor
-                cursor += BYTES_PER_IFD_TAG_VALUE_OFFSET
-
-                tag = self._tag_factory(tag_id, tag_type, tag_count, tag_value_offset,
-                                        section_start_address, tag_value_offset_addr)
-
-                self.ifd_tags[tag.tag] = tag
-
-                if tag.is_exif_pointer():
-                    exif_offset = tag.value_offset
-                if tag.is_gps_pointer():
-                    gps_offset = tag.value_offset
-
+            cursor = self._unpack_ifd_tags(cursor)
             next_offset_str = self._segment_hex.read(cursor, 4)
+
+            if current_ifd == 1:  # IFD segment 1 contains thumbnail (if present)
+                succeeding_hex_string = self._segment_hex.get_hex_string()[cursor * HEX_PER_BYTE:]
+                try:
+                    start_index = succeeding_hex_string.index(ExifMarkers.SOI)
+                    end_index = succeeding_hex_string.index(ExifMarkers.EOI) + len(ExifMarkers.EOI)
+                except ValueError:
+                    pass  # no thumbnail
+                else:
+                    self.thumbnail_hex_string = succeeding_hex_string[start_index:end_index]
 
             try:
                 next_offset_int = int(next_offset_str, 16)
@@ -164,67 +184,12 @@ class App1MetaData:
             cursor = 0xA + next_offset_int
             current_ifd += 1
 
-        # If an EXIF section pointer exists, read EXIF IFD tags.
-        if exif_offset:
-            cursor = 0xA + exif_offset
-            section_start_address = cursor
-            num_ifd_tags = int(self._segment_hex.read(cursor, 2), 16)
-            cursor += 2
-
-            for tag_index in range(num_ifd_tags):  # pylint: disable=unused-variable
-                tag_id = self._segment_hex.read(cursor, BYTES_PER_IFD_TAG_ID)
-                cursor += BYTES_PER_IFD_TAG_ID
-                tag_type = int(self._segment_hex.read(cursor, BYTES_PER_IFD_TAG_ID), 16)
-                cursor += BYTES_PER_IFD_TAG_TYPE
-                tag_count = self._segment_hex.read(cursor, BYTES_PER_IFD_TAG_COUNT)
-                cursor += BYTES_PER_IFD_TAG_COUNT
-                tag_value_offset = self._segment_hex.read(cursor, BYTES_PER_IFD_TAG_VALUE_OFFSET)
-                tag_value_offset_addr = cursor
-                cursor += BYTES_PER_IFD_TAG_VALUE_OFFSET
-
-                tag = self._tag_factory(tag_id, tag_type, tag_count, tag_value_offset,
-                                        section_start_address, tag_value_offset_addr)
-
-                # Handle user comment data structure (see pg. 51 of EXIF specification).
-                if tag.tag == ATTRIBUTE_ID_MAP["user_comment"]:
-                    tag = Ascii(tag_id, tag_count, tag_value_offset,
-                                section_start_address, self._segment_hex, tag_value_offset_addr)
-                    tag.dtype = ExifTypes.ASCII  # reads unicode as well
-
-                    tag.count += 1  # custom data structure does not use null terminator
-                    tag.count -= USER_COMMENT_CHARACTER_CODE_LEN_BYTES
-                    tag.value_offset += USER_COMMENT_CHARACTER_CODE_LEN_BYTES
-
-                self.ifd_tags[tag.tag] = tag
-
-        # If an GPS section pointer exists, read GPS IFD tags.
-        if gps_offset:
-            cursor = 0xA + gps_offset
-            section_start_address = cursor
-            num_ifd_tags = int(self._segment_hex.read(cursor, 2), 16)
-            cursor += 2
-
-            for tag_index in range(num_ifd_tags):  # pylint: disable=unused-variable
-                tag_id = self._segment_hex.read(cursor, BYTES_PER_IFD_TAG_ID)
-                cursor += BYTES_PER_IFD_TAG_ID
-                tag_type = int(self._segment_hex.read(cursor, BYTES_PER_IFD_TAG_ID), 16)
-                cursor += BYTES_PER_IFD_TAG_TYPE
-                tag_count = self._segment_hex.read(cursor, BYTES_PER_IFD_TAG_COUNT)
-                cursor += BYTES_PER_IFD_TAG_COUNT
-                tag_value_offset = self._segment_hex.read(cursor, BYTES_PER_IFD_TAG_VALUE_OFFSET)
-                tag_value_offset_addr = cursor
-                cursor += BYTES_PER_IFD_TAG_VALUE_OFFSET
-
-                tag = self._tag_factory(tag_id, tag_type, tag_count, tag_value_offset,
-                                        section_start_address, tag_value_offset_addr)
-
-                self.ifd_tags[tag.tag] = tag
-
     def __init__(self, segment_hex):
         self._segment_hex = HexInterface(segment_hex)
         self.ifd_tags = {}
+        self.thumbnail_hex_string = None
 
-        self._unpack_ifd_tags()
+        self._parse_ifd_segments()
 
     def __delattr__(self, item):
         try:
