@@ -1,1 +1,2 @@
 include exif/tests/*
+include version

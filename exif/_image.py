@@ -124,7 +124,7 @@ class Image:
         """
         try:
             retval = self.__getattr__(attribute)
-        except AttributeError:
+        except (AttributeError, NotImplementedError):
             retval = default
 
         return retval
