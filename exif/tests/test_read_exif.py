@@ -1,8 +1,8 @@
 """Test reading EXIF attributes."""
 
 import os
-import unittest
 
+import pytest
 from baseline import Baseline
 
 from exif import Image
@@ -10,71 +10,70 @@ from exif import Image
 # pylint: disable=pointless-statement
 
 
-class TestReadExif(unittest.TestCase):
+def test_get_method():
+    """Test behavior when accessing tags using the ``get()`` method."""
+    with open(os.path.join(os.path.dirname(__file__), 'grand_canyon.jpg'), 'rb') as image_file:
+        image = Image(image_file)
 
-    """Test cases for reading EXIF attributes."""
+    assert image.get('fake_attribute') is None
+    assert image.get('light_source', default=-1) == -1  # tag not in image
+    assert image.get('make') == Baseline("""Apple""")
 
-    def setUp(self):
-        """Open sample image file in binary mode for use in test cases."""
-        grand_canyon = os.path.join(os.path.dirname(__file__), 'grand_canyon.jpg')
-        with open(grand_canyon, 'rb') as image_file:
-            self.image = Image(image_file)
 
-        assert self.image.has_exif
+def test_handle_bad_attribute():
+    """Verify that accessing a nonexistent attribute raises an AttributeError."""
+    with open(os.path.join(os.path.dirname(__file__), 'grand_canyon.jpg'), 'rb') as image_file:
+        image = Image(image_file)
 
-    def test_get_method(self):
-        """Test behavior when accessing tags using the ``get()`` method."""
-        self.assertIsNone(self.image.get('fake_attribute'))
-        self.assertEqual(self.image.get('light_source', default=-1), -1)  # tag not in image
-        self.assertEqual(self.image.get('make'), Baseline("""Apple"""))
+    with pytest.raises(AttributeError, match="unknown image attribute fake_attribute"):
+        image.fake_attribute
 
-    def test_handle_bad_attribute(self):
-        """Verify that accessing a nonexistent attribute raises an AttributeError."""
-        with self.assertRaisesRegex(AttributeError, "unknown image attribute fake_attribute"):
-            self.image.fake_attribute
 
-    def test_handle_unset_attribute(self):
-        """Verify that accessing an attribute not present in an image raises an AttributeError."""
-        with self.assertRaisesRegex(AttributeError, "image does not have attribute light_source"):
-            self.image.light_source
+def test_handle_unset_attribute():
+    """Verify that accessing an attribute not present in an image raises an AttributeError."""
+    with open(os.path.join(os.path.dirname(__file__), 'grand_canyon.jpg'), 'rb') as image_file:
+        image = Image(image_file)
 
-    def test_index_accessor(self):
-        """Test accessing attributes using index syntax."""
-        self.assertEqual(self.image["datetime"], Baseline("""2018:03:12 10:12:07"""))
+    with pytest.raises(AttributeError, match="image does not have attribute light_source"):
+        image.light_source
 
-    def test_read_ascii(self):
-        """Test reading ASCII tags and compare to known baseline values."""
-        self.assertEqual(self.image.datetime, Baseline("""2018:03:12 10:12:07"""))
-        self.assertEqual(self.image.make, Baseline("""Apple"""))
-        self.assertEqual(self.image.model, Baseline("""iPhone 7"""))
-        self.assertEqual(self.image.gps_latitude_ref, Baseline("""N"""))
-        self.assertEqual(self.image.gps_longitude_ref, Baseline("""W"""))
 
-    def test_read_byte(self):
-        """Test reading BYTE tags and compare to known baseline values."""
-        self.assertEqual(str(self.image.gps_altitude_ref), Baseline("""0"""))
+def test_index_accessor():
+    """Test accessing attributes using index syntax."""
+    with open(os.path.join(os.path.dirname(__file__), 'grand_canyon.jpg'), 'rb') as image_file:
+        image = Image(image_file)
 
-    def test_read_exif_version(self):
-        """Test reading EXIF version tag and compare to known baseline values."""
-        self.assertEqual(self.image.exif_version, Baseline("0221"))
+    assert image["datetime"] == Baseline("""2018:03:12 10:12:07""")
 
-    def test_read_long(self):
-        """Test reading LONG tags and compare to known baseline values."""
-        self.assertEqual(str(self.image.jpeg_interchange_format), Baseline("""6410"""))
-        self.assertEqual(str(self.image.jpeg_interchange_format_length), Baseline("""4507"""))
 
-    def test_read_rational(self):
-        """Test reading RATIONAL tags and compare to known baseline values."""
-        self.assertEqual(str(self.image.gps_altitude)[:13], Baseline("""2189.98969072"""))
-        self.assertEqual(str(self.image.gps_latitude), Baseline("""(36.0, 3.0, 11.08)"""))
-        self.assertEqual(str(self.image.gps_longitude), Baseline("""(112.0, 5.0, 4.18)"""))
-        self.assertEqual(str(self.image.x_resolution), Baseline("""72.0"""))
-        self.assertEqual(str(self.image.y_resolution), Baseline("""72.0"""))
+def rounded_str(input_object):
+    return str(input_object)[:13]
 
-    def test_read_short(self):
-        """Test reading a SHORT tag and compare to a known baseline value."""
-        self.assertEqual(str(self.image.metering_mode), Baseline("""5"""))
 
-    def test_read_srational(self):
-        """Test reading a SRATIONAL tag and compare to a known baseline value."""
-        self.assertEqual(str(self.image.brightness_value)[:13], Baseline("""11.3644957983"""))
+read_attributes = [
+    ("brightness_value", rounded_str, "11.3644957983"),
+    ("datetime", str, "2018:03:12 10:12:07"),
+    ("exif_version", str, "0221"),
+    ("gps_altitude", rounded_str, "2189.98969072"),
+    ("gps_altitude_ref", str, "0"),
+    ("gps_latitude", str, "(36.0, 3.0, 11.08)"),
+    ("gps_latitude_ref", str, "N"),
+    ("gps_longitude", str, "(112.0, 5.0, 4.18)"),
+    ("gps_longitude_ref", str, "W"),
+    ("jpeg_interchange_format", str, "6410"),
+    ("jpeg_interchange_format_length", str, "4507"),
+    ("make", str, "Apple"),
+    ("metering_mode", str, "5"),
+    ("model", str, "iPhone 7"),
+    ("x_resolution", str, "72.0"),
+    ("y_resolution", str, "72.0"),
+]
+
+
+@pytest.mark.parametrize("attribute, func, value", read_attributes, ids=[params[0] for params in read_attributes])
+def test_read(attribute, func, value):
+    """Test reading tags and compare to known baseline values."""
+    with open(os.path.join(os.path.dirname(__file__), 'grand_canyon.jpg'), 'rb') as image_file:
+        image = Image(image_file)
+
+    assert func(getattr(image, attribute)) == value

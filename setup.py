@@ -3,12 +3,15 @@ import setuptools
 with open("README.rst", "r") as fh:
     long_description = fh.read()
 
+with open("version", "r") as fh:
+    version = fh.read()
+
 setuptools.setup(
     python_requires='>=3.5',
     include_package_data=True,
 
     name='exif',
-    version='0.8.5',
+    version=version,
     author='Tyler N. Thieding',
     author_email='python@thieding.com',
     maintainer='Tyler N. Thieding',

@@ -24,7 +24,9 @@ copyright = u'2019, Tyler N. Thieding'
 author = u'Tyler N. Thieding'
 
 # The short X.Y version
-version = u'0.8.5'
+with open("../version", "r") as fh:
+    version = fh.read()
+
 # The full version, including alpha/beta/rc tags
 release = version
 

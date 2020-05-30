@@ -2,8 +2,8 @@
 
 import os
 import textwrap
-import unittest
 
+import pytest
 from baseline import Baseline
 
 from exif import Image
@@ -12,42 +12,40 @@ from exif.tests.little_endian_baselines import LITTLE_ENDIAN_MODIFY_BASELINE
 # pylint: disable=pointless-statement, protected-access
 
 
-class TestLittleEndian(unittest.TestCase):
+def test_modify():
+    """Verify that modifying tags updates the tag values as expected."""
+    with open(os.path.join(os.path.dirname(__file__), 'little_endian.jpg'), 'rb') as image_file:
+        image = Image(image_file)
 
-    """Test cases for little endian images."""
+    image.model = "Modified"
+    assert image.model == "Modified"
 
-    def setUp(self):
-        """Open sample image file in binary mode for use in test cases."""
-        little_endian_img = os.path.join(os.path.dirname(__file__), 'little_endian.jpg')
-        with open(little_endian_img, 'rb') as image_file:
-            self.image = Image(image_file)
+    image.gps_longitude = (12.0, 34.0, 56.789)
+    assert str(image.gps_longitude) == Baseline("""(12.0, 34.0, 56.789)""")
 
-        assert self.image.has_exif
+    segment_hex = image._segments['APP1'].get_segment_hex()
+    assert '\n'.join(textwrap.wrap(segment_hex, 90)) == LITTLE_ENDIAN_MODIFY_BASELINE
 
-    def test_modify(self):
-        """Verify that modifying tags updates the tag values as expected."""
-        self.image.model = "Modified"
-        self.assertEqual(self.image.model, "Modified")
 
-        self.image.gps_longitude = (12.0, 34.0, 56.789)
-        self.assertEqual(str(self.image.gps_longitude), Baseline("""(12.0, 34.0, 56.789)"""))
+read_attributes = [
+    ("color_space", repr, "<ColorSpace.SRGB: 1>"),
+    ("datetime_original", str, "2019:02:08 21:44:35"),
+    ("gps_latitude", str, "(79.0, 36.0, 54.804590935844615)"),
+    ("gps_longitude", str, "(47.0, 25.0, 34.489798675854615)"),
+    ("make", str, "EXIF Package"),
+    ("model", str, "Little Endian"),
+    ("resolution_unit", str, "2"),
+    ("saturation", repr, "<Saturation.LOW: 1>"),
+    ("sharpness", repr, "<Sharpness.SOFT: 1>"),
+    ("x_resolution", str, "200.0"),
+    ("y_resolution", str, "200.0"),
+]
 
-        segment_hex = self.image._segments['APP1'].get_segment_hex()
-        self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
-                         LITTLE_ENDIAN_MODIFY_BASELINE)
 
-    def test_read(self):
-        """Test reading tags and compare to known baseline values."""
-        self.assertEqual(repr(self.image.color_space), "<ColorSpace.SRGB: 1>")
-        self.assertEqual(str(self.image.datetime_original), Baseline("""2019:02:08 21:44:35"""))
-        self.assertEqual(str(self.image.gps_latitude),
-                         Baseline("""(79.0, 36.0, 54.804590935844615)"""))
-        self.assertEqual(str(self.image.gps_longitude),
-                         Baseline("""(47.0, 25.0, 34.489798675854615)"""))
-        self.assertEqual(self.image.make, Baseline("""EXIF Package"""))
-        self.assertEqual(self.image.model, Baseline("""Little Endian"""))
-        self.assertEqual(str(self.image.resolution_unit), Baseline("""2"""))
-        self.assertEqual(repr(self.image.saturation), Baseline("""<Saturation.LOW: 1>"""))
-        self.assertEqual(repr(self.image.sharpness), Baseline("""<Sharpness.SOFT: 1>"""))
-        self.assertEqual(str(self.image.x_resolution), Baseline("""200.0"""))
-        self.assertEqual(str(self.image.y_resolution), Baseline("""200.0"""))
+@pytest.mark.parametrize("attribute, func, value", read_attributes, ids=[params[0] for params in read_attributes])
+def test_read(attribute, func, value):
+    """Test reading tags and compare to known baseline values."""
+    with open(os.path.join(os.path.dirname(__file__), 'little_endian.jpg'), 'rb') as image_file:
+        image = Image(image_file)
+
+    assert func(getattr(image, attribute)) == value

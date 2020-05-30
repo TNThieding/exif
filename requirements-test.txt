@@ -1,2 +1,4 @@
 baseline
-coverage
+pytest
+pytest-cov
+pytest-html

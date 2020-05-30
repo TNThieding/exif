@@ -2,6 +2,18 @@
 Release Notes
 #############
 
+*******************************************************************************
+[0.8.6] Make ``get()`` return default value if tag isn't readable. (2020-05-29)
+*******************************************************************************
+
+Previously, using ``get()`` to read a tag that can't be read by this package
+raised a ``NotImplementedError``. Now, ``get()`` returns the default value (i.e.,
+``None`` if not specified otherwise) if the specified tag cannot be read.
+
+This patch addresses the following GitHub user issue:
+
+* Method ``gets()`` raises ``NotImplementedError``. (https://github.com/TNThieding/exif/issues/30)
+
 ****************************************************
 [0.8.5] Fix ``exif_version`` attribute. (2020-05-18)
 ****************************************************
