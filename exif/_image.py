@@ -38,10 +38,10 @@ class Image:
                 img_hex[app1_start_index + 2 * HEX_PER_BYTE:app1_start_index + 4 * HEX_PER_BYTE],
                 16
             )
-            cursor += app1_len * HEX_PER_BYTE
+            cursor += (app1_len + 1) * HEX_PER_BYTE
 
             # If the expected length stops early, keep traversing until another section is found.
-            while img_hex[cursor - 2:cursor] != ExifMarkers.SEG_PREFIX:
+            while img_hex[cursor - 4:cursor - 2] != ExifMarkers.SEG_PREFIX:
                 cursor += 2
                 # raise IOError("no subsequent EXIF segment found, is this an EXIF-encoded JPEG?")
                 if cursor > len(img_hex):
@@ -67,7 +67,7 @@ class Image:
         self._parse_segments(img_hex)
 
     def __dir__(self):
-        members = ['get', 'get_file', 'has_exif', '_segments']
+        members = ['get', 'get_file', 'get_thumbnail', 'has_exif', '_segments']
 
         if self.has_exif:
             members += self._segments['APP1'].get_tag_list()
@@ -133,7 +133,7 @@ class Image:
         """Generate equivalent binary file contents.
 
         :returns: image binary with EXIF metadata
-        :rtype: str (Python 2) or bytes (Python 3)
+        :rtype: bytes
 
         """
         img_hex = self._segments['preceding']
@@ -144,6 +144,26 @@ class Image:
         img_hex += self._segments['succeeding']
 
         return binascii.unhexlify(img_hex)
+
+    def get_thumbnail(self):
+        """Extract thumbnail binary contained in EXIF metadata.
+
+        :returns: thumbnail binary
+        :rtype: bytes
+        :raises RuntimeError: image does not contain thumbnail
+
+        """
+        try:
+            app1_segment = self._segments['APP1']
+        except KeyError:
+            thumbnail_hex_string = None
+        else:
+            thumbnail_hex_string = app1_segment.thumbnail_hex_string
+
+        if not thumbnail_hex_string:
+            raise RuntimeError("image does not contain thumbnail")
+
+        return binascii.unhexlify(thumbnail_hex_string)
 
     def set(self, attribute, value):
         """Set the value of the specified attribute.
