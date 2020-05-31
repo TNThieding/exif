@@ -4,8 +4,8 @@ import binascii
 import struct
 
 from exif._constants import (
-    ATTRIBUTE_ID_MAP, ColorSpace, EXIF_LITTLE_ENDIAN_HEADER, Saturation, Sharpness,
-    Orientation)
+    ATTRIBUTE_ID_MAP, ColorSpace, EXIF_LITTLE_ENDIAN_HEADER, ExposureMode, ExposureProgram, MeteringMode, Orientation,
+    Saturation, SceneCaptureType, SensingMethod, Sharpness, WhiteBalance)
 from exif._ifd_tag._base import Base as BaseIfdTag
 
 
@@ -66,12 +66,24 @@ class Short(BaseIfdTag):
 
         if self.tag == ATTRIBUTE_ID_MAP["color_space"]:
             retval = ColorSpace(read_number)
+        elif self.tag == ATTRIBUTE_ID_MAP["exposure_mode"]:
+            retval = ExposureMode(read_number)
+        elif self.tag == ATTRIBUTE_ID_MAP["exposure_program"]:
+            retval = ExposureProgram(read_number)
+        elif self.tag == ATTRIBUTE_ID_MAP["metering_mode"]:
+            retval = MeteringMode(read_number)
         elif self.tag == ATTRIBUTE_ID_MAP["orientation"]:
             retval = Orientation(read_number)
         elif self.tag == ATTRIBUTE_ID_MAP["saturation"]:
             retval = Saturation(read_number)
+        elif self.tag == ATTRIBUTE_ID_MAP["scene_capture_type"]:
+            retval = SceneCaptureType(read_number)
+        elif self.tag == ATTRIBUTE_ID_MAP["sensing_method"]:
+            retval = SensingMethod(read_number)
         elif self.tag == ATTRIBUTE_ID_MAP["sharpness"]:
             retval = Sharpness(read_number)
+        elif self.tag == ATTRIBUTE_ID_MAP["white_balance"]:
+            retval = WhiteBalance(read_number)
         else:
             # No enumeration found, return in original form.
             pass

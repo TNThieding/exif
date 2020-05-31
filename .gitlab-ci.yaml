@@ -10,7 +10,7 @@ before_script:
 py35:
   stage: test
   image: python:3.5
-  coverage: '/TOTAL\s*\d*\s*\d*\s*(\d*)%/'
+  coverage: '/TOTAL\s+\d+\s+\d+\s+\d+\s+\d+\s+(\d+)%/'
   script:
     - tox -vv -e py35
   artifacts:
@@ -21,7 +21,7 @@ py35:
 py36:
   stage: test
   image: python:3.6
-  coverage: '/TOTAL\s*\d*\s*\d*\s*(\d*)%/'
+  coverage: '/TOTAL\s+\d+\s+\d+\s+\d+\s+\d+\s+(\d+)%/'
   script:
     - tox -vv -e py36
   artifacts:
@@ -32,7 +32,7 @@ py36:
 py37:
   stage: test
   image: python:3.7
-  coverage: '/TOTAL\s*\d*\s*\d*\s*(\d*)%/'
+  coverage: '/TOTAL\s+\d+\s+\d+\s+\d+\s+\d+\s+(\d+)%/'
   script:
     - tox -vv -e py37
   artifacts:
@@ -43,7 +43,7 @@ py37:
 py38:
   stage: test
   image: python:3.8
-  coverage: '/TOTAL\s*\d*\s*\d*\s*(\d*)%/'
+  coverage: '/TOTAL\s+\d+\s+\d+\s+\d+\s+\d+\s+(\d+)%/'
   script:
     - tox -vv -e py38
   artifacts:
