@@ -2,6 +2,19 @@
 Release Notes
 #############
 
+******************************************************
+[0.10.0] Add additional tag enumerations. (2020-05-31)
+******************************************************
+
+Add enumerations for the following tags:
+
+* Exposure mode
+* Exposure program
+* Metering mode
+* Scene capture type
+* Sensing method
+* White balance
+
 **************************************************
 [0.9.0] Add thumbnail image accessor. (2020-05-30)
 **************************************************
