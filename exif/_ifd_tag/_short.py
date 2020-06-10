@@ -5,7 +5,7 @@ import struct
 
 from exif._constants import (
     ATTRIBUTE_ID_MAP, ColorSpace, EXIF_LITTLE_ENDIAN_HEADER, ExposureMode, ExposureProgram, MeteringMode, Orientation,
-    Saturation, SceneCaptureType, SensingMethod, Sharpness, WhiteBalance)
+    ResolutionUnit, Saturation, SceneCaptureType, SensingMethod, Sharpness, WhiteBalance)
 from exif._ifd_tag._base import Base as BaseIfdTag
 
 
@@ -74,6 +74,8 @@ class Short(BaseIfdTag):
             retval = MeteringMode(read_number)
         elif self.tag == ATTRIBUTE_ID_MAP["orientation"]:
             retval = Orientation(read_number)
+        elif self.tag == ATTRIBUTE_ID_MAP["resolution_unit"]:
+            retval = ResolutionUnit(read_number)
         elif self.tag == ATTRIBUTE_ID_MAP["saturation"]:
             retval = Saturation(read_number)
         elif self.tag == ATTRIBUTE_ID_MAP["scene_capture_type"]:

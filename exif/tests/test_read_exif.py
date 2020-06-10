@@ -67,6 +67,7 @@ read_attributes_grand_canyon = [
     ("metering_mode", repr, "<MeteringMode.PATTERN: 5>"),
     ("model", str, "iPhone 7"),
     ("orientation", repr, "<Orientation.TOP_LEFT: 1>"),
+    ("resolution_unit", repr, "<ResolutionUnit.INCHES: 2>"),
     ("scene_capture_type", repr, "<SceneCaptureType.STANDARD: 0>"),
     ("sensing_method", repr, "<SensingMethod.ONE_CHIP_COLOR_AREA_SENSOR: 2>"),
     ("x_resolution", str, "72.0"),

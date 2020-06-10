@@ -181,6 +181,16 @@ class Orientation(IntEnum):
     visual bottom."""
 
 
+class ResolutionUnit(IntEnum):
+    """Unit for measuring X resolution and Y resolution tags."""
+
+    INCHES = 2
+    """Inches or Unknown"""
+
+    CENTIMETERS = 3
+    """Centimeters"""
+
+
 class Saturation(IntEnum):
     """Saturation processing applied by camera."""
 

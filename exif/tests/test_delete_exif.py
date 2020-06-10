@@ -3,10 +3,13 @@
 import os
 import textwrap
 import unittest
+from tempfile import TemporaryFile
+
+from baseline import Baseline
 
 from exif import Image
 from exif.tests.delete_exif_baselines import (
-    DELETE_ASCII_TAGS_HEX_BASELINE, DELETE_GEOTAG_HEX_BASELINE)
+    DELETE_ALL_HEX_BASELINE, DELETE_ASCII_TAGS_HEX_BASELINE, DELETE_GEOTAG_HEX_BASELINE)
 
 # pylint: disable=pointless-statement, protected-access
 
@@ -22,6 +25,24 @@ class TestModifyExif(unittest.TestCase):
             self.image = Image(image_file)
 
         assert self.image.has_exif
+
+    def test_delete_all_tags(self):
+        """Verify deleting all EXIF tags from the Image object."""
+        self.image.delete_all()
+
+        segment_hex = self.image._segments['APP1'].get_segment_hex()
+        self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)), DELETE_ALL_HEX_BASELINE)
+
+        with TemporaryFile("w+b") as temporary_file_stream:
+            temporary_file_stream.write(self.image.get_file())
+            temporary_file_stream.seek(0)
+            reloaded_image = Image(temporary_file_stream)
+
+        dunder_dir_text = '\n'.join(textwrap.wrap(repr(sorted(dir(reloaded_image))), 90))
+        self.assertEqual(dunder_dir_text, Baseline("""
+            ['<unknown EXIF tag 59932>', '_segments', 'delete', 'delete_all', 'get', 'get_file',
+            'get_thumbnail', 'has_exif', 'resolution_unit', 'x_resolution', 'y_resolution']
+            """))
 
     def test_delete_ascii_tags(self):
         """Verify deleting EXIF ASCII from the Image object and the hexadecimal equivalent."""
