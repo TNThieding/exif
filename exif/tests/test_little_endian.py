@@ -34,7 +34,7 @@ read_attributes = [
     ("gps_longitude", str, "(47.0, 25.0, 34.489798675854615)"),
     ("make", str, "EXIF Package"),
     ("model", str, "Little Endian"),
-    ("resolution_unit", str, "2"),
+    ("resolution_unit", repr, "<ResolutionUnit.INCHES: 2>"),
     ("saturation", repr, "<Saturation.LOW: 1>"),
     ("sharpness", repr, "<Sharpness.SOFT: 1>"),
     ("x_resolution", str, "200.0"),

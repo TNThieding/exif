@@ -56,7 +56,7 @@ class App1MetaData:
 
         # Overwrite pointer data with null bytes (if applicable, depending on datatype).
         cursor = 0xA + ifd_tag.value_offset
-        if isinstance(delete_target, Ascii):
+        if isinstance(delete_target, Ascii) and delete_target.count > 4:
             self._segment_hex.wipe(cursor, delete_target.count)
         if isinstance(delete_target, (Srational, Rational)):  # 8 Bytes
             self._segment_hex.wipe(cursor, delete_target.count * 8)

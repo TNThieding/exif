@@ -22,10 +22,10 @@ class TestGetFile(unittest.TestCase):
             ['<unknown EXIF tag 59932>', '<unknown EXIF tag 59933>', '_exif_ifd_pointer',
             '_gps_ifd_pointer', '_segments', 'aperture_value', 'brightness_value', 'color_space',
             'components_configuration', 'compression', 'datetime', 'datetime_digitized',
-            'datetime_original', 'exif_version', 'exposure_bias_value', 'exposure_mode',
-            'exposure_program', 'exposure_time', 'f_number', 'flash', 'flashpix_version',
-            'focal_length', 'focal_length_in_35mm_film', 'get', 'get_file', 'get_thumbnail',
-            'gps_altitude', 'gps_altitude_ref', 'gps_datestamp', 'gps_dest_bearing',
+            'datetime_original', 'delete', 'delete_all', 'exif_version', 'exposure_bias_value',
+            'exposure_mode', 'exposure_program', 'exposure_time', 'f_number', 'flash',
+            'flashpix_version', 'focal_length', 'focal_length_in_35mm_film', 'get', 'get_file',
+            'get_thumbnail', 'gps_altitude', 'gps_altitude_ref', 'gps_datestamp', 'gps_dest_bearing',
             'gps_dest_bearing_ref', 'gps_horizontal_positioning_error', 'gps_img_direction',
             'gps_img_direction_ref', 'gps_latitude', 'gps_latitude_ref', 'gps_longitude',
             'gps_longitude_ref', 'gps_speed', 'gps_speed_ref', 'gps_timestamp', 'has_exif',
@@ -43,8 +43,8 @@ class TestGetFile(unittest.TestCase):
             image = Image(image_file)
         dunder_dir_text = '\n'.join(textwrap.wrap(repr(sorted(dir(image))), 90))
         self.assertEqual(dunder_dir_text, Baseline("""
-            ['_exif_ifd_pointer', '_segments', 'color_space', 'compression', 'datetime', 'get',
-            'get_file', 'get_thumbnail', 'has_exif', 'jpeg_interchange_format',
+            ['_exif_ifd_pointer', '_segments', 'color_space', 'compression', 'datetime', 'delete',
+            'delete_all', 'get', 'get_file', 'get_thumbnail', 'has_exif', 'jpeg_interchange_format',
             'jpeg_interchange_format_length', 'orientation', 'pixel_x_dimension', 'pixel_y_dimension',
             'resolution_unit', 'software', 'x_resolution', 'y_resolution']
             """))

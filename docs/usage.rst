@@ -102,6 +102,10 @@ Call ``delete()`` with a tag name to remove it from the image::
 
     >>> self.image.delete("datetime_original")
 
+Erase all EXIF tags in an image using the ``delete_all()`` method::
+
+    >>> my_image.delete_all()
+
 
 ************************
 Writing/Saving the Image

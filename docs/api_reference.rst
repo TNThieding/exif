@@ -17,6 +17,7 @@ Image
 .. autoclass:: exif.Image
 
     .. automethod:: exif.Image.delete
+    .. automethod:: exif.Image.delete_all
     .. automethod:: exif.Image.get
     .. automethod:: exif.Image.get_file
     .. automethod:: exif.Image.get_thumbnail
@@ -39,7 +40,6 @@ ExposureMode
 .. autoclass:: exif.ExposureMode
     :members:
 
-
 ExposureProgram
 ===============
 
@@ -52,11 +52,16 @@ MeteringMode
 .. autoclass:: exif.MeteringMode
     :members:
 
-
 Orientation
 ===========
 
 .. autoclass:: exif.Orientation
+    :members:
+
+ResolutionUnit
+==============
+
+.. autoclass:: exif.ResolutionUnit
     :members:
 
 Saturation
