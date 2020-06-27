@@ -61,7 +61,12 @@ class Image:
         self.has_exif = True
         self._segments = {}
 
-        img_hex = binascii.hexlify(img_file.read()).upper()
+        try:
+            data = img_file.read()
+        except AttributeError:
+            data = img_file
+
+        img_hex = binascii.hexlify(data).upper()
         if sys.version_info[0] == 3:  # pragma: no cover
             img_hex = img_hex.decode("utf8")
 
