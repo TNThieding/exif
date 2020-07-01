@@ -1,6 +1,7 @@
 """Image EXIF metadata interface module."""
 
 import binascii
+import os
 import sys
 import warnings
 
@@ -12,7 +13,8 @@ class Image:
 
     """Image EXIF metadata interface class.
 
-    :param file img_file: image file with EXIF metadata
+    :param img_file: image file with EXIF metadata
+    :type image_file: str (file path), bytes (already-read contents), or File
 
     """
 
@@ -61,7 +63,18 @@ class Image:
         self.has_exif = True
         self._segments = {}
 
-        img_hex = binascii.hexlify(img_file.read()).upper()
+        if hasattr(img_file, "read"):
+            img_bytes = img_file.read()
+        elif isinstance(img_file, bytes):
+            img_bytes = img_file
+        elif os.path.isfile(img_file):
+            with open(img_file, "rb") as file_descriptor:
+                img_bytes = file_descriptor.read()
+        else:  # pragma: no cover
+            raise ValueError("expected file object, file path as str, or bytes")
+
+        img_hex = binascii.hexlify(img_bytes).upper()
+
         if sys.version_info[0] == 3:  # pragma: no cover
             img_hex = img_hex.decode("utf8")
 

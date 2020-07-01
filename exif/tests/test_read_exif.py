@@ -77,7 +77,7 @@ read_attributes_grand_canyon = [
 
 # pylint: disable=line-too-long
 @pytest.mark.parametrize("attribute, func, value", read_attributes_grand_canyon, ids=[params[0] for params in read_attributes_grand_canyon])
-def test_read_grand_canyon(attribute, func, value):
+def test_read_file_object(attribute, func, value):
     """Test reading tags and compare to known baseline values."""
     with open(os.path.join(os.path.dirname(__file__), 'grand_canyon.jpg'), 'rb') as image_file:
         image = Image(image_file)
@@ -105,9 +105,33 @@ read_attributes_grayson_highlands = [
 
 # pylint: disable=line-too-long
 @pytest.mark.parametrize("attribute, func, value", read_attributes_grayson_highlands, ids=[params[0] for params in read_attributes_grayson_highlands])
-def test_read_grayson_highlands(attribute, func, value):
+def test_read_file_path(attribute, func, value):
     """Test reading tags and compare to known baseline values."""
-    with open(os.path.join(os.path.dirname(__file__), 'grayson_highlands.jpg'), 'rb') as image_file:
-        image = Image(image_file)
+    image = Image(os.path.join(os.path.dirname(__file__), 'grayson_highlands.jpg'))
+    assert func(getattr(image, attribute)) == value
+
+
+read_attributes_florida_beach = [
+    ("aperture_value", rounded_str, "1.69599381283"),
+    ("brightness_value", rounded_str, "9.46831050228"),
+    ("color_space", repr, "<ColorSpace.UNCALIBRATED: 65535>"),
+    ("datetime", str, "2019:03:26 19:33:47"),
+    ("gps_altitude", rounded_str, "1.02077865606"),
+    ("gps_altitude_ref", str, "0"),
+    ("make", str, "Apple"),
+    ("metering_mode", repr, "<MeteringMode.PATTERN: 5>"),
+    ("model", str, "iPhone 7"),
+    ("orientation", repr, "<Orientation.TOP_LEFT: 1>"),
+    ("resolution_unit", repr, "<ResolutionUnit.INCHES: 2>"),
+    ("white_balance", repr, "<WhiteBalance.AUTO: 0>"),
+]
+
+
+# pylint: disable=line-too-long
+@pytest.mark.parametrize("attribute, func, value", read_attributes_florida_beach, ids=[params[0] for params in read_attributes_florida_beach])
+def test_read_bytes(attribute, func, value):
+    """Test reading tags and compare to known baseline values."""
+    with open(os.path.join(os.path.dirname(__file__), 'florida_beach.jpg'), 'rb') as image_file:
+        image = Image(image_file.read())
 
     assert func(getattr(image, attribute)) == value
