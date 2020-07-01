@@ -21,6 +21,16 @@ binary mode flag (i.e. ``'rb'``) is set. Pass this image file object into the ``
     ...     my_image = Image(image_file)
     ...
 
+Alternatively, supply a file path or image bytes to the ``exif.Image`` class::
+
+    >>> my_image = Image('grand_canyon.jpg')
+
+    >>> from exif import Image
+    >>> with open('grand_canyon.jpg', 'rb') as image_file:
+    ...     image_bytes = image_file.read()
+    ...
+    >>> my_image = Image(image_bytes)
+
 Verify that an image has EXIF metadata by leveraging the ``has_exif`` attribute::
 
     >>> my_image.has_exif

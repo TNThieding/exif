@@ -2,6 +2,17 @@
 Release Notes
 #############
 
+*******************************************************************************
+[0.11.1] Accept file paths and bytes when instantiating ``Image``. (2020-06-30)
+*******************************************************************************
+
+In addition to accepting an image file descriptor, also support instantiating ``Image``
+with file paths or bytes (e.g., already-read files).
+
+Part of this release contains changes submitted via GitHub pull request by the following user:
+
+* chbndrhnns
+
 **************************************************
 [0.11.0] Add ``delete_all()`` method. (2020-06-06)
 **************************************************
