@@ -17,13 +17,13 @@ class ColorSpace(IntEnum):
 class ExifMarkers:
     """EXIF marker segments bytes."""
 
-    SEG_PREFIX = "FF"
+    SEG_PREFIX = b"\xff"
     """Generic Segment Prefix"""
 
     SOI = "FFD8"
     """Start of Image"""
 
-    APP1 = "FFE1"
+    APP1 = SEG_PREFIX + b"\xe1"
     """EXIF Attribute Information (Application Segment 1)"""
 
     APP2 = "FFE2"

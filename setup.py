@@ -8,8 +8,10 @@ with open("version", "r") as fh:
 
 setuptools.setup(
     python_requires='>=3.5',
+    install_requires=[
+        'plum-py==0.3.1',
+    ],
     include_package_data=True,
-
     name='exif',
     version=version,
     author='Tyler N. Thieding',
