@@ -22,7 +22,7 @@ class TestGitHubIssue12(unittest.TestCase):
 
         assert self.image.has_exif
 
-    def test_get_method(self):
+    def test_ascii_3char(self):
         """Test reading ASCII tags whose values fit inside the value offset field such that it's not a pointer."""
         self.assertEqual(self.image.image_description, Baseline("""dav"""))
         self.image.image_description = "new"

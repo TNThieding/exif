@@ -9,7 +9,7 @@ from baseline import Baseline
 
 from exif import Image
 from exif.tests.modify_exif_baselines import (
-    MODIFY_ASCII_SAME_LEN_HEX_BASELINE, MODIFY_ASCII_SHORTER_HEX_BASELINE,
+    MODIFY_ASCII_SAME_LEN_HEX_BASELINE, MODIFY_ASCII_SHORTER_HEX_BASELINE, MODIFY_ASCII_TO_INTRA_IFD_BASELINE,
     MODIFY_RATIONAL_HEX_BASELINE, MODIFY_SRATIONAL_HEX_BASELINE, ROTATED_GRAND_CANYON_HEX)
 
 # pylint: disable=protected-access
@@ -59,6 +59,15 @@ class TestModifyExif(unittest.TestCase):
         segment_hex = binascii.hexlify(self.image._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
         self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
                          MODIFY_ASCII_SHORTER_HEX_BASELINE)
+
+    def test_modify_ascii_to_intra_ifd(self):
+        """Verify writing a shorter string that can fit in the IFD tag."""
+        self.image.model = "Cam"
+        self.assertEqual(self.image.model, Baseline("""Cam"""))
+
+        segment_hex = binascii.hexlify(self.image._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
+        self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
+                         MODIFY_ASCII_TO_INTRA_IFD_BASELINE)
 
     def test_modify_bytes(self):
         """Verify that modifying a BYTE tag updates the tag value as expected."""

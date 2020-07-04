@@ -1,13 +1,29 @@
 """IFD ASCII tag structure parser module."""
 
-import warnings
+from plum import getbytes
+from plum.int.big import UInt32
+from plum.int.little import UInt32 as UInt32_L
+from plum.str import Str, AsciiZeroTermStr
 
+from exif._datatypes import TiffByteOrder
 from exif._ifd_tag._base import Base as BaseIfdTag
+
+
+class IntraIfdAsciiStr(Str, encoding="ascii", nbytes=4):
+    pass
 
 
 class Ascii(BaseIfdTag):
 
     """IFD ASCII tag structure parser class."""
+
+    def __init__(self, tag_offset, app1_ref):
+        super().__init__(tag_offset, app1_ref)
+
+        if self._app1_ref.endianness == TiffByteOrder.BIG:
+            self._uint32_cls = UInt32
+        else:
+            self._uint32_cls = UInt32_L
 
     def modify(self, value):
         """Modify tag value.
@@ -16,22 +32,34 @@ class Ascii(BaseIfdTag):
         :type value: corresponding Python type
 
         """
-        if len(value) > self.count - 1:
+        if len(value) > self._tag_view.value_count - 1:  # subtract 1 to account for null termination character
             raise ValueError("string must be no longer than original")
 
-        if self.count <= 4:
-            self.parent_segment_hex.modify_hex(self.value_offset_addr, value.encode("ascii").hex() + "00")
-        else:
-            cursor = 0xA + self.value_offset
+        if self._tag_view.value_count <= 4:
+            ascii_str_bytes = IntraIfdAsciiStr(value).pack()
+            self._tag_view.value_offset = self._uint32_cls.unpack(ascii_str_bytes)
 
-            for character in value:
-                self.parent_segment_hex.modify_hex(cursor, hex(ord(character)).lstrip('0x'))
-                cursor += 1
-            for _i in range(self.count - 1 - len(value)):
-                self.parent_segment_hex.modify_hex(cursor, '00')
-                cursor += 1
+        else:  # existing ASCII value offset is a pointer
 
-        self.count = len(value) + 1
+            class IfdTagStrTarget(Str, encoding="ascii", zero_termination=True, nbytes=self._tag_view.value_count):
+                pass
+
+            if len(value) < 4:  # put into IFD tag instead
+                # Wipe existing value at pointer-specified offset.
+                ascii_str_bytes = IfdTagStrTarget().pack()  # empty bytes
+                ascii_replace_stop_index = self._tag_view.value_offset + self._tag_view.value_count
+                self._app1_ref.body_bytes[self._tag_view.value_offset:ascii_replace_stop_index] = ascii_str_bytes
+
+                # Generate intra-IFD tag bytes.
+                ascii_str_bytes = IntraIfdAsciiStr(value).pack()
+                self._tag_view.value_offset = self._uint32_cls.unpack(ascii_str_bytes)
+
+            else:  # modify existing ASCII string at offset
+                ascii_str_bytes = IfdTagStrTarget(value).pack()
+                ascii_replace_stop_index = self._tag_view.value_offset + self._tag_view.value_count
+                self._app1_ref.body_bytes[self._tag_view.value_offset:ascii_replace_stop_index] = ascii_str_bytes
+
+        self._tag_view.value_count = len(value) + 1  # add 1 to account for null termination character
 
     def read(self):
         """Read tag value.
@@ -42,25 +70,14 @@ class Ascii(BaseIfdTag):
         :rtype: corresponding Python type
 
         """
-        retval_chars = []
+        if self._tag_view.value_count <= 4:
+            # Value fits into the 4 bytes within IFD tag itself.
+            value_bytes, _ = getbytes(self._app1_ref.body_bytes, self._tag_view.value_offset.__offset__,
+                                      nbytes=self._tag_view.value_count.get())
 
-        if self.count <= 4:
-            for character in range(self.count - 1):  # subtract 1 to ignore null end-of-string
-                current_ascii_val = self.parent_segment_hex.read(self.value_offset_addr + character, 1)
-                retval_chars.append(chr(int(current_ascii_val, 16)))
+        else:
+            # Value is too large to fit in the IFD tag itself, so it's a pointer.
+            value_bytes, _ = getbytes(self._app1_ref.body_bytes, self._tag_view.value_offset.get(),
+                                      nbytes=self._tag_view.value_count.get())
 
-        else:  # value does not fit in 4 bytes; rather, it's a pointer
-            cursor = 0xA + self.value_offset
-
-            # Subtract 1 from IFD member count to ignore null terminator character.
-            for member_index in range(self.count - 1):  # pylint: disable=unused-variable
-                current_ascii_val = self.parent_segment_hex.read(cursor, 1)
-
-                if not current_ascii_val:  # pragma: no cover
-                    warnings.warn("reached end of string prematurely", RuntimeWarning)
-                    break
-
-                retval_chars.append(chr(int(current_ascii_val, 16)))
-                cursor += 1
-
-        return ''.join(retval_chars)
+        return AsciiZeroTermStr.unpack(value_bytes)

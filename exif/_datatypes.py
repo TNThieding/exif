@@ -70,4 +70,3 @@ class Ifd_L(Structure):
     count: int = DimsMember(cls=UInt16_L)
     tags: list = VariableDimsMember(dims_member=count, cls=IfdTagArray_L)
     next: int = Member(cls=UInt32_L)
-
