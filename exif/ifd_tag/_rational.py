@@ -44,25 +44,18 @@ class Rational(BaseIfdTag):
         """
         # If IFD tag contains multiple values, ensure value is a tuple of appropriate length.
         if isinstance(value, tuple):
-            assert len(value) == self.count
+            assert len(value) == self._tag_view.value_count.get()
         else:
-            assert self.count == 1
+            assert self._tag_view.value_count.get() == 1
             value = (value,)
 
-        cursor = 0xA + self.value_offset
-        for member_index in range(self.count):
-            fraction = Fraction(value[member_index]).limit_denominator()
+        for rational_index in range(self._tag_view.value_count.get()):
+            current_offset = self._tag_view.value_offset.get() + rational_index * self.rational_dtype_cls.nbytes
+            rational_view = self.rational_dtype_cls.view(self._app1_ref.body_bytes, current_offset)
 
-            if self.parent_segment_hex.endianness == EXIF_LITTLE_ENDIAN_HEADER:
-                new_member_bits = struct.pack(
-                    ">LL", fraction.denominator, fraction.numerator)
-            else:
-                new_member_bits = struct.pack(
-                    ">LL", fraction.numerator, fraction.denominator)
-
-            new_member_hex = binascii.hexlify(new_member_bits)
-            self.parent_segment_hex.modify_hex(cursor, new_member_hex)
-            cursor += 8
+            fraction = Fraction(value[rational_index]).limit_denominator()
+            rational_view.numerator.set(fraction.numerator)
+            rational_view.denominator.set(fraction.denominator)
 
     def read(self):
         """Read tag value.

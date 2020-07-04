@@ -45,27 +45,11 @@ class Srational(BaseIfdTag):
         :type value: corresponding Python type
 
         """
-        # If IFD tag contains multiple values, ensure value is a tuple of appropriate length.
-        if isinstance(value, tuple):
-            assert len(value) == self.count
-        else:
-            assert self.count == 1
-            value = (value,)
-
-        cursor = 0xA + self.value_offset
-        for member_index in range(self.count):
-            fraction = Fraction(value[member_index]).limit_denominator()
-
-            if self.parent_segment_hex.endianness == EXIF_LITTLE_ENDIAN_HEADER:
-                new_member_bits = struct.pack(
-                    ">ll", fraction.denominator, fraction.numerator)
-            else:
-                new_member_bits = struct.pack(
-                    ">ll", fraction.numerator, fraction.denominator)
-
-            new_member_hex = binascii.hexlify(new_member_bits)
-            self.parent_segment_hex.modify_hex(cursor, new_member_hex)
-            cursor += 8
+        fraction = Fraction(value).limit_denominator()
+        
+        srational_view = self.srational_dtype_cls.view(self._app1_ref.body_bytes, self._tag_view.value_offset.get())
+        srational_view.numerator.set(fraction.numerator)
+        srational_view.denominator.set(fraction.denominator)
 
     def read(self):
         """Read tag value.
