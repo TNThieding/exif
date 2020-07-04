@@ -3,7 +3,7 @@
 from plum.int.big import UInt8
 from plum.int.little import UInt8 as UInt8_L
 
-from exif._datatypes import IfdTag, IfdTag_L, TiffByteOrder
+from exif._datatypes import TiffByteOrder
 from exif._ifd_tag._base import Base as BaseIfdTag
 
 
@@ -19,8 +19,17 @@ class Byte(BaseIfdTag):
         else:
             self._uint8_cls = UInt8_L
 
-    def modify(self, value):  # pragma: no cover
-        raise NotImplementedError("this package does not yet support setting BYTE tags")
+    def modify(self, value):
+        """Modify tag value.
+
+        This method does not contain logic for unpacking multiple values since the EXIF standard (v2.2) does not list
+        any IFD tags of BYTE type with a count greater than 1.
+
+        :param value: new tag value
+        :type value: corresponding Python type
+
+        """
+        self._uint8_cls.view(self._app1_ref.body_bytes, self._tag_view.value_offset.__offset__).set(value)
 
     def read(self):
         """Read tag value.
@@ -32,5 +41,4 @@ class Byte(BaseIfdTag):
         :rtype: corresponding Python type
 
         """
-        tag_view = self._ifd_tag_cls.view(self._app1_ref.body_bytes, self._tag_offset)
-        return self._uint8_cls.view(self._app1_ref.body_bytes, tag_view.value_offset.__offset__).get()
+        return self._uint8_cls.view(self._app1_ref.body_bytes, self._tag_view.value_offset.__offset__).get()

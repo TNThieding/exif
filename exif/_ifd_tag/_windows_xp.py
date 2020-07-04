@@ -1,6 +1,6 @@
 """Legacy Windows XP style tag structure parser module."""
 
-import warnings
+from plum import getbytes
 
 from exif._ifd_tag._base import Base as BaseIfdTag
 
@@ -21,26 +21,23 @@ class WindowsXp(BaseIfdTag):
     def read(self):
         """Read tag value.
 
-        In string types, the count refers to how many characters exist in the string.
+        In string types, the count refers to how many characters exist in the string. In Windows XP type tags, every
+        other byte is null for some reason, so skip over them.
 
         :returns: tag value
         :rtype: corresponding Python type
 
         """
-        retval_chars = []
-        cursor = 0xA + self.value_offset
+        dereferenced_bytes, _ = getbytes(self._app1_ref.body_bytes, self._tag_view.value_offset.get(),
+                                         nbytes=self._tag_view.value_count.get())
 
-        for member_index in range(self.count - 1):  # pylint: disable=unused-variable
-            current_ascii_val = self.parent_segment_hex.read(cursor, 1)
+        cursor = 0
+        ascii_string = ""
 
-            if not current_ascii_val:  # pragma: no cover
-                warnings.warn("reached end of string prematurely", RuntimeWarning)
-                break
+        for byte in dereferenced_bytes[:-2]:  # discard final null termination bytes (2 for Windows XP tags)
+            if cursor % 2 == 0:  # is at an even position and is therefore part of the string
+                ascii_string += chr(byte)
 
-            if current_ascii_val == "00":
-                break
+            cursor += 1
 
-            retval_chars.append(chr(int(current_ascii_val, 16)))
-            cursor += 2
-
-        return ''.join(retval_chars)
+        return ascii_string

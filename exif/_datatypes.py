@@ -41,14 +41,14 @@ class ExifType_L(Enum, nbytes=2, byteorder="little"):
 class IfdTag(Structure):
     tag_id: int = Member(cls=UInt16)
     type: int = Member(cls=ExifType)
-    count: int = Member(cls=UInt32)
+    value_count: int = Member(cls=UInt32)
     value_offset: int = Member(cls=UInt32)
 
 
 class IfdTag_L(Structure):
     tag_id: int = Member(cls=UInt16_L)
     type: int = Member(cls=ExifType_L)
-    count: int = Member(cls=UInt32_L)
+    value_count: int = Member(cls=UInt32_L)
     value_offset: int = Member(cls=UInt32_L)
 
 

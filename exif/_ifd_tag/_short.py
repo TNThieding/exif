@@ -1,15 +1,12 @@
 """IFD SHORT tag structure parser module."""
 
-import binascii
-import struct
-
 from plum.int.big import UInt16
 from plum.int.little import UInt16 as UInt16_L
 
 from exif._constants import (
-    ATTRIBUTE_ID_MAP, ColorSpace, EXIF_LITTLE_ENDIAN_HEADER, ExposureMode, ExposureProgram, MeteringMode, Orientation,
-    ResolutionUnit, Saturation, SceneCaptureType, SensingMethod, Sharpness, WhiteBalance)
-from exif._datatypes import IfdTag, IfdTag_L, TiffByteOrder
+    ATTRIBUTE_ID_MAP, ColorSpace, ExposureMode, ExposureProgram, MeteringMode, Orientation, ResolutionUnit, Saturation,
+    SceneCaptureType, SensingMethod, Sharpness, WhiteBalance)
+from exif._datatypes import TiffByteOrder
 from exif._ifd_tag._base import Base as BaseIfdTag
 
 
@@ -49,8 +46,7 @@ class Short(BaseIfdTag):
         :type value: corresponding Python type
 
         """
-        tag_view = self._ifd_tag_cls.view(self._app1_ref.body_bytes, self._tag_offset)
-        self._uint16_cls.view(self._app1_ref.body_bytes, tag_view.value_offset.__offset__).set(value)
+        self._uint16_cls.view(self._app1_ref.body_bytes, self._tag_view.value_offset.__offset__).set(value)
 
     def read(self):
         """Read tag value.
@@ -62,10 +58,9 @@ class Short(BaseIfdTag):
         :rtype: corresponding Python type
 
         """
-        tag_view = self._ifd_tag_cls.view(self._app1_ref.body_bytes, self._tag_offset)
-        retval = self._uint16_cls.view(self._app1_ref.body_bytes, tag_view.value_offset.__offset__).get()
+        retval = self._uint16_cls.view(self._app1_ref.body_bytes, self._tag_view.value_offset.__offset__).get()
 
-        if int(tag_view.tag_id) in self.ENUMS_MAP:
-            retval = self.ENUMS_MAP[int(tag_view.tag_id)](retval)
+        if int(self._tag_view.tag_id) in self.ENUMS_MAP:
+            retval = self.ENUMS_MAP[int(self._tag_view.tag_id)](retval)
 
         return retval

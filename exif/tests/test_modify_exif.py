@@ -60,6 +60,12 @@ class TestModifyExif(unittest.TestCase):
         self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
                          MODIFY_ASCII_SHORTER_HEX_BASELINE)
 
+    def test_modify_bytes(self):
+        """Verify that modifying a BYTE tag updates the tag value as expected."""
+        assert self.image.gps_altitude_ref == 0
+        self.image.gps_altitude_ref = 1
+        assert self.image.gps_altitude_ref == 1
+
     def test_modify_orientation(self):
         """Verify that modifying the orientation (a short tag) updates the tag value as expected."""
         assert self.image.orientation == 1

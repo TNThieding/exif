@@ -16,6 +16,8 @@ class Base:
         else:
             self._ifd_tag_cls = IfdTag_L
 
+        self._tag_view = self._ifd_tag_cls.view(self._app1_ref.body_bytes, self._tag_offset)
+
     def __eq__(self, other):
         return self._tag_offset == other._tag_offset
 
