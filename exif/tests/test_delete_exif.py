@@ -14,7 +14,7 @@ from exif.tests.delete_exif_baselines import (
 # pylint: disable=pointless-statement, protected-access
 
 
-class TestModifyExif(unittest.TestCase):
+class TestDeleteExif(unittest.TestCase):
 
     """Test cases for deleting EXIF attributes."""
 

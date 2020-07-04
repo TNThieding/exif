@@ -58,6 +58,17 @@ class App1MetaData:
         # Remove tag from parser tag dictionary.
         del self.ifd_tags[ifd_tag.tag]
 
+    def _extract_thumbnail(self):
+        if 1 in self.ifd_pointers:  # IFD segment 1 contains thumbnail (if present)
+            hex_after_ifd1 = self.body_bytes[self.ifd_pointers[1]:]
+            try:
+                start_index = hex_after_ifd1.index(ExifMarkers.SOI)
+                end_index = hex_after_ifd1.index(ExifMarkers.EOI) + len(ExifMarkers.EOI)
+            except ValueError:
+                pass  # no thumbnail
+            else:
+                self.thumbnail_bytes = hex_after_ifd1[start_index:end_index]
+
     def get_segment_bytes(self):
         """Get equivalent APP1 segment bytes.
 
@@ -147,17 +158,6 @@ class App1MetaData:
         if "gps" in self.ifd_pointers:
             self._iter_ifd_tags(self.ifd_pointers["gps"])
 
-        #
-        #     if current_ifd == 1:  # TODO: IFD segment 1 contains thumbnail (if present)
-        #         succeeding_hex_string = self._segment_hex.get_hex_string()[cursor * HEX_PER_BYTE:]
-        #         try:
-        #             start_index = succeeding_hex_string.index(ExifMarkers.SOI)
-        #             end_index = succeeding_hex_string.index(ExifMarkers.EOI) + len(ExifMarkers.EOI)
-        #         except ValueError:
-        #             pass  # no thumbnail
-        #         else:
-        #             self.thumbnail_hex_string = succeeding_hex_string[start_index:end_index]
-
     def __init__(self, segment_bytes):
         self.header_bytes = bytearray(segment_bytes[:0xA])
         self.body_bytes = bytearray(segment_bytes[0xA:])
@@ -168,6 +168,7 @@ class App1MetaData:
         self.thumbnail_bytes = None
 
         self._parse_ifd_segments()
+        self._extract_thumbnail()
 
     def __delattr__(self, item):
         try:

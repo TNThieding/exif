@@ -118,6 +118,7 @@ read_attributes_florida_beach = [
     ("datetime", str, "2019:03:26 19:33:47"),
     ("gps_altitude", rounded_str, "1.02077865606"),
     ("gps_altitude_ref", str, "0"),
+    ("gps_version_id", str, "2"),
     ("make", str, "Apple"),
     ("metering_mode", repr, "<MeteringMode.PATTERN: 5>"),
     ("model", str, "iPhone 7"),

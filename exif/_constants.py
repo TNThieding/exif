@@ -20,31 +20,31 @@ class ExifMarkers:
     SEG_PREFIX = b"\xff"
     """Generic Segment Prefix"""
 
-    SOI = "FFD8"
+    SOI = SEG_PREFIX + b"\xd8"
     """Start of Image"""
 
     APP1 = SEG_PREFIX + b"\xe1"
     """EXIF Attribute Information (Application Segment 1)"""
 
-    APP2 = "FFE2"
+    APP2 = SEG_PREFIX + b"\xe2"
     """EXIF Extended Data (Application Segment 2)"""
 
-    DQT = "FFDB"
+    DQT = SEG_PREFIX + b"\xdb"
     """Quantization Table Definition"""
 
-    DHT = "FFC4"
+    DHT = SEG_PREFIX + b"\xc4"
     """Huffman Table Definition"""
 
-    DRI = "FFDD"
+    DRI = SEG_PREFIX + b"\xdd"
     """Restart Interoperability Definition"""
 
-    SOF = "FFC0"
+    SOF =SEG_PREFIX + b"\xc0"
     """Start of Frame"""
 
-    SOS = "FFDA"
+    SOS = SEG_PREFIX + b"\xda"
     """Start of Scan"""
 
-    EOI = "FFD9"
+    EOI = SEG_PREFIX + b"\xd9"
     """End of Image"""
 
 
