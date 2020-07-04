@@ -9,6 +9,7 @@ class Long(BaseIfdTag):
 
     """IFD LONG tag structure parser class."""
 
+    # TODO: Support and test this since known issues says otherwise now!
     def modify(self, value):  # pragma: no cover
         """Modify tag value.
 
