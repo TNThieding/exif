@@ -1,6 +1,5 @@
 """Image EXIF metadata interface module."""
 
-import binascii
 import os
 import warnings
 
@@ -50,11 +49,8 @@ class Image:
                     break
 
         if self.has_exif:
-            app1_hex = binascii.hexlify(img_bytes[app1_start_index:cursor]).upper().decode("utf8")
-
             # Instantiate an APP1 segment object to create an EXIF tag interface.
-            #self._segments['APP1'] = App1MetaData(img_bytes[app1_start_index:cursor])
-            self._segments['APP1'] = App1MetaData(app1_hex)
+            self._segments['APP1'] = App1MetaData(img_bytes[app1_start_index:cursor])
             self._segments['succeeding'] = img_bytes[cursor:]
         else:
             # Store the remainder of the image so that it can be reconstructed when exporting.
@@ -157,7 +153,7 @@ class Image:
         img_bytes = self._segments['preceding']
 
         if self.has_exif:
-            img_bytes += binascii.unhexlify(self._segments['APP1'].get_segment_hex())
+            img_bytes += self._segments['APP1'].get_segment_bytes()
 
         img_bytes += self._segments['succeeding']
 
@@ -174,14 +170,14 @@ class Image:
         try:
             app1_segment = self._segments['APP1']
         except KeyError:
-            thumbnail_hex_string = None
+            thumbnail_bytes = None
         else:
-            thumbnail_hex_string = app1_segment.thumbnail_hex_string
+            thumbnail_bytes = app1_segment.thumbnail_bytes
 
-        if not thumbnail_hex_string:
+        if not thumbnail_bytes:
             raise RuntimeError("image does not contain thumbnail")
 
-        return binascii.unhexlify(thumbnail_hex_string)
+        return thumbnail_bytes
 
     def set(self, attribute, value):
         """Set the value of the specified attribute.

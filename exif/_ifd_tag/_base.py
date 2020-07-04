@@ -1,50 +1,20 @@
 """Base IFD tag structure parser module."""
 
-from exif._constants import EXIF_LITTLE_ENDIAN_HEADER, EXIF_POINTER_TAG_ID, GPS_POINTER_TAG_ID
-
 
 class Base:
 
     """Base IFD tag structure parser class."""
 
-    def __init__(self, tag, count, value_offset, section_start_address, parent_segment_hex,
-                 value_offset_addr):
-        self.tag = int(tag, 16)
-        self.count = int(count, 16)
-        self.value_offset = int(value_offset, 16)
-        self.section_start_address = section_start_address
-        self.parent_segment_hex = parent_segment_hex
-        self.value_offset_addr = value_offset_addr
-
-        if self.parent_segment_hex.endianness == EXIF_LITTLE_ENDIAN_HEADER:
-            self.struct_index = -1
-        else:
-            self.struct_index = 0
+    def __init__(self, tag_offset, app1_body_bytes, endianness):
+        self._tag_offset = tag_offset
+        self._app1_body_bytes = app1_body_bytes
+        self._endianness = endianness
 
     def __eq__(self, other):
-        return self.tag == other.tag
+        return self._tag_offset == other._tag_offset
 
     def __repr__(self):
-        return "_ifd_tag.Base(tag={}, count={}, value_offset={}, section_start_address={})".format(
-            self.tag, self.count, self.value_offset, self.section_start_address)
-
-    def is_exif_pointer(self):
-        """Determine if this IFD tag is an EXIF pointer.
-
-        :returns: is EXIF pointer
-        :rtype: bool
-
-        """
-        return self.tag == EXIF_POINTER_TAG_ID
-
-    def is_gps_pointer(self):
-        """Determine if this IFD tag is an GPS pointer.
-
-        :returns: is GPS pointer
-        :rtype: bool
-
-        """
-        return self.tag == GPS_POINTER_TAG_ID
+        return "_ifd_tag.Base(tag_offset={})".format(self._tag_offset)
 
     def modify(self, value):  # pragma: no cover
         """Modify tag value.

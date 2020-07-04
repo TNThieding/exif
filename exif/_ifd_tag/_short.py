@@ -3,15 +3,34 @@
 import binascii
 import struct
 
+from plum import unpack_from
+from plum.int.big import UInt16
+from plum.int.little import UInt16 as UInt16_L
+
 from exif._constants import (
     ATTRIBUTE_ID_MAP, ColorSpace, EXIF_LITTLE_ENDIAN_HEADER, ExposureMode, ExposureProgram, MeteringMode, Orientation,
     ResolutionUnit, Saturation, SceneCaptureType, SensingMethod, Sharpness, WhiteBalance)
+from exif._datatypes import IfdTag, IfdTag_L, TiffByteOrder
 from exif._ifd_tag._base import Base as BaseIfdTag
 
 
 class Short(BaseIfdTag):
 
     """IFD SHORT tag structure parser class."""
+
+    ENUMS_MAP = {
+        ATTRIBUTE_ID_MAP["color_space"]: ColorSpace,
+        ATTRIBUTE_ID_MAP["exposure_mode"]: ExposureMode,
+        ATTRIBUTE_ID_MAP["exposure_program"]: ExposureProgram,
+        ATTRIBUTE_ID_MAP["metering_mode"]: MeteringMode,
+        ATTRIBUTE_ID_MAP["orientation"]: Orientation,
+        ATTRIBUTE_ID_MAP["resolution_unit"]: ResolutionUnit,
+        ATTRIBUTE_ID_MAP["saturation"]: Saturation,
+        ATTRIBUTE_ID_MAP["scene_capture_type"]: SceneCaptureType,
+        ATTRIBUTE_ID_MAP["sensing_method"]: SensingMethod,
+        ATTRIBUTE_ID_MAP["sharpness"]: Sharpness,
+        ATTRIBUTE_ID_MAP["white_balance"]: WhiteBalance,
+    }
 
     def modify(self, value):
         """Modify tag value.
@@ -40,54 +59,24 @@ class Short(BaseIfdTag):
     def read(self):
         """Read tag value.
 
+        This method does not contain logic for unpacking multiple values since the EXIF standard (v2.2) does not list
+        any IFD tags of SHORT type with a count greater than 1.
+
         :returns: tag value
         :rtype: corresponding Python type
 
         """
-        retvals = []
-
-        for member_index in range(self.count):  # pylint: disable=unused-variable
-            value_bits = struct.pack('>I', self.value_offset)
-            retvals.append(struct.unpack('>HH', value_bits)[self.struct_index])
-
-        retvals_in_enum = []  # Converted to enumerations where applicable.
-        for retval in retvals:
-            retvals_in_enum.append(self._short_to_enum(retval))
-
-        if len(retvals_in_enum) == 1:
-            retval = retvals_in_enum[0]
+        if self._endianness == TiffByteOrder.BIG:
+            ifd_tag_cls = IfdTag
+            uint16_cls = UInt16
         else:
-            retval = tuple(retvals_in_enum)
+            ifd_tag_cls = IfdTag_L
+            uint16_cls = UInt16_L
 
-        return retval
+        tag_view = ifd_tag_cls.view(self._app1_body_bytes, self._tag_offset)
+        retval = int(unpack_from(uint16_cls, tag_view.value_offset.pack()))
 
-    def _short_to_enum(self, read_number):
-        retval = read_number
-
-        if self.tag == ATTRIBUTE_ID_MAP["color_space"]:
-            retval = ColorSpace(read_number)
-        elif self.tag == ATTRIBUTE_ID_MAP["exposure_mode"]:
-            retval = ExposureMode(read_number)
-        elif self.tag == ATTRIBUTE_ID_MAP["exposure_program"]:
-            retval = ExposureProgram(read_number)
-        elif self.tag == ATTRIBUTE_ID_MAP["metering_mode"]:
-            retval = MeteringMode(read_number)
-        elif self.tag == ATTRIBUTE_ID_MAP["orientation"]:
-            retval = Orientation(read_number)
-        elif self.tag == ATTRIBUTE_ID_MAP["resolution_unit"]:
-            retval = ResolutionUnit(read_number)
-        elif self.tag == ATTRIBUTE_ID_MAP["saturation"]:
-            retval = Saturation(read_number)
-        elif self.tag == ATTRIBUTE_ID_MAP["scene_capture_type"]:
-            retval = SceneCaptureType(read_number)
-        elif self.tag == ATTRIBUTE_ID_MAP["sensing_method"]:
-            retval = SensingMethod(read_number)
-        elif self.tag == ATTRIBUTE_ID_MAP["sharpness"]:
-            retval = Sharpness(read_number)
-        elif self.tag == ATTRIBUTE_ID_MAP["white_balance"]:
-            retval = WhiteBalance(read_number)
-        else:
-            # No enumeration found, return in original form.
-            pass
+        if int(tag_view.tag_id) in self.ENUMS_MAP:
+            retval = self.ENUMS_MAP[int(tag_view.tag_id)](retval)
 
         return retval
