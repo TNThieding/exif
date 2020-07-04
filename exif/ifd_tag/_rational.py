@@ -1,16 +1,16 @@
-"""IFD SRATIONAL tag structure parser module."""
+"""IFD RATIONAL tag structure parser module."""
 
 import binascii
 import struct
 from fractions import Fraction
 
 from exif._constants import EXIF_LITTLE_ENDIAN_HEADER
-from exif._ifd_tag._base import Base as BaseIfdTag
+from exif.ifd_tag._base import Base as BaseIfdTag
 
 
-class Srational(BaseIfdTag):
+class Rational(BaseIfdTag):
 
-    """IFD SRATIONAL tag structure parser class."""
+    """IFD RATIONAL tag structure parser class."""
 
     def modify(self, value):
         """Modify tag value.
@@ -32,10 +32,10 @@ class Srational(BaseIfdTag):
 
             if self.parent_segment_hex.endianness == EXIF_LITTLE_ENDIAN_HEADER:
                 new_member_bits = struct.pack(
-                    ">ll", fraction.denominator, fraction.numerator)
+                    ">LL", fraction.denominator, fraction.numerator)
             else:
                 new_member_bits = struct.pack(
-                    ">ll", fraction.numerator, fraction.denominator)
+                    ">LL", fraction.numerator, fraction.denominator)
 
             new_member_hex = binascii.hexlify(new_member_bits)
             self.parent_segment_hex.modify_hex(cursor, new_member_hex)
@@ -52,7 +52,7 @@ class Srational(BaseIfdTag):
         cursor = 0xA + self.value_offset
 
         for member_index in range(self.count):  # pylint: disable=unused-variable
-            data_format = ">ll"
+            data_format = ">LL"
             numerator, denominator = struct.unpack(data_format, binascii.unhexlify(
                 self.parent_segment_hex.read(cursor, 8)))
             cursor += 8

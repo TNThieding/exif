@@ -5,19 +5,11 @@ from plum import unpack_from
 from exif._constants import (
     ATTRIBUTE_ID_MAP, ATTRIBUTE_NAME_MAP, BYTES_PER_IFD_TAG_COUNT, BYTES_PER_IFD_TAG_ID,
     BYTES_PER_IFD_TAG_TYPE, BYTES_PER_IFD_TAG_VALUE_OFFSET, BYTES_PER_IFD_TAG_TOTAL,
-    ERROR_IMG_NO_ATTR, ExifMarkers, USER_COMMENT_CHARACTER_CODE_LEN_BYTES)
+    ERROR_IMG_NO_ATTR, ExifMarkers)
 from exif._datatypes import ExifType, ExifType_L, Ifd, Ifd_L, IfdTag, IfdTag_L, TiffByteOrder, TiffHeader
 
-from exif._ifd_tag._ascii import Ascii
-from exif._ifd_tag._base import Base as BaseIfdTag
-from exif._ifd_tag._byte import Byte
-from exif._ifd_tag._exifversion import ExifVersion
-from exif._ifd_tag._long import Long
-from exif._ifd_tag._rational import Rational
-from exif._ifd_tag._short import Short
-from exif._ifd_tag._slong import Slong
-from exif._ifd_tag._srational import Srational
-from exif._ifd_tag._windows_xp import WindowsXp
+from exif.ifd_tag import (
+    Ascii, BaseIfdTag, Byte, ExifVersion, Long, Rational, Short, Slong, Srational, UserComment, WindowsXp)
 
 
 class App1MetaData:
@@ -95,6 +87,8 @@ class App1MetaData:
             cls = WindowsXp
         elif ATTRIBUTE_ID_MAP["exif_version"] == tag_t.tag_id:  # custom ASCII encoding without termination character
             cls = ExifVersion
+        elif ATTRIBUTE_ID_MAP["user_comment"] == tag_t.tag_id:
+            cls = UserComment
         elif tag_t.type == exif_type_cls.BYTE:
             cls = Byte
         elif tag_t.type == exif_type_cls.ASCII:
@@ -124,16 +118,6 @@ class App1MetaData:
             tag_offset = ifd_offset + 2 + tag_index * IfdTag.nbytes  # count is 2 bytes
             tag_t = ifd_t.tags[tag_index]
             tag_py_ins = self._tag_factory(ifd_t.tags[tag_index], tag_offset)
-
-            # TODO Handle user comment data structure (see pg. 51 of EXIF specification).
-            # if tag.tag == ATTRIBUTE_ID_MAP["user_comment"]:
-            #     tag = Ascii(tag_id, tag_count, tag_value_offset,
-            #                 initial_cursor_position, self._segment_hex, tag_value_offset_addr)
-            #     tag.dtype = ExifTypes.ASCII  # reads unicode as well
-            #
-            #     tag.count += 1  # custom data structure does not use null terminator
-            #     tag.count -= USER_COMMENT_CHARACTER_CODE_LEN_BYTES
-            #     tag.value_offset += USER_COMMENT_CHARACTER_CODE_LEN_BYTES
 
             self.ifd_tags[tag_t.tag_id] = tag_py_ins
 

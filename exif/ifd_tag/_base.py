@@ -22,7 +22,7 @@ class Base:
         return self._tag_offset == other._tag_offset
 
     def __repr__(self):
-        return "_ifd_tag.Base(tag_offset={})".format(self._tag_offset)
+        return "exif.ifd_tag.Base(tag_offset={})".format(self._tag_offset)
 
     def modify(self, value):  # pragma: no cover
         """Modify tag value.

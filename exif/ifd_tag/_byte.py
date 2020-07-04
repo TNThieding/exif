@@ -4,7 +4,7 @@ from plum.int.big import UInt8
 from plum.int.little import UInt8 as UInt8_L
 
 from exif._datatypes import TiffByteOrder
-from exif._ifd_tag._base import Base as BaseIfdTag
+from exif.ifd_tag._base import Base as BaseIfdTag
 
 
 class Byte(BaseIfdTag):

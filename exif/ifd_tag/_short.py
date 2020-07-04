@@ -7,7 +7,7 @@ from exif._constants import (
     ATTRIBUTE_ID_MAP, ColorSpace, ExposureMode, ExposureProgram, MeteringMode, Orientation, ResolutionUnit, Saturation,
     SceneCaptureType, SensingMethod, Sharpness, WhiteBalance)
 from exif._datatypes import TiffByteOrder
-from exif._ifd_tag._base import Base as BaseIfdTag
+from exif.ifd_tag._base import Base as BaseIfdTag
 
 
 class Short(BaseIfdTag):

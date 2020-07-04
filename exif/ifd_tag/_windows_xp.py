@@ -2,7 +2,7 @@
 
 from plum import getbytes
 
-from exif._ifd_tag._base import Base as BaseIfdTag
+from exif.ifd_tag._base import Base as BaseIfdTag
 
 
 class WindowsXp(BaseIfdTag):

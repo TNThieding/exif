@@ -1,6 +1,6 @@
 """IFD SLONG tag structure parser module."""
 
-from exif._ifd_tag._base import Base as BaseIfdTag
+from exif.ifd_tag._base import Base as BaseIfdTag
 
 
 class Slong(BaseIfdTag):

@@ -2,7 +2,7 @@
 
 from plum.str import AsciiStr
 
-from exif._ifd_tag._base import Base as BaseIfdTag
+from exif.ifd_tag._base import Base as BaseIfdTag
 
 
 class ExifVersion(BaseIfdTag):

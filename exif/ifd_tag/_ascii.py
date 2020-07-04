@@ -6,7 +6,7 @@ from plum.int.little import UInt32 as UInt32_L
 from plum.str import Str, AsciiZeroTermStr
 
 from exif._datatypes import TiffByteOrder
-from exif._ifd_tag._base import Base as BaseIfdTag
+from exif.ifd_tag._base import Base as BaseIfdTag
 
 
 class IntraIfdAsciiStr(Str, encoding="ascii", nbytes=4):
