@@ -1,14 +1,20 @@
 """Base IFD tag structure parser module."""
 
+from exif._datatypes import IfdTag, IfdTag_L, TiffByteOrder
+
 
 class Base:
 
     """Base IFD tag structure parser class."""
 
-    def __init__(self, tag_offset, app1_body_bytes, endianness):
+    def __init__(self, tag_offset, app1_ref):
         self._tag_offset = tag_offset
-        self._app1_body_bytes = app1_body_bytes
-        self._endianness = endianness
+        self._app1_ref = app1_ref
+
+        if self._app1_ref.endianness == TiffByteOrder.BIG:
+            self._ifd_tag_cls = IfdTag
+        else:
+            self._ifd_tag_cls = IfdTag_L
 
     def __eq__(self, other):
         return self._tag_offset == other._tag_offset

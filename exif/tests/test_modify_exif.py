@@ -1,5 +1,6 @@
 """Test modifying EXIF attributes."""
 
+import binascii
 import os
 import textwrap
 import unittest
@@ -46,7 +47,7 @@ class TestModifyExif(unittest.TestCase):
         self.image.model = "MyCamera"
         self.assertEqual(self.image.model, Baseline("""MyCamera"""))
 
-        segment_hex = self.image._segments['APP1'].get_segment_hex()
+        segment_hex = binascii.hexlify(self.image._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
         self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
                          MODIFY_ASCII_SAME_LEN_HEX_BASELINE)
 
@@ -55,7 +56,7 @@ class TestModifyExif(unittest.TestCase):
         self.image.model = "MyCam"
         self.assertEqual(self.image.model, Baseline("""MyCam"""))
 
-        segment_hex = self.image._segments['APP1'].get_segment_hex()
+        segment_hex = binascii.hexlify(self.image._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
         self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
                          MODIFY_ASCII_SHORTER_HEX_BASELINE)
 
@@ -67,7 +68,7 @@ class TestModifyExif(unittest.TestCase):
         self.image.orientation = 6
         assert self.image.orientation == 6
 
-        segment_hex = self.image._segments['APP1'].get_segment_hex()
+        segment_hex = binascii.hexlify(self.image._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
         self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
                          ROTATED_GRAND_CANYON_HEX)
 
@@ -78,7 +79,7 @@ class TestModifyExif(unittest.TestCase):
         self.image.gps_latitude = (41.0, 36.0, 33.786)
         self.assertEqual(str(self.image.gps_latitude), Baseline("""(41.0, 36.0, 33.786)"""))
 
-        segment_hex = self.image._segments['APP1'].get_segment_hex()
+        segment_hex = binascii.hexlify(self.image._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
         self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
                          MODIFY_RATIONAL_HEX_BASELINE)
 
@@ -87,7 +88,7 @@ class TestModifyExif(unittest.TestCase):
         self.image.brightness_value = -2.468
         self.assertEqual(str(self.image.brightness_value), Baseline("""-2.468"""))
 
-        segment_hex = self.image._segments['APP1'].get_segment_hex()
+        segment_hex = binascii.hexlify(self.image._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
         self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
                          MODIFY_SRATIONAL_HEX_BASELINE)
 

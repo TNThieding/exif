@@ -1,7 +1,5 @@
 """APP1 metadata interface module for EXIF tags."""
 
-from io import BytesIO
-
 from plum import unpack_from
 
 from exif._constants import (
@@ -75,7 +73,7 @@ class App1MetaData:
         :rtype: bytes
 
         """
-        return self._header_bytes.read() + self._body_bytes.read()
+        return bytes(self.header_bytes) + bytes(self.body_bytes)
 
     def get_tag_list(self):
         """Get a list of EXIF tag attributes present in the image objec.
@@ -88,7 +86,7 @@ class App1MetaData:
                 for key in self.ifd_tags]
 
     def _tag_factory(self, tag_t, offset):
-        if self._endianness == TiffByteOrder.BIG:
+        if self.endianness == TiffByteOrder.BIG:
             exif_type_cls = ExifType
         else:
             exif_type_cls = ExifType_L
@@ -114,13 +112,13 @@ class App1MetaData:
         else:
             cls = BaseIfdTag
 
-        return cls(offset, self._body_bytes, self._endianness)
+        return cls(offset, self)
 
     def _iter_ifd_tags(self, ifd_offset):
-        if self._endianness == TiffByteOrder.BIG:
-            ifd_t = unpack_from(Ifd, self._body_bytes, offset=ifd_offset)
+        if self.endianness == TiffByteOrder.BIG:
+            ifd_t = unpack_from(Ifd, self.body_bytes, offset=ifd_offset)
         else:
-            ifd_t = unpack_from(Ifd_L, self._body_bytes, offset=ifd_offset)
+            ifd_t = unpack_from(Ifd_L, self.body_bytes, offset=ifd_offset)
 
         for tag_index in range(ifd_t.count):
             tag_offset = ifd_offset + 2 + tag_index * IfdTag.nbytes  # count is 2 bytes
@@ -140,30 +138,30 @@ class App1MetaData:
             self.ifd_tags[tag_t.tag_id] = tag_py_ins
 
             if tag_t.tag_id == ATTRIBUTE_ID_MAP["_exif_ifd_pointer"]:
-                self._ifd_pointers["exif"] = tag_t.value_offset
+                self.ifd_pointers["exif"] = tag_t.value_offset
 
             if tag_t.tag_id == ATTRIBUTE_ID_MAP["_gps_ifd_pointer"]:
-                self._ifd_pointers["gps"] = tag_t.value_offset
+                self.ifd_pointers["gps"] = tag_t.value_offset
 
         return ifd_t.next
 
     def _parse_ifd_segments(self):
-        tiff_header = unpack_from(TiffHeader, self._body_bytes)
-        self._endianness = tiff_header.byte_order
+        tiff_header = unpack_from(TiffHeader, self.body_bytes)
+        self.endianness = tiff_header.byte_order
 
         current_ifd = 0
         current_ifd_offset = tiff_header.ifd_offset
 
         while current_ifd_offset:
-            self._ifd_pointers[current_ifd] = current_ifd_offset
+            self.ifd_pointers[current_ifd] = current_ifd_offset
             current_ifd_offset = self._iter_ifd_tags(current_ifd_offset)
             current_ifd += 1
 
-        if "exif" in self._ifd_pointers:
-            self._iter_ifd_tags(self._ifd_pointers["exif"])
+        if "exif" in self.ifd_pointers:
+            self._iter_ifd_tags(self.ifd_pointers["exif"])
 
-        if "gps" in self._ifd_pointers:
-            self._iter_ifd_tags(self._ifd_pointers["gps"])
+        if "gps" in self.ifd_pointers:
+            self._iter_ifd_tags(self.ifd_pointers["gps"])
 
         #
         #     if current_ifd == 1:  # TODO: IFD segment 1 contains thumbnail (if present)
@@ -177,11 +175,11 @@ class App1MetaData:
         #             self.thumbnail_hex_string = succeeding_hex_string[start_index:end_index]
 
     def __init__(self, segment_bytes):
-        self._header_bytes = BytesIO(segment_bytes[:0xA])
-        self._body_bytes = BytesIO(segment_bytes[0xA:])
+        self.header_bytes = bytearray(segment_bytes[:0xA])
+        self.body_bytes = bytearray(segment_bytes[0xA:])
 
-        self._endianness = None
-        self._ifd_pointers = {}
+        self.endianness = None
+        self.ifd_pointers = {}
         self.ifd_tags = {}
         self.thumbnail_bytes = None
 
