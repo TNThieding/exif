@@ -2,6 +2,29 @@
 Release Notes
 #############
 
+****************************************************************************
+[0.12.0] Add preliminary support for adding IFD tags to images. (2020-07-05)
+****************************************************************************
+
+Support adding the following tag types:
+
+* SHORT (except for TIFF attributes)
+
+Add data types and enumerations for the following tags:
+
+* Flash
+* Light source
+
+This release also addresses the following anomalous behavior:
+
+* Previously, thumbnail IFD tags would overwrite the primary image's. Now,
+  thumbnail IFD tags are only included if they are not included in the primary
+  image IFD (e.g., ``jpeg_interchange_format``).
+* Include thumbnail tags during deletion with ``delete_all()`` method.
+
+.. note:: Refer to the `known limitations page <known_limitations.html>`_ for
+          an up-to-date list of stipulations, limitations, and workarounds.
+
 *************************************************************************************
 [0.11.2] Overhaul internal bytes processing and drop Python 3.5 support. (2020-07-04)
 *************************************************************************************

@@ -2,8 +2,8 @@
 
 from plum import unpack_from
 
-from exif._constants import ATTRIBUTE_ID_MAP, ATTRIBUTE_NAME_MAP, ERROR_IMG_NO_ATTR, ExifMarkers
-from exif._datatypes import ExifType, ExifTypeLe, Ifd, IfdLe, IfdTag, TiffByteOrder, TiffHeader
+from exif._constants import ATTRIBUTE_ID_MAP, ATTRIBUTE_NAME_MAP, ATTRIBUTE_TYPE_MAP, ERROR_IMG_NO_ATTR, ExifMarkers
+from exif._datatypes import ExifType, ExifTypeLe, Ifd, IfdLe, IfdTag, IfdTagLe, TiffByteOrder, TiffHeader
 
 from exif.ifd_tag import (
     Ascii, BaseIfdTag, Byte, ExifVersion, Long, Rational, Short, Slong, Srational, UserComment, WindowsXp)
@@ -12,6 +12,38 @@ from exif.ifd_tag import (
 class App1MetaData:
 
     """APP1 metadata interface class for EXIF tags."""
+
+    def _add_tag(self, tag, value):
+        try:
+            tag_type, ifd_number = ATTRIBUTE_TYPE_MAP[tag]
+        except KeyError:
+            raise AttributeError("cannot add attribute {0} to image".format(tag))
+
+        if self.endianness == TiffByteOrder.BIG:
+            ifd_cls = Ifd
+            ifd_tag_cls = IfdTag
+        else:
+            ifd_cls = IfdLe
+            ifd_tag_cls = IfdTagLe
+
+        target_ifd_offset = self.ifd_pointers[ifd_number]
+        orig_ifd = unpack_from(ifd_cls, self.body_bytes, offset=target_ifd_offset)
+
+        offset_after_ifd = target_ifd_offset + orig_ifd.nbytes
+        if not self.body_bytes[offset_after_ifd:offset_after_ifd + IfdTag.nbytes] == b"\x00" * IfdTag.nbytes:
+            raise RuntimeError("destination IFD ({0}) does not have space for an additional tag".format(ifd_number))
+
+        tags = list(orig_ifd.tags)
+        tags.append(ifd_tag_cls(  # FUTURE: Find a valid value offset if a pointer type!
+            tag_id=ATTRIBUTE_ID_MAP[tag], type=tag_type, value_count=1, value_offset=0))  # value set later
+
+        # Pack in new IFD bytes. (Note: The pack_into method overrides the pre-existing bytes.)
+        new_ifd = ifd_cls(tags=tags, next=orig_ifd.next)
+        new_ifd.pack_into(self.body_bytes, offset=target_ifd_offset)
+
+        # Reload to pick up on new bytes arrangement and then modify the currently-zero value.
+        self._parse_ifd_segments()
+        self.ifd_tags[ATTRIBUTE_ID_MAP[tag]].modify(value)
 
     def _delete_ifd_tag(self, attribute_id):
         # Overwrite pointer data with null bytes (if applicable, depending on datatype).
@@ -84,8 +116,9 @@ class App1MetaData:
             tag_t = ifd_t.tags[tag_index]
             tag_py_ins = self._tag_factory(ifd_t.tags[tag_index], tag_offset)
 
-            self.ifd_tags[tag_t.tag_id] = tag_py_ins
-            self.tag_parent_ifd[tag_t.tag_id] = ifd_key
+            if ifd_key != 1 or tag_t.tag_id not in self.ifd_tags:  # don't let thumbnail tags override base image tags
+                self.ifd_tags[tag_t.tag_id] = tag_py_ins
+                self.tag_parent_ifd[tag_t.tag_id] = ifd_key
 
             if tag_t.tag_id == ATTRIBUTE_ID_MAP["_exif_ifd_pointer"]:
                 self.ifd_pointers["exif"] = tag_t.value_offset
@@ -199,6 +232,7 @@ class App1MetaData:
             try:
                 ifd_tag = self.ifd_tags[attribute_id]
             except KeyError:
-                raise AttributeError(ERROR_IMG_NO_ATTR.format(key))
-
-            ifd_tag.modify(value)
+                # Tag is not in image already.
+                self._add_tag(key, value)
+            else:
+                ifd_tag.modify(value)

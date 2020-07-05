@@ -118,11 +118,14 @@ class Image:
 
     def delete_all(self):
         """Remove all EXIF tags from the image."""
-        for tag in self._segments['APP1'].get_tag_list():
-            try:
-                self.__delattr__(tag)
-            except AttributeError:
-                warnings.warn("could not delete tag " + tag, RuntimeWarning)
+        for _ in range(2):  # iterate twice to delete thumbnail tags the second time around
+            for tag in self._segments['APP1'].get_tag_list():
+                try:
+                    self.__delattr__(tag)
+                except AttributeError:
+                    warnings.warn("could not delete tag " + tag, RuntimeWarning)
+
+            self._parse_segments(self.get_file())
 
     def get(self, attribute, default=None):
         """Return the value of the specified attribute.
