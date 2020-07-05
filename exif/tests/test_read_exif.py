@@ -62,6 +62,9 @@ read_attributes_grand_canyon = [
     ("color_space", repr, "<ColorSpace.UNCALIBRATED: 65535>"),
     ("datetime", str, "2018:03:12 10:12:07"),
     ("exif_version", str, "0221"),
+    ("flash", str, "Flash(flash_fired=False, flash_return=FlashReturn.NO_STROBE_RETURN_DETECTION_FUNCTION, "
+                   "flash_mode=FlashMode.COMPULSORY_FLASH_SUPPRESSION, flash_function_not_present=False, "
+                   "red_eye_reduction_supported=False, reserved=0)"),
     ("gps_altitude", rounded_str, "2189.98969072"),
     ("gps_altitude_ref", str, "0"),
     ("gps_latitude", str, "(36.0, 3.0, 11.08)"),
@@ -123,6 +126,9 @@ read_attributes_florida_beach = [
     ("brightness_value", rounded_str, "9.46831050228"),
     ("color_space", repr, "<ColorSpace.UNCALIBRATED: 65535>"),
     ("datetime", str, "2019:03:26 19:33:47"),
+    ("flash", str, "Flash(flash_fired=False, flash_return=FlashReturn.NO_STROBE_RETURN_DETECTION_FUNCTION, "
+                   "flash_mode=FlashMode.AUTO_MODE, flash_function_not_present=False, "
+                   "red_eye_reduction_supported=False, reserved=0)"),
     ("gps_altitude", rounded_str, "1.02077865606"),
     ("gps_altitude_ref", str, "0"),
     ("gps_version_id", str, "2"),

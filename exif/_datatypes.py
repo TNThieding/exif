@@ -1,7 +1,10 @@
 """Package EXIF-specific datatypes."""
 
+from enum import IntFlag
+
 from plum.array import Array
 from plum.int.big import UInt16, UInt32
+from plum.int.bitfields import BitFields, BitField
 from plum.int.little import UInt16 as UInt16_L, UInt32 as UInt32_L
 from plum.int.enum import Enum
 from plum.structure import DimsMember, Member, Structure, TypeMember, VariableDimsMember, VariableTypeMember
@@ -100,3 +103,35 @@ class IfdLe(Structure):
     count: int = DimsMember(cls=UInt16_L)
     tags: list = VariableDimsMember(dims_member=count, cls=IfdTagArrayLe)
     next: int = Member(cls=UInt32_L)
+
+
+class FlashReturn(IntFlag):
+
+    """Flash status of returned light."""
+
+    NO_STROBE_RETURN_DETECTION_FUNCTION = 0
+    RESERVED = 1
+    STROBE_RETURN_LIGHT_DETECTED = 2
+    STROBE_RETURN_LIGHT_NOT_DETECTED = 3
+
+
+class FlashMode(IntFlag):
+
+    """Flash mode of the camera."""
+
+    UNKNOWN = 0
+    COMPULSORY_FLASH_FIRING = 1
+    COMPULSORY_FLASH_SUPPRESSION = 2
+    AUTO_MODE = 3
+
+
+class Flash(BitFields, nbytes=1):
+
+    """Status of the camera's flash when the image was taken. (Reported by the ``flash`` tag.)"""
+
+    flash_fired: bool = BitField(size=1)
+    flash_return: FlashReturn = BitField(size=2)
+    flash_mode: FlashMode = BitField(size=2)
+    flash_function_not_present: bool = BitField(size=1)
+    red_eye_reduction_supported: bool = BitField(size=1)
+    reserved: int = BitField(size=1)

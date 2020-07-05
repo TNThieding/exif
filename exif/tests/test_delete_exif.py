@@ -42,7 +42,7 @@ class TestDeleteExif(unittest.TestCase):
         dunder_dir_text = '\n'.join(textwrap.wrap(repr(sorted(dir(reloaded_image))), 90))
         self.assertEqual(dunder_dir_text, Baseline("""
             ['<unknown EXIF tag 59932>', '_segments', 'delete', 'delete_all', 'get', 'get_file',
-            'get_thumbnail', 'has_exif', 'resolution_unit', 'x_resolution', 'y_resolution']
+            'get_thumbnail', 'has_exif']
             """))
 
     def test_delete_ascii_tags(self):

@@ -27,11 +27,6 @@ class TestModifyExif(unittest.TestCase):
 
         assert self.image.has_exif
 
-    def test_handle_unset_attribute(self):
-        """Verify that accessing an attribute not present in an image raises an AttributeError."""
-        with self.assertRaisesRegex(AttributeError, "image does not have attribute light_source"):
-            self.image.light_source = 0
-
     def test_handle_ascii_too_long(self):
         """Verify that writing a longer string to an ASCII tag raises a ValueError."""
         with self.assertRaisesRegex(ValueError, "string must be no longer than original"):

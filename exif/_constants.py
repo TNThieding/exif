@@ -117,6 +117,73 @@ class ExposureProgram(IntEnum):
     """Landscape Kode (For Landscape Photos with the Background in Focus)"""
 
 
+class LightSource(IntEnum):
+    """Class of the program used by the camera to set exposure when the picture is taken."""
+
+    UNKNOWN = 0
+    """Unknown"""
+
+    DAYLIGHT = 1
+    """Daylight"""
+
+    FLUORESCENT = 2
+    """Fluorescent"""
+
+    TUNGSTEN = 3
+    """Tungsten (Incandescent Light)"""
+
+    FLASH = 4
+    """Flash"""
+
+    FINE_WEATHER = 9
+    """Fine Weather"""
+
+    CLOUDY_WEATHER = 10
+    """Cloudy Weather"""
+
+    SHADE = 11
+    """Shade"""
+
+    DAYLIGHT_FLUORESCENT = 12
+    """Daylight Fluorescent (D 5700 - 7100K)"""
+
+    DAY_WHITE_FLUORESCENT = 13
+    """Day White Fluorescent (N 4600 - 5400K)"""
+
+    COOL_WHITE_FLUORESCENT = 14
+    """Cool White Fluorescent (W 3900 - 4500K)"""
+
+    WHITE_FLUORESCENT = 15
+    """White Fluorescent (WW 3200 - 3700K)"""
+
+    STANDARD_LIGHT_A = 17
+    """Standard Light A"""
+
+    STANDARD_LIGHT_B = 18
+    """Standard Light B"""
+
+    STANDARD_LIGHT_C = 19
+    """Standard Light C"""
+
+    D55 = 20
+    """D55"""
+
+    D65 = 21
+    """D65"""
+
+    D75 = 22
+    """D75"""
+
+    D50 = 23
+    """D50"""
+
+    ISO_STUDIO_TUNGSTEN = 24
+    """ISO Studio Tungsten"""
+
+    OTHER = 255
+    """Other Light Source"""
+
+
 class MeteringMode(IntEnum):
     """Metering mode."""
 
@@ -427,5 +494,29 @@ ATTRIBUTE_ID_MAP = {
 }
 
 ATTRIBUTE_NAME_MAP = {value: key for key, value in ATTRIBUTE_ID_MAP.items()}
+
+ATTRIBUTE_TYPE_MAP = {  # tuple of type ID and IFD number description used when adding new tags
+    "color_space": (int(ExifTypes.SHORT), "exif"),
+    "contrast": (int(ExifTypes.SHORT), "exif"),
+    "custom_rendered": (int(ExifTypes.SHORT), "exif"),
+    "exposure_mode": (int(ExifTypes.SHORT), "exif"),
+    "exposure_program": (int(ExifTypes.SHORT), "exif"),
+    "flash": (int(ExifTypes.SHORT), "exif"),
+    "focal_length_in_35mm_film": (int(ExifTypes.SHORT), "exif"),
+    "focal_plane_resolution_unit": (int(ExifTypes.SHORT), "exif"),
+    "gps_differential": (int(ExifTypes.SHORT), "gps"),
+    "light_source": (int(ExifTypes.SHORT), "exif"),
+    "metering_mode": (int(ExifTypes.SHORT), "exif"),
+    "pixel_x_dimension": (int(ExifTypes.SHORT), "exif"),
+    "pixel_y_dimension": (int(ExifTypes.SHORT), "exif"),
+    "saturation": (int(ExifTypes.SHORT), "exif"),
+    "scene_capture_type": (int(ExifTypes.SHORT), "exif"),
+    "sensing_method": (int(ExifTypes.SHORT), "exif"),
+    "sharpness": (int(ExifTypes.SHORT), "exif"),
+    "subject_distance_range": (int(ExifTypes.SHORT), "exif"),
+    "subject_location": (int(ExifTypes.SHORT), "exif"),
+    "white_balance": (int(ExifTypes.SHORT), "exif"),
+}
+
 
 ERROR_IMG_NO_ATTR = "image does not have attribute {0}"
