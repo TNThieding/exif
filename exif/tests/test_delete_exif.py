@@ -1,5 +1,6 @@
 """Test deleting EXIF attributes."""
 
+import binascii
 import os
 import textwrap
 import unittest
@@ -30,7 +31,7 @@ class TestDeleteExif(unittest.TestCase):
         """Verify deleting all EXIF tags from the Image object."""
         self.image.delete_all()
 
-        segment_hex = self.image._segments['APP1'].get_segment_hex()
+        segment_hex = binascii.hexlify(self.image._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
         self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)), DELETE_ALL_HEX_BASELINE)
 
         with TemporaryFile("w+b") as temporary_file_stream:
@@ -54,7 +55,7 @@ class TestDeleteExif(unittest.TestCase):
         with self.assertRaisesRegex(AttributeError, "image does not have attribute model"):
             self.image.model
 
-        segment_hex = self.image._segments['APP1'].get_segment_hex()
+        segment_hex = binascii.hexlify(self.image._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
         self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)), DELETE_ASCII_TAGS_HEX_BASELINE)
 
     def test_delete_gps_tags(self):
@@ -70,7 +71,7 @@ class TestDeleteExif(unittest.TestCase):
         with self.assertRaisesRegex(AttributeError, "image does not have attribute gps_altitude"):
             self.image.gps_altitude
 
-        segment_hex = self.image._segments['APP1'].get_segment_hex()
+        segment_hex = binascii.hexlify(self.image._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
         self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)), DELETE_GEOTAG_HEX_BASELINE)
 
     def test_delete_method(self):

@@ -46,7 +46,7 @@ class Short(BaseIfdTag):
         :type value: corresponding Python type
 
         """
-        self._uint16_cls.view(self._app1_ref.body_bytes, self._tag_view.value_offset.__offset__).set(value)
+        self._uint16_cls.view(self._app1_ref.body_bytes, self.tag_view.value_offset.__offset__).set(value)
 
     def read(self):
         """Read tag value.
@@ -58,9 +58,9 @@ class Short(BaseIfdTag):
         :rtype: corresponding Python type
 
         """
-        retval = self._uint16_cls.view(self._app1_ref.body_bytes, self._tag_view.value_offset.__offset__).get()
+        retval = self._uint16_cls.view(self._app1_ref.body_bytes, self.tag_view.value_offset.__offset__).get()
 
-        if int(self._tag_view.tag_id) in self.ENUMS_MAP:
-            retval = self.ENUMS_MAP[int(self._tag_view.tag_id)](retval)
+        if int(self.tag_view.tag_id) in self.ENUMS_MAP:
+            retval = self.ENUMS_MAP[int(self.tag_view.tag_id)](retval)
 
         return retval

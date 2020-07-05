@@ -28,8 +28,8 @@ class WindowsXp(BaseIfdTag):
         :rtype: corresponding Python type
 
         """
-        dereferenced_bytes, _ = getbytes(self._app1_ref.body_bytes, self._tag_view.value_offset.get(),
-                                         nbytes=self._tag_view.value_count.get())
+        dereferenced_bytes, _ = getbytes(self._app1_ref.body_bytes, self.tag_view.value_offset.get(),
+                                         nbytes=self.tag_view.value_count.get())
 
         cursor = 0
         ascii_string = ""

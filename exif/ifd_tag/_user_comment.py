@@ -22,20 +22,20 @@ class UserComment(BaseIfdTag):
         :type value: corresponding Python type
 
         """
-        if len(value) + USER_COMMENT_CHARACTER_CODE_LEN_BYTES > self._tag_view.value_count:
+        if len(value) + USER_COMMENT_CHARACTER_CODE_LEN_BYTES > self.tag_view.value_count:
             raise ValueError("comment must be no longer than original")
 
         class IfdTagStrTarget(Str, encoding="ascii", zero_termination=True,
-                              nbytes=self._tag_view.value_count - USER_COMMENT_CHARACTER_CODE_LEN_BYTES):
+                              nbytes=self.tag_view.value_count - USER_COMMENT_CHARACTER_CODE_LEN_BYTES):
             pass
 
         ascii_str_bytes = IfdTagStrTarget(value).pack()
-        ascii_replace_start_index = self._tag_view.value_offset.get() + USER_COMMENT_CHARACTER_CODE_LEN_BYTES
-        ascii_replace_stop_index = (ascii_replace_start_index + self._tag_view.value_count -
+        ascii_replace_start_index = self.tag_view.value_offset.get() + USER_COMMENT_CHARACTER_CODE_LEN_BYTES
+        ascii_replace_stop_index = (ascii_replace_start_index + self.tag_view.value_count -
                                     USER_COMMENT_CHARACTER_CODE_LEN_BYTES)
         self._app1_ref.body_bytes[ascii_replace_start_index:ascii_replace_stop_index] = ascii_str_bytes
 
-        self._tag_view.value_count = len(value) + USER_COMMENT_CHARACTER_CODE_LEN_BYTES
+        self.tag_view.value_count = len(value) + USER_COMMENT_CHARACTER_CODE_LEN_BYTES
 
     def read(self):
         """Read tag value.
@@ -48,8 +48,8 @@ class UserComment(BaseIfdTag):
 
         """
         # The string value (not null-terminated) occurs after the character code designation. (All decodable as ASCII.)
-        string_value_offset = self._tag_view.value_offset.get() + USER_COMMENT_CHARACTER_CODE_LEN_BYTES
-        string_len = self._tag_view.value_count.get() - USER_COMMENT_CHARACTER_CODE_LEN_BYTES
+        string_value_offset = self.tag_view.value_offset.get() + USER_COMMENT_CHARACTER_CODE_LEN_BYTES
+        string_len = self.tag_view.value_count.get() - USER_COMMENT_CHARACTER_CODE_LEN_BYTES
 
         value_bytes, _ = getbytes(self._app1_ref.body_bytes, string_value_offset,nbytes=string_len)
         return AsciiStr.unpack(value_bytes)

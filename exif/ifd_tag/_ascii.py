@@ -14,7 +14,6 @@ class IntraIfdAsciiStr(Str, encoding="ascii", nbytes=4):
 
 
 class Ascii(BaseIfdTag):
-
     """IFD ASCII tag structure parser class."""
 
     def __init__(self, tag_offset, app1_ref):
@@ -32,34 +31,34 @@ class Ascii(BaseIfdTag):
         :type value: corresponding Python type
 
         """
-        if len(value) > self._tag_view.value_count - 1:  # subtract 1 to account for null termination character
+        if len(value) > self.tag_view.value_count - 1:  # subtract 1 to account for null termination character
             raise ValueError("string must be no longer than original")
 
-        if self._tag_view.value_count <= 4:
+        if self.tag_view.value_count <= 4:
             ascii_str_bytes = IntraIfdAsciiStr(value).pack()
-            self._tag_view.value_offset = self._uint32_cls.unpack(ascii_str_bytes)
+            self.tag_view.value_offset = self._uint32_cls.unpack(ascii_str_bytes)
 
         else:  # existing ASCII value offset is a pointer
 
-            class IfdTagStrTarget(Str, encoding="ascii", zero_termination=True, nbytes=self._tag_view.value_count):
+            class IfdTagStrTarget(Str, encoding="ascii", zero_termination=True, nbytes=self.tag_view.value_count):
                 pass
 
             if len(value) < 4:  # put into IFD tag instead
                 # Wipe existing value at pointer-specified offset.
                 ascii_str_bytes = IfdTagStrTarget().pack()  # empty bytes
-                ascii_replace_stop_index = self._tag_view.value_offset + self._tag_view.value_count
-                self._app1_ref.body_bytes[self._tag_view.value_offset:ascii_replace_stop_index] = ascii_str_bytes
+                ascii_replace_stop_index = self.tag_view.value_offset + self.tag_view.value_count
+                self._app1_ref.body_bytes[self.tag_view.value_offset:ascii_replace_stop_index] = ascii_str_bytes
 
                 # Generate intra-IFD tag bytes.
                 ascii_str_bytes = IntraIfdAsciiStr(value).pack()
-                self._tag_view.value_offset = self._uint32_cls.unpack(ascii_str_bytes)
+                self.tag_view.value_offset = self._uint32_cls.unpack(ascii_str_bytes)
 
             else:  # modify existing ASCII string at offset
                 ascii_str_bytes = IfdTagStrTarget(value).pack()
-                ascii_replace_stop_index = self._tag_view.value_offset + self._tag_view.value_count
-                self._app1_ref.body_bytes[self._tag_view.value_offset:ascii_replace_stop_index] = ascii_str_bytes
+                ascii_replace_stop_index = self.tag_view.value_offset + self.tag_view.value_count
+                self._app1_ref.body_bytes[self.tag_view.value_offset:ascii_replace_stop_index] = ascii_str_bytes
 
-        self._tag_view.value_count = len(value) + 1  # add 1 to account for null termination character
+        self.tag_view.value_count = len(value) + 1  # add 1 to account for null termination character
 
     def read(self):
         """Read tag value.
@@ -70,14 +69,21 @@ class Ascii(BaseIfdTag):
         :rtype: corresponding Python type
 
         """
-        if self._tag_view.value_count <= 4:
+        if self.tag_view.value_count <= 4:
             # Value fits into the 4 bytes within IFD tag itself.
-            value_bytes, _ = getbytes(self._app1_ref.body_bytes, self._tag_view.value_offset.__offset__,
-                                      nbytes=self._tag_view.value_count.get())
+            value_bytes, _ = getbytes(self._app1_ref.body_bytes, self.tag_view.value_offset.__offset__,
+                                      nbytes=self.tag_view.value_count.get())
 
         else:
             # Value is too large to fit in the IFD tag itself, so it's a pointer.
-            value_bytes, _ = getbytes(self._app1_ref.body_bytes, self._tag_view.value_offset.get(),
-                                      nbytes=self._tag_view.value_count.get())
+            value_bytes, _ = getbytes(self._app1_ref.body_bytes, self.tag_view.value_offset.get(),
+                                      nbytes=self.tag_view.value_count.get())
 
         return AsciiZeroTermStr.unpack(value_bytes)
+
+    def wipe(self):
+        """Wipe value pointer target bytes to null."""
+        if self.tag_view.value_count > 4:
+            start_index = self.tag_view.value_offset
+            stop_index = start_index + self.tag_view.value_count
+            self._app1_ref.body_bytes[start_index:stop_index] = b"\x00" * self.tag_view.value_count

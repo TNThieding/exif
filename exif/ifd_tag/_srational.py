@@ -1,14 +1,11 @@
 """IFD SRATIONAL tag structure parser module."""
 
-import binascii
-import struct
 from fractions import Fraction
 
 from plum.int.big import SInt32
 from plum.int.little import SInt32 as SInt32_L
 from plum.structure import Member, Structure
 
-from exif._constants import EXIF_LITTLE_ENDIAN_HEADER
 from exif._datatypes import TiffByteOrder
 from exif.ifd_tag._base import Base as BaseIfdTag
 
@@ -46,8 +43,8 @@ class Srational(BaseIfdTag):
 
         """
         fraction = Fraction(value).limit_denominator()
-        
-        srational_view = self.srational_dtype_cls.view(self._app1_ref.body_bytes, self._tag_view.value_offset.get())
+
+        srational_view = self.srational_dtype_cls.view(self._app1_ref.body_bytes, self.tag_view.value_offset.get())
         srational_view.numerator.set(fraction.numerator)
         srational_view.denominator.set(fraction.denominator)
 
@@ -61,5 +58,11 @@ class Srational(BaseIfdTag):
         :rtype: corresponding Python type
 
         """
-        srational_view = self.srational_dtype_cls.view(self._app1_ref.body_bytes, self._tag_view.value_offset.get())
+        srational_view = self.srational_dtype_cls.view(self._app1_ref.body_bytes, self.tag_view.value_offset.get())
         return srational_view.numerator / srational_view.denominator
+
+    def wipe(self):
+        """Wipe value pointer target bytes to null."""
+        srational_view = self.srational_dtype_cls.view(self._app1_ref.body_bytes, self.tag_view.value_offset.get())
+        srational_view.numerator.set(0)
+        srational_view.denominator.set(0)

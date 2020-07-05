@@ -16,12 +16,9 @@ class Base:
         else:
             self._ifd_tag_cls = IfdTag_L
 
-        self._tag_view = self._ifd_tag_cls.view(self._app1_ref.body_bytes, self._tag_offset)
+        self.tag_view = self._ifd_tag_cls.view(self._app1_ref.body_bytes, self._tag_offset)
 
-    def __eq__(self, other):
-        return self._tag_offset == other._tag_offset
-
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         return "exif.ifd_tag.Base(tag_offset={})".format(self._tag_offset)
 
     def modify(self, value):  # pragma: no cover
@@ -41,3 +38,7 @@ class Base:
 
         """
         raise NotImplementedError("cannot read a base/unknown IFD tag instance")
+
+    def wipe(self):  # pragma: no cover
+        """Wipe value pointer target bytes to null."""
+        pass

@@ -17,6 +17,7 @@ class TiffHeader(Structure):
 
 
 class ExifType(Enum, nbytes=2, byteorder="big"):
+    EMPTY = 0
     BYTE = 1
     ASCII = 2
     SHORT = 3
@@ -28,6 +29,7 @@ class ExifType(Enum, nbytes=2, byteorder="big"):
 
 
 class ExifType_L(Enum, nbytes=2, byteorder="little"):
+    EMPTY = 0
     BYTE = 1
     ASCII = 2
     SHORT = 3

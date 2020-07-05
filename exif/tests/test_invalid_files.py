@@ -4,6 +4,7 @@ import os
 import textwrap
 import unittest
 
+import pytest
 from baseline import Baseline
 
 from exif import Image
@@ -51,5 +52,8 @@ class TestInvalidFiles(unittest.TestCase):
         self.assertEqual(str(dir(my_image)), Baseline("""
             ['_segments', 'delete', 'delete_all', 'get', 'get_file', 'get_thumbnail', 'has_exif']
             """))
+
+        with pytest.raises(RuntimeError, match="image does not contain thumbnail"):
+            my_image.get_thumbnail()
 
         self.assertEqual('\n'.join(textwrap.wrap(str(my_image.get_file()), 90)), NO_APP1_PNG)

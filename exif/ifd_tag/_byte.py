@@ -29,7 +29,7 @@ class Byte(BaseIfdTag):
         :type value: corresponding Python type
 
         """
-        self._uint8_cls.view(self._app1_ref.body_bytes, self._tag_view.value_offset.__offset__).set(value)
+        self._uint8_cls.view(self._app1_ref.body_bytes, self.tag_view.value_offset.__offset__).set(value)
 
     def read(self):
         """Read tag value.
@@ -41,4 +41,4 @@ class Byte(BaseIfdTag):
         :rtype: corresponding Python type
 
         """
-        return self._uint8_cls.view(self._app1_ref.body_bytes, self._tag_view.value_offset.__offset__).get()
+        return self._uint8_cls.view(self._app1_ref.body_bytes, self.tag_view.value_offset.__offset__).get()

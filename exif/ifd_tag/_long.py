@@ -29,4 +29,4 @@ class Long(BaseIfdTag):
         :rtype: corresponding Python type
 
         """
-        return self._tag_view.value_offset.get()
+        return self.tag_view.value_offset.get()

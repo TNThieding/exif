@@ -25,4 +25,4 @@ class ExifVersion(BaseIfdTag):
         :rtype: corresponding Python type
 
         """
-        return AsciiStr.unpack(self._tag_view.value_offset.pack())
+        return AsciiStr.unpack(self.tag_view.value_offset.pack())
