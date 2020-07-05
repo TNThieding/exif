@@ -1,5 +1,6 @@
 """Test modifying EXIF attributes."""
 
+import binascii
 import os
 import textwrap
 import unittest
@@ -8,7 +9,7 @@ from baseline import Baseline
 
 from exif import Image
 from exif.tests.modify_exif_baselines import (
-    MODIFY_ASCII_SAME_LEN_HEX_BASELINE, MODIFY_ASCII_SHORTER_HEX_BASELINE,
+    MODIFY_ASCII_SAME_LEN_HEX_BASELINE, MODIFY_ASCII_SHORTER_HEX_BASELINE, MODIFY_ASCII_TO_INTRA_IFD_BASELINE,
     MODIFY_RATIONAL_HEX_BASELINE, MODIFY_SRATIONAL_HEX_BASELINE, ROTATED_GRAND_CANYON_HEX)
 
 # pylint: disable=protected-access
@@ -46,7 +47,7 @@ class TestModifyExif(unittest.TestCase):
         self.image.model = "MyCamera"
         self.assertEqual(self.image.model, Baseline("""MyCamera"""))
 
-        segment_hex = self.image._segments['APP1'].get_segment_hex()
+        segment_hex = binascii.hexlify(self.image._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
         self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
                          MODIFY_ASCII_SAME_LEN_HEX_BASELINE)
 
@@ -55,9 +56,24 @@ class TestModifyExif(unittest.TestCase):
         self.image.model = "MyCam"
         self.assertEqual(self.image.model, Baseline("""MyCam"""))
 
-        segment_hex = self.image._segments['APP1'].get_segment_hex()
+        segment_hex = binascii.hexlify(self.image._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
         self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
                          MODIFY_ASCII_SHORTER_HEX_BASELINE)
+
+    def test_modify_ascii_to_intra_ifd(self):
+        """Verify writing a shorter string that can fit in the IFD tag."""
+        self.image.model = "Cam"
+        self.assertEqual(self.image.model, Baseline("""Cam"""))
+
+        segment_hex = binascii.hexlify(self.image._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
+        self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
+                         MODIFY_ASCII_TO_INTRA_IFD_BASELINE)
+
+    def test_modify_bytes(self):
+        """Verify that modifying a BYTE tag updates the tag value as expected."""
+        assert self.image.gps_altitude_ref == 0
+        self.image.gps_altitude_ref = 1
+        assert self.image.gps_altitude_ref == 1
 
     def test_modify_orientation(self):
         """Verify that modifying the orientation (a short tag) updates the tag value as expected."""
@@ -67,7 +83,7 @@ class TestModifyExif(unittest.TestCase):
         self.image.orientation = 6
         assert self.image.orientation == 6
 
-        segment_hex = self.image._segments['APP1'].get_segment_hex()
+        segment_hex = binascii.hexlify(self.image._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
         self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
                          ROTATED_GRAND_CANYON_HEX)
 
@@ -78,7 +94,7 @@ class TestModifyExif(unittest.TestCase):
         self.image.gps_latitude = (41.0, 36.0, 33.786)
         self.assertEqual(str(self.image.gps_latitude), Baseline("""(41.0, 36.0, 33.786)"""))
 
-        segment_hex = self.image._segments['APP1'].get_segment_hex()
+        segment_hex = binascii.hexlify(self.image._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
         self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
                          MODIFY_RATIONAL_HEX_BASELINE)
 
@@ -87,7 +103,7 @@ class TestModifyExif(unittest.TestCase):
         self.image.brightness_value = -2.468
         self.assertEqual(str(self.image.brightness_value), Baseline("""-2.468"""))
 
-        segment_hex = self.image._segments['APP1'].get_segment_hex()
+        segment_hex = binascii.hexlify(self.image._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
         self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
                          MODIFY_SRATIONAL_HEX_BASELINE)
 

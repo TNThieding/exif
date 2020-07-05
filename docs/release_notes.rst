@@ -2,6 +2,19 @@
 Release Notes
 #############
 
+*************************************************************************************
+[0.11.2] Overhaul internal bytes processing and drop Python 3.5 support. (2020-07-04)
+*************************************************************************************
+
+This under-the-hood change significantly simplifies and improves internal bytes
+processing by using hte ``plum-py`` (pack / unpack memory) package instead of
+a custom hexadecimal string interface like before. This patch also includes
+minor, benign bug fixes with hexadecimal processing. These changes will
+facilitate future development (e.g., support for adding new tags to images).
+
+Since the ``plum-py`` package only supports Python 3.6 and higher, this version
+drops support for Python 3.5.
+
 *******************************************************************************
 [0.11.1] Accept file paths and bytes when instantiating ``Image``. (2020-06-30)
 *******************************************************************************
@@ -138,7 +151,7 @@ currently has EXIF metadata.
 [0.7.0] Support modifying image rotation. (2019-06-23)
 ******************************************************
 
-Add support for modifying metadata with the SHORT datatype (e.g. image orientation). Add
+Add support for modifying metadata with the SHORT datatype (e.g., image orientation). Add
 ``Orientation`` enumeration to facilitate rotating images.
 
 *******************************************
