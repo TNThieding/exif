@@ -1,11 +1,12 @@
 """Image EXIF metadata interface module."""
 
-import binascii
 import os
-import sys
 import warnings
 
-from exif._constants import ATTRIBUTE_ID_MAP, ExifMarkers, HEX_PER_BYTE
+from plum import unpack
+from plum.int.big import UInt16
+
+from exif._constants import ATTRIBUTE_ID_MAP, ExifMarkers
 from exif._app1_metadata import App1MetaData
 
 
@@ -21,43 +22,39 @@ class Image:
     has_exif = None
     """Boolean reporting whether or not the image currently has EXIF metadata."""
 
-    def _parse_segments(self, img_hex):
+    def _parse_segments(self, img_bytes):
         cursor = 0
 
         # Traverse hexadecimal string until EXIF APP1 segment found.
-        while img_hex[cursor:cursor + 4] != ExifMarkers.APP1:
-            cursor += HEX_PER_BYTE
-            if cursor > len(img_hex):
+        while img_bytes[cursor:cursor + len(ExifMarkers.APP1)] != ExifMarkers.APP1:
+            cursor += len(ExifMarkers.APP1)
+            if cursor > len(img_bytes):
                 self.has_exif = False
                 break
 
-        self._segments['preceding'] = img_hex[:cursor]
+        self._segments['preceding'] = img_bytes[:cursor]
         app1_start_index = cursor
 
         if self.has_exif:
             # Determine the expected length of the APP1 segment.
-
-            app1_len = int(
-                img_hex[app1_start_index + 2 * HEX_PER_BYTE:app1_start_index + 4 * HEX_PER_BYTE],
-                16
-            )
-            cursor += (app1_len + 1) * HEX_PER_BYTE
+            app1_len = unpack(UInt16, img_bytes[app1_start_index + 2:app1_start_index + 4])
+            cursor += app1_len + 1
 
             # If the expected length stops early, keep traversing until another section is found.
-            while img_hex[cursor - 4:cursor - 2] != ExifMarkers.SEG_PREFIX:
-                cursor += 2
+            while img_bytes[cursor - 2:cursor - 1] != ExifMarkers.SEG_PREFIX:
+                cursor += 1
                 # raise IOError("no subsequent EXIF segment found, is this an EXIF-encoded JPEG?")
-                if cursor > len(img_hex):
+                if cursor > len(img_bytes):
                     self.has_exif = False
                     break
 
         if self.has_exif:
             # Instantiate an APP1 segment object to create an EXIF tag interface.
-            self._segments['APP1'] = App1MetaData(img_hex[app1_start_index:cursor])
-            self._segments['succeeding'] = img_hex[cursor:]
+            self._segments['APP1'] = App1MetaData(img_bytes[app1_start_index:cursor])
+            self._segments['succeeding'] = img_bytes[cursor:]
         else:
             # Store the remainder of the image so that it can be reconstructed when exporting.
-            self._segments['succeeding'] = img_hex[app1_start_index:]
+            self._segments['succeeding'] = img_bytes[app1_start_index:]
 
     def __init__(self, img_file):
         self.has_exif = True
@@ -73,12 +70,7 @@ class Image:
         else:  # pragma: no cover
             raise ValueError("expected file object, file path as str, or bytes")
 
-        img_hex = binascii.hexlify(img_bytes).upper()
-
-        if sys.version_info[0] == 3:  # pragma: no cover
-            img_hex = img_hex.decode("utf8")
-
-        self._parse_segments(img_hex)
+        self._parse_segments(img_bytes)
 
     def __dir__(self):
         members = ['delete', 'delete_all', 'get', 'get_file', 'get_thumbnail', 'has_exif', '_segments']
@@ -158,14 +150,14 @@ class Image:
         :rtype: bytes
 
         """
-        img_hex = self._segments['preceding']
+        img_bytes = self._segments['preceding']
 
         if self.has_exif:
-            img_hex += self._segments['APP1'].get_segment_hex()
+            img_bytes += self._segments['APP1'].get_segment_bytes()
 
-        img_hex += self._segments['succeeding']
+        img_bytes += self._segments['succeeding']
 
-        return binascii.unhexlify(img_hex)
+        return img_bytes
 
     def get_thumbnail(self):
         """Extract thumbnail binary contained in EXIF metadata.
@@ -178,14 +170,14 @@ class Image:
         try:
             app1_segment = self._segments['APP1']
         except KeyError:
-            thumbnail_hex_string = None
+            thumbnail_bytes = None
         else:
-            thumbnail_hex_string = app1_segment.thumbnail_hex_string
+            thumbnail_bytes = app1_segment.thumbnail_bytes
 
-        if not thumbnail_hex_string:
+        if not thumbnail_bytes:
             raise RuntimeError("image does not contain thumbnail")
 
-        return binascii.unhexlify(thumbnail_hex_string)
+        return thumbnail_bytes
 
     def set(self, attribute, value):
         """Set the value of the specified attribute.

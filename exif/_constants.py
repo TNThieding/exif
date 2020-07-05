@@ -17,34 +17,34 @@ class ColorSpace(IntEnum):
 class ExifMarkers:
     """EXIF marker segments bytes."""
 
-    SEG_PREFIX = "FF"
+    SEG_PREFIX = b"\xff"
     """Generic Segment Prefix"""
 
-    SOI = "FFD8"
+    SOI = SEG_PREFIX + b"\xd8"
     """Start of Image"""
 
-    APP1 = "FFE1"
+    APP1 = SEG_PREFIX + b"\xe1"
     """EXIF Attribute Information (Application Segment 1)"""
 
-    APP2 = "FFE2"
+    APP2 = SEG_PREFIX + b"\xe2"
     """EXIF Extended Data (Application Segment 2)"""
 
-    DQT = "FFDB"
+    DQT = SEG_PREFIX + b"\xdb"
     """Quantization Table Definition"""
 
-    DHT = "FFC4"
+    DHT = SEG_PREFIX + b"\xc4"
     """Huffman Table Definition"""
 
-    DRI = "FFDD"
+    DRI = SEG_PREFIX + b"\xdd"
     """Restart Interoperability Definition"""
 
-    SOF = "FFC0"
+    SOF = SEG_PREFIX + b"\xc0"
     """Start of Frame"""
 
-    SOS = "FFDA"
+    SOS = SEG_PREFIX + b"\xda"
     """Start of Scan"""
 
-    EOI = "FFD9"
+    EOI = SEG_PREFIX + b"\xd9"
     """End of Image"""
 
 
@@ -428,29 +428,4 @@ ATTRIBUTE_ID_MAP = {
 
 ATTRIBUTE_NAME_MAP = {value: key for key, value in ATTRIBUTE_ID_MAP.items()}
 
-BYTES_PER_IFD_TAG_ID = 2
-
-BYTES_PER_IFD_TAG_TYPE = 2
-
-BYTES_PER_IFD_TAG_COUNT = 4
-
-BYTES_PER_IFD_TAG_VALUE_OFFSET = 4
-
-BYTES_PER_IFD_TAG_TOTAL = (
-    BYTES_PER_IFD_TAG_ID + BYTES_PER_IFD_TAG_TYPE + BYTES_PER_IFD_TAG_COUNT +
-    BYTES_PER_IFD_TAG_VALUE_OFFSET
-)
-
 ERROR_IMG_NO_ATTR = "image does not have attribute {0}"
-
-EXIF_BIG_ENDIAN_HEADER = "4D4D"
-
-EXIF_LITTLE_ENDIAN_HEADER = "4949"
-
-EXIF_POINTER_TAG_ID = 34665
-
-GPS_POINTER_TAG_ID = 34853
-
-HEX_PER_BYTE = 2
-
-USER_COMMENT_CHARACTER_CODE_LEN_BYTES = 8

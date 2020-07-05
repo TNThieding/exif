@@ -1,5 +1,6 @@
 """Test accessing and manipulating attributes of a little endian image."""
 
+import binascii
 import os
 import textwrap
 
@@ -23,7 +24,7 @@ def test_modify():
     image.gps_longitude = (12.0, 34.0, 56.789)
     assert str(image.gps_longitude) == Baseline("""(12.0, 34.0, 56.789)""")
 
-    segment_hex = image._segments['APP1'].get_segment_hex()
+    segment_hex = binascii.hexlify(image._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
     assert '\n'.join(textwrap.wrap(segment_hex, 90)) == LITTLE_ENDIAN_MODIFY_BASELINE
 
 
