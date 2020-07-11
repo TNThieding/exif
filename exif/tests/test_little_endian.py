@@ -21,6 +21,9 @@ def test_modify():
     image.model = "Modified"
     assert image.model == "Modified"
 
+    image.make = "Value for Make Tag that is Longer than Before"
+    assert image.make == "Value for Make Tag that is Longer than Before"
+
     image.gps_longitude = (12.0, 34.0, 56.789)
     assert str(image.gps_longitude) == Baseline("""(12.0, 34.0, 56.789)""")
 

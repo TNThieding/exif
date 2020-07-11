@@ -6,9 +6,8 @@ This package contains the following known limitations:
 
 - Accessing SLONG tags is not supported (since no IFD tags in the EXIF
   specification are SLONG type).
-- ASCII tags cannot be modified to a value longer than their original length.
-- Adding new EXIF tags to an image is not yet supported (except SHORT).
-- Dynamically expanding the image metadata regions is not yet supported. As a
-  temporary workaround, users can delete non-essential or unwanted tags to free
-  up space for the desired new tag.
+- EXIF IFDs cannot be added to images that only contain IFD 0 (and/or IFD 1).
+  However, GPS IFDs can be inserted if there's a subsequent IFD 1 segment. When
+  adding metadata to a previously non-APP1 image, this is not a concern since
+  the package adds empty 0, EXIF, and GPS IFDs.
 - Modifying Windows XP tags is not supported.

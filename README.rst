@@ -60,6 +60,10 @@ Access EXIF metadata tags using Python attribute notation::
     >>> # Delete tags with Python "del" notation.
     >>> del my_image.gps_latitude
     >>> del my_image.gps_longitude
+    >>>
+    >>> # Add new tags with Python "set" notation.
+    >>> from exif import LightSource
+    >>> my_image.light_source = LightSource.DAYLIGHT
 
 Write the image with modified EXIF metadata to an image file using ``open()`` in binary
 write mode::

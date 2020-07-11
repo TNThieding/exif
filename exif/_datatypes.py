@@ -84,12 +84,12 @@ class IfdTagArray(Array, item_cls=IfdTag):
 
 class IfdTagArrayLe(Array, item_cls=IfdTagLe):
 
-    """IFD Tag Array (Little EndianO"""
+    """IFD Tag Array (Little Endian)"""
 
 
 class Ifd(Structure):
 
-    """IFD SEgment"""
+    """IFD Segment"""
 
     count: int = DimsMember(cls=UInt16)
     tags: list = VariableDimsMember(dims_member=count, cls=IfdTagArray)

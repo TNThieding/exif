@@ -60,6 +60,12 @@ ExposureProgram
 .. autoclass:: exif.ExposureProgram
     :members:
 
+GpsAltitudeRef
+==============
+
+.. autoclass:: exif.GpsAltitudeRef
+    :members:
+
 LightSource
 ===========
 

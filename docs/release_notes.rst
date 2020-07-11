@@ -3,6 +3,24 @@ Release Notes
 #############
 
 ****************************************************************************
+[1.0.0] Support adding tags and adding EXIF to non-EXIF images. (2020-07-11)
+****************************************************************************
+
+Initial release with full support for adding new tags to images. This includes
+adding EXIF tags to an image without any pre-existing metadata (e.g., a JPEG
+produced by a scanner).
+
+In addition, SHORT tags could only previously be added if pre-existing tags
+were deleted to make room. Now, this code dynamically expands and re-packs
+the EXIF/APP1 metadata section to facilitate adding new tags to images without
+size limitations. ASCII tags can now be modified to a value longer than their
+original length too.
+
+Add enumeration for the following tag:
+
+* GPS altitude reference
+
+****************************************************************************
 [0.12.0] Add preliminary support for adding IFD tags to images. (2020-07-05)
 ****************************************************************************
 

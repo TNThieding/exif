@@ -77,6 +77,11 @@ Change the EXIF tag value by modifying the attribute value::
 
     >>> my_image.make = "Python"
 
+Set new attribute values to add EXIF tags to an image::
+
+    >>> from exif import LightSource
+    >>> my_image.light_source = LightSource.DAYLIGHT
+
 Use ``del`` notation to remove EXIF tags from the image::
 
     >>> del my_image.gps_latitude
@@ -85,7 +90,7 @@ Use ``del`` notation to remove EXIF tags from the image::
 Indexed/Item Syntax
 +++++++++++++++++++
 
-Alternatively, use indexed/item syntax to read, modify, and remove attribute tags::
+Alternatively, use indexed/item syntax to read, modify, add, and remove attribute tags::
 
     >>> my_image["orientation"]
     1
@@ -104,7 +109,7 @@ exist::
     >>> my_image.get("nonexistent_tag")
     None
 
-Call ``set()`` with a tag name and value to modify it::
+Call ``set()`` with a tag name and value to add or modify it::
 
     >>> self.image.set("model", "EXIF Package")
 
@@ -130,3 +135,41 @@ write (i.e. ``'wb'``) mode::
 
 Extract the thumbnail embedded within the EXIF data by using ``get_thumbnail()`` instead of
 ``get_file()``.
+
+********
+Cookbook
+********
+
+Add Geolocation
++++++++++++++++
+
+Add geolocation metadata to an image by providing tuples of degrees, minutes,
+and decimal seconds::
+
+    >>> from exif import Image
+    >>> image = Image("cleveland_public_square.jpg")
+    >>>
+    >>> image.gps_latitude = (41.0, 29.0, 57.48)
+    >>> image.gps_latitude_ref = "N"
+    >>> image.gps_longitude = (81.0, 41.0, 39.84)
+    >>> image.gps_longitude_ref = "W"
+    >>> image.gps_altitude = 199.034  # in meters
+    >>> image.gps_altitude_ref = GpsAltitudeRef.ABOVE_SEA_LEVEL
+    >>>
+    >>> # Then, save image to desired location using code discussed above.
+
+Add Timestamps
+++++++++++++++
+
+Use ``datetime_original`` and ``datetime_digitized`` to add timestamps to an
+image (e.g., from a scanner)::
+
+    >>> from exif import Image, DATETIME_STR_FORMAT
+    >>> from datetime import datetime
+    >>> datetime_taken = datetime(year=1999, month=12, day=31, hour=23, minute=49, second=12)
+    >>> datetime_scanned = datetime(year=2020, month=7, day=11, hour=10, minute=11, second=37)
+    >>>
+    >>> image = Image("my_scanned_photo.jpg")
+    >>> image.datetime_original = datetime_taken.strftime(DATETIME_STR_FORMAT)
+    >>> image.datetime_digitized = datetime_scanned.strftime(DATETIME_STR_FORMAT)
+    >>> # Then, save image to desired location using code discussed above.

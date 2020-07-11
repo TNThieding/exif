@@ -7,6 +7,7 @@ from plum import unpack
 from plum.int.big import UInt16
 
 from exif._constants import ATTRIBUTE_ID_MAP, ExifMarkers
+from exif._app1_create import generate_empty_app1_bytes
 from exif._app1_metadata import App1MetaData
 
 
@@ -30,6 +31,7 @@ class Image:
             cursor += len(ExifMarkers.APP1)
             if cursor > len(img_bytes):
                 self.has_exif = False
+                cursor = 2  # should theoretically go after SOI marker (if adding)
                 break
 
         self._segments['preceding'] = img_bytes[:cursor]
@@ -89,6 +91,10 @@ class Image:
         except KeyError:
             super(Image, self).__setattr__(key, value)
         else:
+            if not self.has_exif:
+                self._segments['APP1'] = App1MetaData(generate_empty_app1_bytes())
+                self.has_exif = True
+
             setattr(self._segments['APP1'], key, value)
 
     def __delattr__(self, item):

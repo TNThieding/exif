@@ -11,6 +11,7 @@ from exif import Image
 from exif.tests.modify_exif_baselines import (
     MODIFY_ASCII_SAME_LEN_HEX_BASELINE, MODIFY_ASCII_SHORTER_HEX_BASELINE, MODIFY_ASCII_TO_INTRA_IFD_BASELINE,
     MODIFY_RATIONAL_HEX_BASELINE, MODIFY_SRATIONAL_HEX_BASELINE, ROTATED_GRAND_CANYON_HEX)
+from exif.tests.test_read_exif import read_attributes_grand_canyon
 
 # pylint: disable=protected-access
 
@@ -28,9 +29,14 @@ class TestModifyExif(unittest.TestCase):
         assert self.image.has_exif
 
     def test_handle_ascii_too_long(self):
-        """Verify that writing a longer string to an ASCII tag raises a ValueError."""
-        with self.assertRaisesRegex(ValueError, "string must be no longer than original"):
-            self.image.model = "MyArtificiallySetCameraAttribute"
+        """Test modifying ASCII tags to a longer length."""
+        self.image.model = "My Artificially Set Camera Attribute"
+        assert self.image.model == "My Artificially Set Camera Attribute"
+
+        # Verify pre-existing attributes can still be read as expected since this deletes and re-adds under-the-hood.
+        for attribute, func, value in read_attributes_grand_canyon:
+            if attribute != "model":
+                assert func(getattr(self.image, attribute)) == value
 
     def test_index_modifier(self):
         """Test modifying attributes using index syntax."""

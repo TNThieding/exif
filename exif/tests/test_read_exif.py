@@ -66,7 +66,7 @@ read_attributes_grand_canyon = [
                    "flash_mode=FlashMode.COMPULSORY_FLASH_SUPPRESSION, flash_function_not_present=False, "
                    "red_eye_reduction_supported=False, reserved=0)"),
     ("gps_altitude", rounded_str, "2189.98969072"),
-    ("gps_altitude_ref", str, "0"),
+    ("gps_altitude_ref", repr, "<GpsAltitudeRef.ABOVE_SEA_LEVEL: 0>"),
     ("gps_latitude", str, "(36.0, 3.0, 11.08)"),
     ("gps_latitude_ref", str, "N"),
     ("gps_longitude", str, "(112.0, 5.0, 4.18)"),
@@ -130,7 +130,7 @@ read_attributes_florida_beach = [
                    "flash_mode=FlashMode.AUTO_MODE, flash_function_not_present=False, "
                    "red_eye_reduction_supported=False, reserved=0)"),
     ("gps_altitude", rounded_str, "1.02077865606"),
-    ("gps_altitude_ref", str, "0"),
+    ("gps_altitude_ref", repr, "<GpsAltitudeRef.ABOVE_SEA_LEVEL: 0>"),
     ("gps_version_id", str, "2"),
     ("make", str, "Apple"),
     ("metering_mode", repr, "<MeteringMode.PATTERN: 5>"),
