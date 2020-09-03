@@ -2,6 +2,21 @@
 Release Notes
 #############
 
+**************************************************************************************************
+[1.0.1] Fix ``UnpackError`` when reading ASCII tags with shorter value than expected. (2020-09-03)
+**************************************************************************************************
+
+Previously, reading an ASCII tag whose value was shorter than the specified size
+(i.e., with excess trailing null bytes) resulted in a ``UnpackError``. Now, the
+package returns the tag value with excess bytes stripped off. It also issues a
+``RuntimeWarning`` stating the nonconformity to the EXIF standard and how many
+extra bytes were found.
+
+This patch addresses the following GitLab user issue:
+
+* Cannot read EXIF tag containing excess trailing bytes. (https://gitlab.com/TNThieding/exif/issues/23)
+
+
 ****************************************************************************
 [1.0.0] Support adding tags and adding EXIF to non-EXIF images. (2020-07-11)
 ****************************************************************************

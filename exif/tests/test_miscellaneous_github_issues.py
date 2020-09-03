@@ -1,4 +1,4 @@
-"""Regression test for miscellaneous GitHub issues.."""
+"""Regression tests for miscellaneous GitHub issues."""
 
 import os
 import unittest
