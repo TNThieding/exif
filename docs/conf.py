@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = u'exif'
-copyright = u'2019, Tyler N. Thieding'
+copyright = u'2020, Tyler N. Thieding'
 author = u'Tyler N. Thieding'
 
 # The short X.Y version

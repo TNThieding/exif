@@ -2,6 +2,19 @@
 Release Notes
 #############
 
+*****************************************************************************************************
+[1.0.2] Fix ``ZeroDivisionError`` when reading lens specification with unknown F number. (2020-10-18)
+*****************************************************************************************************
+
+Previously, reading the lens specification attribute where the F values were
+unknown resulted in a ``ZeroDivisionError`` since unknown is encoded as 0/0.
+Now, the value is returned as ``0`` and the exception is no longer raised.
+
+This patch addresses the following GitLab user issue:
+
+* ``ZeroDivisionError`` reported when reading ``lens_specification``. (https://gitlab.com/TNThieding/exif/issues/26)
+
+
 **************************************************************************************************
 [1.0.1] Fix ``UnpackError`` when reading ASCII tags with shorter value than expected. (2020-09-03)
 **************************************************************************************************

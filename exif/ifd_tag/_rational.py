@@ -56,9 +56,14 @@ class Rational(BaseIfdTag):
             current_offset = self.tag_view.value_offset.get() + rational_index * self.rational_dtype_cls.nbytes
             rational_view = self.rational_dtype_cls.view(self._app1_ref.body_bytes, current_offset)
 
-            fraction = Fraction(value[rational_index]).limit_denominator()
-            rational_view.numerator.set(fraction.numerator)
-            rational_view.denominator.set(fraction.denominator)
+            if isinstance(value[rational_index], int) and value[rational_index] == 0:
+                # EXIF 2.3 Specification: "When a value is unknown, the notation is 0/0" (e.g., lens specification).
+                rational_view.numerator.set(0)
+                rational_view.denominator.set(0)
+            else:
+                fraction = Fraction(value[rational_index]).limit_denominator()
+                rational_view.numerator.set(fraction.numerator)
+                rational_view.denominator.set(fraction.denominator)
 
     def read(self):
         """Read tag value.
@@ -72,7 +77,12 @@ class Rational(BaseIfdTag):
         for rational_index in range(self.tag_view.value_count.get()):
             current_offset = self.tag_view.value_offset.get() + rational_index * self.rational_dtype_cls.nbytes
             rational_view = self.rational_dtype_cls.view(self._app1_ref.body_bytes, current_offset)
-            retvals.append(rational_view.numerator / rational_view.denominator)
+
+            if rational_view.numerator == 0 and rational_view.denominator == 0:
+                # EXIF 2.3 Specification: "When a value is unknown, the notation is 0/0" (e.g., lens specification).
+                retvals.append(0)
+            else:
+                retvals.append(rational_view.numerator / rational_view.denominator)
 
         if len(retvals) == 1:
             retval = retvals[0]
