@@ -40,6 +40,17 @@ py38:
       - .tox/py38/tmp
     when: always
 
+py39:
+  stage: test
+  image: python:3.9
+  coverage: '/TOTAL\s+\d+\s+\d+\s+\d+\s+\d+\s+(\d+)%/'
+  script:
+    - tox -vv -e py39
+  artifacts:
+    paths:
+      - .tox/py39/tmp
+    when: always
+
 pylint:
   stage: lint
   image: python:3.7
