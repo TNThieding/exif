@@ -72,5 +72,5 @@ write mode::
     ...     new_image_file.write(my_image.get_file())
     ...
 
-Refer to the `usage page <https://exif.readthedocs.io/en/latest/>`_ for information and examples of alternative ways to access EXIF tags (e.g.
+Refer to the `usage page <https://exif.readthedocs.io/en/latest/usage.html>`_ for information and examples of alternative ways to access EXIF tags (e.g.
 with index/item syntax or with methods).
