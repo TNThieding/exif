@@ -38,6 +38,7 @@ class ExifType(Enum, nbytes=2, byteorder="big"):
     LONG = 4
     RATIONAL = 5
     UNDEFINED = 7
+    SSHORT = 8
     SLONG = 9
     SRATIONAL = 10
 
@@ -53,6 +54,7 @@ class ExifTypeLe(Enum, nbytes=2, byteorder="little"):
     LONG = 4
     RATIONAL = 5
     UNDEFINED = 7
+    SSHORT = 8
     SLONG = 9
     SRATIONAL = 10
 

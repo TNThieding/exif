@@ -38,3 +38,14 @@ def test_gitlab_issue_26():
     image_under_test.lens_specification = (50.0, 50.0, 25.0, 25.0)
     image_under_test.lens_specification = (50.0, 50.0, 0, 0)
     assert image_under_test.lens_specification == (50.0, 50.0, 0, 0)
+
+def test_gitlab_issue_28():
+    """Regression test for GitLab issue 28.
+
+    Verify reading a photo with signed short tags does not raise an exception.
+
+    """
+    image_under_test = Image(os.path.join(os.path.dirname(__file__), "gitlab_issue_28.jpg"))
+
+    # Check initial value.
+    assert repr(image_under_test.exposure_program) == '<ExposureProgram.APERTURE_PRIORITY: 3>'
