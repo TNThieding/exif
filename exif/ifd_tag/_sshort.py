@@ -3,10 +3,8 @@
 from plum.int.big import SInt16
 from plum.int.little import SInt16 as SInt16_L
 
-from exif._constants import (
-    ATTRIBUTE_ID_MAP, ColorSpace, ExposureMode, ExposureProgram, LightSource, MeteringMode, Orientation, ResolutionUnit,
-    Saturation, SceneCaptureType, SensingMethod, Sharpness, WhiteBalance)
-from exif._datatypes import Flash, TiffByteOrder
+from exif._datatypes import TiffByteOrder
+from exif.ifd_tag._short import Short
 from exif.ifd_tag._base import Base as BaseIfdTag
 
 
@@ -14,21 +12,7 @@ class Sshort(BaseIfdTag):
 
     """IFD SHORT tag structure parser class."""
 
-    ENUMS_MAP = {
-        ATTRIBUTE_ID_MAP["color_space"]: ColorSpace,
-        ATTRIBUTE_ID_MAP["exposure_mode"]: ExposureMode,
-        ATTRIBUTE_ID_MAP["exposure_program"]: ExposureProgram,
-        ATTRIBUTE_ID_MAP["flash"]: Flash,
-        ATTRIBUTE_ID_MAP["metering_mode"]: MeteringMode,
-        ATTRIBUTE_ID_MAP["light_source"]: LightSource,
-        ATTRIBUTE_ID_MAP["orientation"]: Orientation,
-        ATTRIBUTE_ID_MAP["resolution_unit"]: ResolutionUnit,
-        ATTRIBUTE_ID_MAP["saturation"]: Saturation,
-        ATTRIBUTE_ID_MAP["scene_capture_type"]: SceneCaptureType,
-        ATTRIBUTE_ID_MAP["sensing_method"]: SensingMethod,
-        ATTRIBUTE_ID_MAP["sharpness"]: Sharpness,
-        ATTRIBUTE_ID_MAP["white_balance"]: WhiteBalance,
-    }
+    ENUMS_MAP = Short.ENUMS_MAP
 
     def __init__(self, tag_offset, app1_ref):
         super().__init__(tag_offset, app1_ref)
@@ -38,7 +22,7 @@ class Sshort(BaseIfdTag):
         else:
             self._int16_cls = SInt16_L
 
-    def modify(self, value):
+    def modify(self, value):  # pragma: no cover
         """Modify tag value.
 
 
