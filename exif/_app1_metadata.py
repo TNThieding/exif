@@ -8,7 +8,7 @@ from exif._add_tag_utils import value_fits_in_ifd_tag
 from exif._constants import ATTRIBUTE_ID_MAP, ATTRIBUTE_NAME_MAP, ATTRIBUTE_TYPE_MAP, ERROR_IMG_NO_ATTR, ExifMarkers
 from exif._datatypes import ExifType, ExifTypeLe, Ifd, IfdLe, IfdTag, IfdTagLe, TiffByteOrder, TiffHeader
 from exif.ifd_tag import (
-    Ascii, BaseIfdTag, Byte, ExifVersion, Long, Rational, Short, Slong, Srational, UserComment, WindowsXp)
+    Ascii, BaseIfdTag, Byte, ExifVersion, Long, Rational, Short, Slong, Srational, Sshort, UserComment, WindowsXp)
 from exif.ifd_tag._rational import RationalDtype
 from exif.ifd_tag._srational import SrationalDtype
 
@@ -355,6 +355,8 @@ class App1MetaData:
             cls = Slong
         elif tag_t.type == exif_type_cls.SRATIONAL:
             cls = Srational
+        elif tag_t.type == exif_type_cls.SSHORT:
+            cls = Sshort
         else:
             cls = BaseIfdTag
 

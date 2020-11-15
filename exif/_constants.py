@@ -66,6 +66,9 @@ class ExifTypes(IntEnum):
     RATIONAL = 5
     """Two (Numerator and Denominator) LONGs"""
 
+    SSHORT = 8
+    """16-Bit Signed Integer"""
+
     SLONG = 9
     """32-Bit Signed Integer"""
 
