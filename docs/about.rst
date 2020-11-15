@@ -8,6 +8,7 @@ Contributors
 
 + Tyler N. Thieding (Primary Author)
 + ArgiesDario (``delete_all()`` Method)
++ Justin Saunders (Support Signed Short Integers)
 + RKrahl (``setup.py`` Tweaks)
 + chbndrhnns (Allow Read File in Instantiation)
 

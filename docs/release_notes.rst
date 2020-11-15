@@ -2,6 +2,21 @@
 Release Notes
 #############
 
+****************************************************************
+[1.0.3] Fix ``ValueError`` when SSHORT are present. (2020-11-15)
+****************************************************************
+
+Previously, reading signed short integers resulted in a ``ValueError``.
+
+This patch addresses the following GitLab user issue:
+
+* Signed short integers in EXIF are not supported. (https://gitlab.com/TNThieding/exif/issues/28)
+
+This patch contains changes submitted via GitLab merge request by the following user:
+
+* Justin Saunders (jumaka1)
+
+
 *****************************************************************************************************
 [1.0.2] Fix ``ZeroDivisionError`` when reading lens specification with unknown F number. (2020-10-18)
 *****************************************************************************************************
