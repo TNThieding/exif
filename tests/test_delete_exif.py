@@ -9,8 +9,7 @@ from tempfile import TemporaryFile
 from baseline import Baseline
 
 from exif import Image
-from exif.tests.delete_exif_baselines import (
-    DELETE_ALL_HEX_BASELINE, DELETE_ASCII_TAGS_HEX_BASELINE, DELETE_GEOTAG_HEX_BASELINE)
+from .delete_exif_baselines import DELETE_ALL_HEX_BASELINE, DELETE_ASCII_TAGS_HEX_BASELINE, DELETE_GEOTAG_HEX_BASELINE
 
 # pylint: disable=pointless-statement, protected-access
 

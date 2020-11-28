@@ -5,7 +5,7 @@ import os
 import textwrap
 
 from exif import Image
-from exif.tests.get_file_baselines import GRAND_CANYON_THUMBNAIL, MODIFIED_NOISE_FILE_HEX_BASELINE
+from .get_file_baselines import GRAND_CANYON_THUMBNAIL, MODIFIED_NOISE_FILE_HEX_BASELINE
 
 
 def test_get_file():

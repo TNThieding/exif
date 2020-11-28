@@ -8,7 +8,7 @@ import pytest
 from baseline import Baseline
 
 from exif import Image
-from exif.tests.little_endian_baselines import LITTLE_ENDIAN_MODIFY_BASELINE
+from .little_endian_baselines import LITTLE_ENDIAN_MODIFY_BASELINE
 
 # pylint: disable=pointless-statement, protected-access
 

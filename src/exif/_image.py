@@ -87,7 +87,7 @@ class Image:
 
     def __setattr__(self, key, value):
         try:
-            ATTRIBUTE_ID_MAP[key]
+            ATTRIBUTE_ID_MAP[key.lower()]
         except KeyError:
             super(Image, self).__setattr__(key, value)
         else:
@@ -95,7 +95,7 @@ class Image:
                 self._segments['APP1'] = App1MetaData(generate_empty_app1_bytes())
                 self.has_exif = True
 
-            setattr(self._segments['APP1'], key, value)
+            setattr(self._segments['APP1'], key.lower(), value)
 
     def __delattr__(self, item):
         try:

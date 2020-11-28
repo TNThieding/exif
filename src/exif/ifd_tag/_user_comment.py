@@ -51,3 +51,9 @@ class UserComment(BaseIfdTag):
 
         value_bytes, _ = getbytes(self._app1_ref.body_bytes, string_value_offset, nbytes=string_len)
         return AsciiStr.unpack(value_bytes)
+
+    def set_character_code_to_ascii(self):
+        """Set the character code header to ASCII."""
+        header_replace_start_index = self.tag_view.value_offset.get()
+        header_replace_stop_index = self.tag_view.value_offset.get() + USER_COMMENT_CHARACTER_CODE_LEN_BYTES
+        self._app1_ref.body_bytes[header_replace_start_index:header_replace_stop_index] = b'ASCII\x00\x00\x00'
