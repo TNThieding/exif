@@ -6,12 +6,13 @@ import textwrap
 import unittest
 
 from exif import GpsAltitudeRef, Image
-from exif.tests.add_exif_baselines.add_short import ADD_SHORT_BASELINE, ADD_SHORT_LE_BASELINE
-from exif.tests.add_exif_baselines.add_ascii import ADD_ASCII_BASELINE, ADD_ASCII_LE_BASELINE
-from exif.tests.add_exif_baselines.add_gps import ADD_GPS_BASELINE
-from exif.tests.add_exif_baselines.add_to_scan import ADD_TO_SCANNED_IMAGE_BASELINE
-from exif.tests.test_little_endian import read_attributes as read_attributes_little_endian
-from exif.tests.test_read_exif import read_attributes_florida_beach
+from .add_exif_baselines.add_short import ADD_SHORT_BASELINE, ADD_SHORT_LE_BASELINE
+from .add_exif_baselines.add_ascii import ADD_ASCII_BASELINE, ADD_ASCII_LE_BASELINE
+from .add_exif_baselines.add_rational import ADD_RATIONAL_BASELINE
+from .add_exif_baselines.add_gps import ADD_GPS_BASELINE
+from .add_exif_baselines.add_to_scan import ADD_TO_SCANNED_IMAGE_BASELINE
+from .test_little_endian import read_attributes as read_attributes_little_endian
+from .test_read_exif import read_attributes_florida_beach
 
 # pylint: disable=protected-access
 
@@ -80,6 +81,15 @@ class TestAddExif(unittest.TestCase):
         self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
                          ADD_GPS_BASELINE)
 
+    def test_add_rational(self):
+        """Test adding new RATIONAL tags to an image."""
+        self.image_alt.focal_length = 123.45
+        assert self.image_alt.focal_length == 123.45
+
+        segment_hex = binascii.hexlify(self.image_alt._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
+        self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
+                         ADD_RATIONAL_BASELINE)
+
     def test_add_shorts(self):
         """Test adding two new SHORT tags to an image."""
         self.image.light_source = 1
@@ -130,6 +140,7 @@ def test_add_to_scanner_image():
     image.datetime_original = "1999:12:31 23:49:12"
     image.datetime_digitized = "2020:07:11 10:11:37"
     image.brightness_value = 10.9876  # provides coverage for SRATIONAL
+    image.user_comment = "This image was scanned in from an old photo album."  # provides coverage for user comment
 
     assert image.has_exif
     assert image.gps_latitude == (41.0, 29.0, 57.48)
@@ -143,6 +154,7 @@ def test_add_to_scanner_image():
     assert image.datetime_original == "1999:12:31 23:49:12"
     assert image.datetime_digitized == "2020:07:11 10:11:37"
     assert image.brightness_value == 10.9876  # provides coverage for SRATIONAL
+    assert image.user_comment == "This image was scanned in from an old photo album."  # provides coverage for user comment
 
     segment_hex = binascii.hexlify(image._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
     assert '\n'.join(textwrap.wrap(segment_hex, 90)) == ADD_TO_SCANNED_IMAGE_BASELINE

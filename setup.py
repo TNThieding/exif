@@ -1,4 +1,4 @@
-import setuptools
+from setuptools import setup, find_packages
 
 with open("README.rst", "r") as fh:
     long_description = fh.read()
@@ -6,7 +6,7 @@ with open("README.rst", "r") as fh:
 with open("version", "r") as fh:
     version = fh.read()
 
-setuptools.setup(
+setup(
     python_requires='>=3.6',
     install_requires=[
         'plum-py==0.3.1',
@@ -36,6 +36,6 @@ setuptools.setup(
         'Programming Language :: Python :: 3.8',
         'Topic :: Multimedia :: Graphics :: Editors',
         ],
-    license='MIT License',
-    packages=setuptools.find_packages()
+    package_dir={"": "src"},
+    packages=find_packages('src'),
 )

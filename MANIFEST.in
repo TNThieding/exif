@@ -1,2 +1,2 @@
-include exif/tests/*
 include version
+graft src

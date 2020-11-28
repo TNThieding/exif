@@ -8,7 +8,7 @@ import unittest
 from baseline import Baseline
 
 from exif import Image
-from exif.tests.modify_exif_baselines import MODIFY_USER_COMMENT_BASELINE
+from .modify_exif_baselines import MODIFY_USER_COMMENT_BASELINE
 
 
 class TestUserComment(unittest.TestCase):

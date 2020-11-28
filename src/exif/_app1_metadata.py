@@ -11,6 +11,7 @@ from exif.ifd_tag import (
     Ascii, BaseIfdTag, Byte, ExifVersion, Long, Rational, Short, Slong, Srational, Sshort, UserComment, WindowsXp)
 from exif.ifd_tag._rational import RationalDtype
 from exif.ifd_tag._srational import SrationalDtype
+from exif.ifd_tag._user_comment import USER_COMMENT_CHARACTER_CODE_LEN_BYTES
 
 
 class App1MetaData:
@@ -113,6 +114,12 @@ class App1MetaData:
             # Value count stays at 1 since EXIF specification does not define multi-valued SRATIONAL tags.
             pointer_value_bytes = value_count * SrationalDtype.nbytes
 
+        if tag == "user_comment":  # character code header followed by null-terminated ASCII string
+            value_count = USER_COMMENT_CHARACTER_CODE_LEN_BYTES + len(value) + 1
+
+            if len(value) >= 4:
+                pointer_value_bytes = USER_COMMENT_CHARACTER_CODE_LEN_BYTES + len(value) + 1
+
         added_bytes += pointer_value_bytes
 
         # Keep all bytes prior to the IFD where the new tag will be added.
@@ -151,7 +158,7 @@ class App1MetaData:
 
         # Determine if a pointer to a value is necessary, and if so, find it.
         if (tag_type == exif_type_cls.ASCII and len(value) >= 4) or tag_type in [
-                exif_type_cls.RATIONAL, exif_type_cls.SRATIONAL]:
+                exif_type_cls.RATIONAL, exif_type_cls.SRATIONAL] or (tag == "user_comment" and len(value) >= 4):
             if subsequent_ifd_offsets:
                 value_pointer = subsequent_ifd_offsets[0] + ifd_tag_cls.nbytes
             else:
@@ -227,6 +234,10 @@ class App1MetaData:
         self.body_bytes = new_app1_bytes
         self._parse_ifd_segments()
         self.ifd_tags[ATTRIBUTE_ID_MAP[tag]].modify(value)
+
+        # If the tag is a user comment, update its character code header to reflect ASCII encoding.
+        if tag == "user_comment":
+            self.ifd_tags[ATTRIBUTE_ID_MAP[tag]].set_character_code_to_ascii()
 
     def _delete_ifd_tag(self, attribute_id):
         # Overwrite pointer data with null bytes (if applicable, depending on datatype).
@@ -395,7 +406,7 @@ class App1MetaData:
     def __getattr__(self, item):
         """If attribute is not a class member, get the value of the EXIF tag of the same name."""
         try:
-            attribute_id = ATTRIBUTE_ID_MAP[item]
+            attribute_id = ATTRIBUTE_ID_MAP[item.lower()]
         except KeyError:
             raise AttributeError("unknown image attribute {0}".format(item))
 
