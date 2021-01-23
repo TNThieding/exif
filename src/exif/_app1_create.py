@@ -5,6 +5,8 @@ from plum.int.big import UInt16
 from exif._constants import ATTRIBUTE_ID_MAP, ExifMarkers
 from exif._datatypes import ExifType, Ifd, IfdTag, TiffByteOrder, TiffHeader
 
+HEADER_BYTES_EXCLUDED_FROM_LENGTH = 2  # IMPORTANT: APP1 marker is excluded from the length of field.
+
 
 def generate_empty_app1_bytes():
     """Generate an empty APP1 segment with IFDs 0, EXIF, and GPS.
@@ -15,7 +17,7 @@ def generate_empty_app1_bytes():
     """
     header_bytes = bytearray(ExifMarkers.APP1)
     header_bytes += b"\x00\x00"  # APP1 length (touched up later at end)
-    header_bytes += b"\x45\x78\x69\x66\x00\x00" # EXIF word, NULL, and padding
+    header_bytes += b"\x45\x78\x69\x66\x00\x00"  # EXIF word, NULL, and padding
 
     tiff_header = TiffHeader(byte_order=TiffByteOrder.BIG, reserved=0x2A, ifd_offset=0x8)
 
@@ -39,7 +41,7 @@ def generate_empty_app1_bytes():
     body_bytes += exif_ifd.pack()
     body_bytes += gps_ifd.pack()
 
-    # Adjust the APP1 length (2 bytes ino header).
-    UInt16(len(header_bytes + body_bytes)).pack_into(header_bytes, offset=2)
+    # Adjust the APP1 length (2 bytes into header).
+    UInt16(len(header_bytes + body_bytes) - HEADER_BYTES_EXCLUDED_FROM_LENGTH).pack_into(header_bytes, offset=2)
 
     return header_bytes + body_bytes

@@ -2,6 +2,19 @@
 Release Notes
 #############
 
+******************************************************************************************
+[1.0.5] Fix corruption errors when adding tags to previously non-EXIF images. (2021-01-23)
+******************************************************************************************
+
+Previously, adding EXIF tags to non-EXIF images resulted in an incorrectly-calculated APP1 segment length value. This
+resulted in some image tools and libraries reporting that the file was corrupt. Now, the APP1 segment length value is
+calculated correctly by excluding the APP1 marker length from the segment length.
+
+This patch addresses the following GitLab user issue:
+
+* Corrupt JPEG data error caused by writing EXIF data. (https://gitlab.com/TNThieding/exif/-/issues/30)
+
+
 *****************************************************************************
 [1.0.4] Fix adding focal length and user comment tags to images. (2020-11-28)
 *****************************************************************************
