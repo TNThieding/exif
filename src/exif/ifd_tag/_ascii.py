@@ -12,7 +12,7 @@ from exif._datatypes import TiffByteOrder
 from exif.ifd_tag._base import Base as BaseIfdTag
 
 
-class IntraIfdAsciiStr(Str, encoding="ascii", nbytes=4):
+class IntraIfdAsciiStr(Str, encoding="ascii", nbytes=4):  # type: ignore
 
     """ASCII string data that fits within an IFD tag."""
 

@@ -360,13 +360,8 @@ class App1MetaData:
             else:
                 self.thumbnail_bytes = hex_after_ifd1[start_index:end_index]
 
-    def get_segment_bytes(self):
-        """Get equivalent APP1 segment bytes.
-
-        :returns: segment bytes
-        :rtype: bytes
-
-        """
+    def get_segment_bytes(self) -> bytes:
+        """Get equivalent APP1 segment bytes."""
         return bytes(self.header_bytes) + bytes(self.body_bytes)
 
     def get_tag_list(self):

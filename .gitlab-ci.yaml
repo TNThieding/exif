@@ -57,6 +57,12 @@ black:
   script:
     - tox -vv -e black
 
+mypy:
+  stage: lint
+  image: python:3.9
+  script:
+    - tox -vv -e mypy
+
 pylint:
   stage: lint
   image: python:3.9
