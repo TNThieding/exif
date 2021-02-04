@@ -27,23 +27,25 @@ class Image:
         cursor = 0
 
         # Traverse hexadecimal string until EXIF APP1 segment found.
-        while img_bytes[cursor:cursor + len(ExifMarkers.APP1)] != ExifMarkers.APP1:
+        while img_bytes[cursor : cursor + len(ExifMarkers.APP1)] != ExifMarkers.APP1:
             cursor += len(ExifMarkers.APP1)
             if cursor > len(img_bytes):
                 self.has_exif = False
                 cursor = 2  # should theoretically go after SOI marker (if adding)
                 break
 
-        self._segments['preceding'] = img_bytes[:cursor]
+        self._segments["preceding"] = img_bytes[:cursor]
         app1_start_index = cursor
 
         if self.has_exif:
             # Determine the expected length of the APP1 segment.
-            app1_len = unpack(UInt16, img_bytes[app1_start_index + 2:app1_start_index + 4])
+            app1_len = unpack(
+                UInt16, img_bytes[app1_start_index + 2 : app1_start_index + 4]
+            )
             cursor += app1_len + 1
 
             # If the expected length stops early, keep traversing until another section is found.
-            while img_bytes[cursor - 2:cursor - 1] != ExifMarkers.SEG_PREFIX:
+            while img_bytes[cursor - 2 : cursor - 1] != ExifMarkers.SEG_PREFIX:
                 cursor += 1
                 # raise IOError("no subsequent EXIF segment found, is this an EXIF-encoded JPEG?")
                 if cursor > len(img_bytes):
@@ -52,11 +54,11 @@ class Image:
 
         if self.has_exif:
             # Instantiate an APP1 segment object to create an EXIF tag interface.
-            self._segments['APP1'] = App1MetaData(img_bytes[app1_start_index:cursor])
-            self._segments['succeeding'] = img_bytes[cursor:]
+            self._segments["APP1"] = App1MetaData(img_bytes[app1_start_index:cursor])
+            self._segments["succeeding"] = img_bytes[cursor:]
         else:
             # Store the remainder of the image so that it can be reconstructed when exporting.
-            self._segments['succeeding'] = img_bytes[app1_start_index:]
+            self._segments["succeeding"] = img_bytes[app1_start_index:]
 
     def __init__(self, img_file):
         self.has_exif = True
@@ -75,15 +77,23 @@ class Image:
         self._parse_segments(img_bytes)
 
     def __dir__(self):
-        members = ['delete', 'delete_all', 'get', 'get_file', 'get_thumbnail', 'has_exif', '_segments']
+        members = [
+            "delete",
+            "delete_all",
+            "get",
+            "get_file",
+            "get_thumbnail",
+            "has_exif",
+            "_segments",
+        ]
 
         if self.has_exif:
-            members += self._segments['APP1'].get_tag_list()
+            members += self._segments["APP1"].get_tag_list()
 
         return members
 
     def __getattr__(self, item):
-        return getattr(self._segments['APP1'], item)
+        return getattr(self._segments["APP1"], item)
 
     def __setattr__(self, key, value):
         try:
@@ -92,10 +102,10 @@ class Image:
             super(Image, self).__setattr__(key, value)
         else:
             if not self.has_exif:
-                self._segments['APP1'] = App1MetaData(generate_empty_app1_bytes())
+                self._segments["APP1"] = App1MetaData(generate_empty_app1_bytes())
                 self.has_exif = True
 
-            setattr(self._segments['APP1'], key.lower(), value)
+            setattr(self._segments["APP1"], key.lower(), value)
 
     def __delattr__(self, item):
         try:
@@ -103,7 +113,7 @@ class Image:
         except KeyError:
             super(Image, self).__delattr__(item)
         else:
-            delattr(self._segments['APP1'], item)
+            delattr(self._segments["APP1"], item)
 
     def __getitem__(self, item):
         return self.__getattr__(item)
@@ -124,8 +134,10 @@ class Image:
 
     def delete_all(self):
         """Remove all EXIF tags from the image."""
-        for _ in range(2):  # iterate twice to delete thumbnail tags the second time around
-            for tag in self._segments['APP1'].get_tag_list():
+        for _ in range(
+            2
+        ):  # iterate twice to delete thumbnail tags the second time around
+            for tag in self._segments["APP1"].get_tag_list():
                 try:
                     self.__delattr__(tag)
                 except AttributeError:
@@ -159,12 +171,12 @@ class Image:
         :rtype: bytes
 
         """
-        img_bytes = self._segments['preceding']
+        img_bytes = self._segments["preceding"]
 
         if self.has_exif:
-            img_bytes += self._segments['APP1'].get_segment_bytes()
+            img_bytes += self._segments["APP1"].get_segment_bytes()
 
-        img_bytes += self._segments['succeeding']
+        img_bytes += self._segments["succeeding"]
 
         return img_bytes
 
@@ -177,7 +189,7 @@ class Image:
 
         """
         try:
-            app1_segment = self._segments['APP1']
+            app1_segment = self._segments["APP1"]
         except KeyError:
             thumbnail_bytes = None
         else:

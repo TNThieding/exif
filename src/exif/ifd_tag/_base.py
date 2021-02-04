@@ -16,7 +16,9 @@ class Base:
         else:
             self._ifd_tag_cls = IfdTagLe
 
-        self.tag_view = self._ifd_tag_cls.view(self._app1_ref.body_bytes, self._tag_offset)
+        self.tag_view = self._ifd_tag_cls.view(
+            self._app1_ref.body_bytes, self._tag_offset
+        )
 
     def __repr__(self):  # pragma: no cover
         return "exif.ifd_tag.Base(tag_offset={})".format(self._tag_offset)

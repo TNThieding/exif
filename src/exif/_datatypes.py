@@ -7,7 +7,14 @@ from plum.int.big import UInt16, UInt32
 from plum.int.bitfields import BitFields, BitField
 from plum.int.little import UInt16 as UInt16_L, UInt32 as UInt32_L
 from plum.int.enum import Enum
-from plum.structure import DimsMember, Member, Structure, TypeMember, VariableDimsMember, VariableTypeMember
+from plum.structure import (
+    DimsMember,
+    Member,
+    Structure,
+    TypeMember,
+    VariableDimsMember,
+    VariableTypeMember,
+)
 
 
 class TiffByteOrder(Enum, nbytes=2):
@@ -22,7 +29,10 @@ class TiffHeader(Structure):
 
     """TIFF Header"""
 
-    byte_order: int = TypeMember(cls=TiffByteOrder, mapping={TiffByteOrder.LITTLE: UInt32_L, TiffByteOrder.BIG: UInt32})
+    byte_order: int = TypeMember(
+        cls=TiffByteOrder,
+        mapping={TiffByteOrder.LITTLE: UInt32_L, TiffByteOrder.BIG: UInt32},
+    )
     reserved: int = Member(cls=UInt16)
     ifd_offset: int = VariableTypeMember(type_member=byte_order)
 

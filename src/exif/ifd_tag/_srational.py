@@ -50,7 +50,9 @@ class Srational(BaseIfdTag):
         """
         fraction = Fraction(value).limit_denominator()
 
-        srational_view = self.srational_dtype_cls.view(self._app1_ref.body_bytes, self.tag_view.value_offset.get())
+        srational_view = self.srational_dtype_cls.view(
+            self._app1_ref.body_bytes, self.tag_view.value_offset.get()
+        )
         srational_view.numerator.set(fraction.numerator)
         srational_view.denominator.set(fraction.denominator)
 
@@ -64,11 +66,15 @@ class Srational(BaseIfdTag):
         :rtype: corresponding Python type
 
         """
-        srational_view = self.srational_dtype_cls.view(self._app1_ref.body_bytes, self.tag_view.value_offset.get())
+        srational_view = self.srational_dtype_cls.view(
+            self._app1_ref.body_bytes, self.tag_view.value_offset.get()
+        )
         return srational_view.numerator / srational_view.denominator
 
     def wipe(self):
         """Wipe value pointer target bytes to null."""
-        srational_view = self.srational_dtype_cls.view(self._app1_ref.body_bytes, self.tag_view.value_offset.get())
+        srational_view = self.srational_dtype_cls.view(
+            self._app1_ref.body_bytes, self.tag_view.value_offset.get()
+        )
         srational_view.numerator.set(0)
         srational_view.denominator.set(0)

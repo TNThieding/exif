@@ -4,8 +4,20 @@ from plum.int.big import UInt16
 from plum.int.little import UInt16 as UInt16_L
 
 from exif._constants import (
-    ATTRIBUTE_ID_MAP, ColorSpace, ExposureMode, ExposureProgram, LightSource, MeteringMode, Orientation, ResolutionUnit,
-    Saturation, SceneCaptureType, SensingMethod, Sharpness, WhiteBalance)
+    ATTRIBUTE_ID_MAP,
+    ColorSpace,
+    ExposureMode,
+    ExposureProgram,
+    LightSource,
+    MeteringMode,
+    Orientation,
+    ResolutionUnit,
+    Saturation,
+    SceneCaptureType,
+    SensingMethod,
+    Sharpness,
+    WhiteBalance,
+)
 from exif._datatypes import Flash, TiffByteOrder
 from exif.ifd_tag._base import Base as BaseIfdTag
 
@@ -48,7 +60,9 @@ class Short(BaseIfdTag):
         :type value: corresponding Python type
 
         """
-        self._uint16_cls.view(self._app1_ref.body_bytes, self.tag_view.value_offset.__offset__).set(int(value))
+        self._uint16_cls.view(
+            self._app1_ref.body_bytes, self.tag_view.value_offset.__offset__
+        ).set(int(value))
 
     def read(self):
         """Read tag value.
@@ -60,7 +74,9 @@ class Short(BaseIfdTag):
         :rtype: corresponding Python type
 
         """
-        retval = self._uint16_cls.view(self._app1_ref.body_bytes, self.tag_view.value_offset.__offset__).get()
+        retval = self._uint16_cls.view(
+            self._app1_ref.body_bytes, self.tag_view.value_offset.__offset__
+        ).get()
 
         if int(self.tag_view.tag_id) in self.ENUMS_MAP:
             retval = self.ENUMS_MAP[int(self.tag_view.tag_id)](retval)

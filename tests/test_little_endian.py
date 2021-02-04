@@ -15,7 +15,9 @@ from .little_endian_baselines import LITTLE_ENDIAN_MODIFY_BASELINE
 
 def test_modify():
     """Verify that modifying tags updates the tag values as expected."""
-    with open(os.path.join(os.path.dirname(__file__), 'little_endian.jpg'), 'rb') as image_file:
+    with open(
+        os.path.join(os.path.dirname(__file__), "little_endian.jpg"), "rb"
+    ) as image_file:
         image = Image(image_file)
 
     image.model = "Modified"
@@ -27,8 +29,12 @@ def test_modify():
     image.gps_longitude = (12.0, 34.0, 56.789)
     assert str(image.gps_longitude) == Baseline("""(12.0, 34.0, 56.789)""")
 
-    segment_hex = binascii.hexlify(image._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
-    assert '\n'.join(textwrap.wrap(segment_hex, 90)) == LITTLE_ENDIAN_MODIFY_BASELINE
+    segment_hex = (
+        binascii.hexlify(image._segments["APP1"].get_segment_bytes())
+        .decode("utf-8")
+        .upper()
+    )
+    assert "\n".join(textwrap.wrap(segment_hex, 90)) == LITTLE_ENDIAN_MODIFY_BASELINE
 
 
 read_attributes = [
@@ -46,10 +52,16 @@ read_attributes = [
 ]
 
 
-@pytest.mark.parametrize("attribute, func, value", read_attributes, ids=[params[0] for params in read_attributes])
+@pytest.mark.parametrize(
+    "attribute, func, value",
+    read_attributes,
+    ids=[params[0] for params in read_attributes],
+)
 def test_read(attribute, func, value):
     """Test reading tags and compare to known baseline values."""
-    with open(os.path.join(os.path.dirname(__file__), 'little_endian.jpg'), 'rb') as image_file:
+    with open(
+        os.path.join(os.path.dirname(__file__), "little_endian.jpg"), "rb"
+    ) as image_file:
         image = Image(image_file)
 
     assert func(getattr(image, attribute)) == value

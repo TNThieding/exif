@@ -14,17 +14,19 @@ def test_get_file():
     Assert the produced file is equivalent to a known baseline.
 
     """
-    image = Image(os.path.join(os.path.dirname(__file__), 'noise.jpg'))
+    image = Image(os.path.join(os.path.dirname(__file__), "noise.jpg"))
     image.software = "Python"
 
     file_hex = binascii.hexlify(image.get_file()).decode("utf-8")
-    assert '\n'.join(textwrap.wrap(file_hex, 90)) == MODIFIED_NOISE_FILE_HEX_BASELINE
+    assert "\n".join(textwrap.wrap(file_hex, 90)) == MODIFIED_NOISE_FILE_HEX_BASELINE
 
 
 def test_get_thumbnail():
     """Test file contents of thumbnail image."""
-    with open(os.path.join(os.path.dirname(__file__), 'grand_canyon.jpg'), 'rb') as image_file:
+    with open(
+        os.path.join(os.path.dirname(__file__), "grand_canyon.jpg"), "rb"
+    ) as image_file:
         image = Image(image_file)
 
     file_hex = binascii.hexlify(image.get_thumbnail()).decode("utf8")
-    assert '\n'.join(textwrap.wrap(file_hex, 90)) == GRAND_CANYON_THUMBNAIL
+    assert "\n".join(textwrap.wrap(file_hex, 90)) == GRAND_CANYON_THUMBNAIL

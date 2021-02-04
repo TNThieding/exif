@@ -12,6 +12,9 @@
     :target: https://exif.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :target: https://github.com/psf/black
+
 Read and modify image EXIF metadata using Python without any third-party software
 dependencies. For example, batch process image metadata using a Python script.
 

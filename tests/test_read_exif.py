@@ -12,17 +12,21 @@ from exif import Image
 
 def test_get_method():
     """Test behavior when accessing tags using the ``get()`` method."""
-    with open(os.path.join(os.path.dirname(__file__), 'grand_canyon.jpg'), 'rb') as image_file:
+    with open(
+        os.path.join(os.path.dirname(__file__), "grand_canyon.jpg"), "rb"
+    ) as image_file:
         image = Image(image_file)
 
-    assert image.get('fake_attribute') is None
-    assert image.get('light_source', default=-1) == -1  # tag not in image
-    assert image.get('make') == Baseline("""Apple""")
+    assert image.get("fake_attribute") is None
+    assert image.get("light_source", default=-1) == -1  # tag not in image
+    assert image.get("make") == Baseline("""Apple""")
 
 
 def test_handle_bad_attribute():
     """Verify that accessing a nonexistent attribute raises an AttributeError."""
-    with open(os.path.join(os.path.dirname(__file__), 'grand_canyon.jpg'), 'rb') as image_file:
+    with open(
+        os.path.join(os.path.dirname(__file__), "grand_canyon.jpg"), "rb"
+    ) as image_file:
         image = Image(image_file)
 
     with pytest.raises(AttributeError, match="unknown image attribute fake_attribute"):
@@ -31,16 +35,22 @@ def test_handle_bad_attribute():
 
 def test_handle_unset_attribute():
     """Verify that accessing an attribute not present in an image raises an AttributeError."""
-    with open(os.path.join(os.path.dirname(__file__), 'grand_canyon.jpg'), 'rb') as image_file:
+    with open(
+        os.path.join(os.path.dirname(__file__), "grand_canyon.jpg"), "rb"
+    ) as image_file:
         image = Image(image_file)
 
-    with pytest.raises(AttributeError, match="image does not have attribute light_source"):
+    with pytest.raises(
+        AttributeError, match="image does not have attribute light_source"
+    ):
         image.light_source
 
 
 def test_index_accessor():
     """Test accessing attributes using index syntax."""
-    with open(os.path.join(os.path.dirname(__file__), 'grand_canyon.jpg'), 'rb') as image_file:
+    with open(
+        os.path.join(os.path.dirname(__file__), "grand_canyon.jpg"), "rb"
+    ) as image_file:
         image = Image(image_file)
 
     assert image["datetime"] == Baseline("""2018:03:12 10:12:07""")
@@ -62,9 +72,13 @@ read_attributes_grand_canyon = [
     ("color_space", repr, "<ColorSpace.UNCALIBRATED: 65535>"),
     ("datetime", str, "2018:03:12 10:12:07"),
     ("exif_version", str, "0221"),
-    ("flash", str, "Flash(flash_fired=False, flash_return=FlashReturn.NO_STROBE_RETURN_DETECTION_FUNCTION, "
-                   "flash_mode=FlashMode.COMPULSORY_FLASH_SUPPRESSION, flash_function_not_present=False, "
-                   "red_eye_reduction_supported=False, reserved=0)"),
+    (
+        "flash",
+        str,
+        "Flash(flash_fired=False, flash_return=FlashReturn.NO_STROBE_RETURN_DETECTION_FUNCTION, "
+        "flash_mode=FlashMode.COMPULSORY_FLASH_SUPPRESSION, flash_function_not_present=False, "
+        "red_eye_reduction_supported=False, reserved=0)",
+    ),
     ("gps_altitude", rounded_str, "2189.98969072"),
     ("gps_altitude_ref", repr, "<GpsAltitudeRef.ABOVE_SEA_LEVEL: 0>"),
     ("gps_latitude", str, "(36.0, 3.0, 11.08)"),
@@ -86,10 +100,16 @@ read_attributes_grand_canyon = [
 
 
 # pylint: disable=line-too-long
-@pytest.mark.parametrize("attribute, func, value", read_attributes_grand_canyon, ids=[params[0] for params in read_attributes_grand_canyon])
+@pytest.mark.parametrize(
+    "attribute, func, value",
+    read_attributes_grand_canyon,
+    ids=[params[0] for params in read_attributes_grand_canyon],
+)
 def test_read_file_object(attribute, func, value):
     """Test reading tags and compare to known baseline values."""
-    with open(os.path.join(os.path.dirname(__file__), 'grand_canyon.jpg'), 'rb') as image_file:
+    with open(
+        os.path.join(os.path.dirname(__file__), "grand_canyon.jpg"), "rb"
+    ) as image_file:
         image = Image(image_file)
 
     assert func(getattr(image, attribute)) == value
@@ -114,10 +134,14 @@ read_attributes_grayson_highlands = [
 
 
 # pylint: disable=line-too-long
-@pytest.mark.parametrize("attribute, func, value", read_attributes_grayson_highlands, ids=[params[0] for params in read_attributes_grayson_highlands])
+@pytest.mark.parametrize(
+    "attribute, func, value",
+    read_attributes_grayson_highlands,
+    ids=[params[0] for params in read_attributes_grayson_highlands],
+)
 def test_read_file_path(attribute, func, value):
     """Test reading tags and compare to known baseline values."""
-    image = Image(os.path.join(os.path.dirname(__file__), 'grayson_highlands.jpg'))
+    image = Image(os.path.join(os.path.dirname(__file__), "grayson_highlands.jpg"))
     assert func(getattr(image, attribute)) == value
 
 
@@ -126,9 +150,13 @@ read_attributes_florida_beach = [
     ("brightness_value", rounded_str, "9.46831050228"),
     ("color_space", repr, "<ColorSpace.UNCALIBRATED: 65535>"),
     ("datetime", str, "2019:03:26 19:33:47"),
-    ("flash", str, "Flash(flash_fired=False, flash_return=FlashReturn.NO_STROBE_RETURN_DETECTION_FUNCTION, "
-                   "flash_mode=FlashMode.AUTO_MODE, flash_function_not_present=False, "
-                   "red_eye_reduction_supported=False, reserved=0)"),
+    (
+        "flash",
+        str,
+        "Flash(flash_fired=False, flash_return=FlashReturn.NO_STROBE_RETURN_DETECTION_FUNCTION, "
+        "flash_mode=FlashMode.AUTO_MODE, flash_function_not_present=False, "
+        "red_eye_reduction_supported=False, reserved=0)",
+    ),
     ("gps_altitude", rounded_str, "1.02077865606"),
     ("gps_altitude_ref", repr, "<GpsAltitudeRef.ABOVE_SEA_LEVEL: 0>"),
     ("gps_version_id", str, "2"),
@@ -142,10 +170,16 @@ read_attributes_florida_beach = [
 
 
 # pylint: disable=line-too-long
-@pytest.mark.parametrize("attribute, func, value", read_attributes_florida_beach, ids=[params[0] for params in read_attributes_florida_beach])
+@pytest.mark.parametrize(
+    "attribute, func, value",
+    read_attributes_florida_beach,
+    ids=[params[0] for params in read_attributes_florida_beach],
+)
 def test_read_bytes(attribute, func, value):
     """Test reading tags and compare to known baseline values."""
-    with open(os.path.join(os.path.dirname(__file__), 'florida_beach.jpg'), 'rb') as image_file:
+    with open(
+        os.path.join(os.path.dirname(__file__), "florida_beach.jpg"), "rb"
+    ) as image_file:
         image = Image(image_file.read())
 
     assert func(getattr(image, attribute)) == value

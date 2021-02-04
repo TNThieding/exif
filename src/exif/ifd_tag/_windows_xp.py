@@ -16,7 +16,9 @@ class WindowsXp(BaseIfdTag):
         :type value: corresponding Python type
 
         """
-        raise NotImplementedError("this package does not yet support setting Windows XP style tags")
+        raise NotImplementedError(
+            "this package does not yet support setting Windows XP style tags"
+        )
 
     def read(self):
         """Read tag value.
@@ -28,14 +30,21 @@ class WindowsXp(BaseIfdTag):
         :rtype: corresponding Python type
 
         """
-        dereferenced_bytes, _ = getbytes(self._app1_ref.body_bytes, self.tag_view.value_offset.get(),
-                                         nbytes=self.tag_view.value_count.get())
+        dereferenced_bytes, _ = getbytes(
+            self._app1_ref.body_bytes,
+            self.tag_view.value_offset.get(),
+            nbytes=self.tag_view.value_count.get(),
+        )
 
         cursor = 0
         ascii_string = ""
 
-        for byte in dereferenced_bytes[:-2]:  # discard final null termination bytes (2 for Windows XP tags)
-            if cursor % 2 == 0:  # is at an even position and is therefore part of the string
+        for byte in dereferenced_bytes[
+            :-2
+        ]:  # discard final null termination bytes (2 for Windows XP tags)
+            if (
+                cursor % 2 == 0
+            ):  # is at an even position and is therefore part of the string
                 ascii_string += chr(byte)
 
             cursor += 1

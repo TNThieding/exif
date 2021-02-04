@@ -30,8 +30,10 @@ class Sshort(BaseIfdTag):
         :type value: corresponding Python type
 
         """
-        raise NotImplementedError("this package does not yet support setting SSHORT tags since no SSHORT tags "
-                                  "exist in EXIF specification")
+        raise NotImplementedError(
+            "this package does not yet support setting SSHORT tags since no SSHORT tags "
+            "exist in EXIF specification"
+        )
 
     def read(self):
         """Read tag value.
@@ -43,7 +45,9 @@ class Sshort(BaseIfdTag):
         :rtype: corresponding Python type
 
         """
-        retval = self._int16_cls.view(self._app1_ref.body_bytes, self.tag_view.value_offset.__offset__).get()
+        retval = self._int16_cls.view(
+            self._app1_ref.body_bytes, self.tag_view.value_offset.__offset__
+        ).get()
 
         if int(self.tag_view.tag_id) in self.ENUMS_MAP:
             retval = self.ENUMS_MAP[int(self.tag_view.tag_id)](retval)
