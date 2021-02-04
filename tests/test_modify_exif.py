@@ -9,8 +9,13 @@ from baseline import Baseline
 
 from exif import Image
 from .modify_exif_baselines import (
-    MODIFY_ASCII_SAME_LEN_HEX_BASELINE, MODIFY_ASCII_SHORTER_HEX_BASELINE, MODIFY_ASCII_TO_INTRA_IFD_BASELINE,
-    MODIFY_RATIONAL_HEX_BASELINE, MODIFY_SRATIONAL_HEX_BASELINE, ROTATED_GRAND_CANYON_HEX)
+    MODIFY_ASCII_SAME_LEN_HEX_BASELINE,
+    MODIFY_ASCII_SHORTER_HEX_BASELINE,
+    MODIFY_ASCII_TO_INTRA_IFD_BASELINE,
+    MODIFY_RATIONAL_HEX_BASELINE,
+    MODIFY_SRATIONAL_HEX_BASELINE,
+    ROTATED_GRAND_CANYON_HEX,
+)
 from .test_read_exif import read_attributes_grand_canyon
 
 # pylint: disable=protected-access
@@ -22,8 +27,8 @@ class TestModifyExif(unittest.TestCase):
 
     def setUp(self):
         """Open sample image file in binary mode for use in test cases."""
-        grand_canyon = os.path.join(os.path.dirname(__file__), 'grand_canyon.jpg')
-        with open(grand_canyon, 'rb') as image_file:
+        grand_canyon = os.path.join(os.path.dirname(__file__), "grand_canyon.jpg")
+        with open(grand_canyon, "rb") as image_file:
             self.image = Image(image_file)
 
         assert self.image.has_exif
@@ -48,27 +53,44 @@ class TestModifyExif(unittest.TestCase):
         self.image.model = "MyCamera"
         self.assertEqual(self.image.model, Baseline("""MyCamera"""))
 
-        segment_hex = binascii.hexlify(self.image._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
-        self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
-                         MODIFY_ASCII_SAME_LEN_HEX_BASELINE)
+        segment_hex = (
+            binascii.hexlify(self.image._segments["APP1"].get_segment_bytes())
+            .decode("utf-8")
+            .upper()
+        )
+        self.assertEqual(
+            "\n".join(textwrap.wrap(segment_hex, 90)),
+            MODIFY_ASCII_SAME_LEN_HEX_BASELINE,
+        )
 
     def test_modify_ascii_shorter(self):
         """Verify that writing a shorter string to an ASCII tag updates the tag."""
         self.image.model = "MyCam"
         self.assertEqual(self.image.model, Baseline("""MyCam"""))
 
-        segment_hex = binascii.hexlify(self.image._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
-        self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
-                         MODIFY_ASCII_SHORTER_HEX_BASELINE)
+        segment_hex = (
+            binascii.hexlify(self.image._segments["APP1"].get_segment_bytes())
+            .decode("utf-8")
+            .upper()
+        )
+        self.assertEqual(
+            "\n".join(textwrap.wrap(segment_hex, 90)), MODIFY_ASCII_SHORTER_HEX_BASELINE
+        )
 
     def test_modify_ascii_to_intra_ifd(self):
         """Verify writing a shorter string that can fit in the IFD tag."""
         self.image.model = "Cam"
         self.assertEqual(self.image.model, Baseline("""Cam"""))
 
-        segment_hex = binascii.hexlify(self.image._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
-        self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
-                         MODIFY_ASCII_TO_INTRA_IFD_BASELINE)
+        segment_hex = (
+            binascii.hexlify(self.image._segments["APP1"].get_segment_bytes())
+            .decode("utf-8")
+            .upper()
+        )
+        self.assertEqual(
+            "\n".join(textwrap.wrap(segment_hex, 90)),
+            MODIFY_ASCII_TO_INTRA_IFD_BASELINE,
+        )
 
     def test_modify_bytes(self):
         """Verify that modifying a BYTE tag updates the tag value as expected."""
@@ -84,29 +106,46 @@ class TestModifyExif(unittest.TestCase):
         self.image.orientation = 6
         assert self.image.orientation == 6
 
-        segment_hex = binascii.hexlify(self.image._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
-        self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
-                         ROTATED_GRAND_CANYON_HEX)
+        segment_hex = (
+            binascii.hexlify(self.image._segments["APP1"].get_segment_bytes())
+            .decode("utf-8")
+            .upper()
+        )
+        self.assertEqual(
+            "\n".join(textwrap.wrap(segment_hex, 90)), ROTATED_GRAND_CANYON_HEX
+        )
 
     def test_modify_rational(self):
         """Verify that modifying RATIONAL tags updates the tag values as expected."""
         self.image.gps_altitude = 123.456789
         self.assertEqual(str(self.image.gps_altitude), Baseline("""123.456789"""))
         self.image.gps_latitude = (41.0, 36.0, 33.786)
-        self.assertEqual(str(self.image.gps_latitude), Baseline("""(41.0, 36.0, 33.786)"""))
+        self.assertEqual(
+            str(self.image.gps_latitude), Baseline("""(41.0, 36.0, 33.786)""")
+        )
 
-        segment_hex = binascii.hexlify(self.image._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
-        self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
-                         MODIFY_RATIONAL_HEX_BASELINE)
+        segment_hex = (
+            binascii.hexlify(self.image._segments["APP1"].get_segment_bytes())
+            .decode("utf-8")
+            .upper()
+        )
+        self.assertEqual(
+            "\n".join(textwrap.wrap(segment_hex, 90)), MODIFY_RATIONAL_HEX_BASELINE
+        )
 
     def test_modify_srational(self):
         """Verify that modifying a SRATIONAL tag updates the tag value as expected."""
         self.image.brightness_value = -2.468
         self.assertEqual(str(self.image.brightness_value), Baseline("""-2.468"""))
 
-        segment_hex = binascii.hexlify(self.image._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
-        self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
-                         MODIFY_SRATIONAL_HEX_BASELINE)
+        segment_hex = (
+            binascii.hexlify(self.image._segments["APP1"].get_segment_bytes())
+            .decode("utf-8")
+            .upper()
+        )
+        self.assertEqual(
+            "\n".join(textwrap.wrap(segment_hex, 90)), MODIFY_SRATIONAL_HEX_BASELINE
+        )
 
     def test_set_method(self):
         """Test behavior when setting tags using the ``set()`` method."""

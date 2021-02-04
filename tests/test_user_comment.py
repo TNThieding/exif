@@ -17,8 +17,8 @@ class TestUserComment(unittest.TestCase):
 
     def setUp(self):
         """Open sample image file in binary mode for use in test cases."""
-        image_path = os.path.join(os.path.dirname(__file__), 'user_comment.jpg')
-        with open(image_path, 'rb') as image_file:
+        image_path = os.path.join(os.path.dirname(__file__), "user_comment.jpg")
+        with open(image_path, "rb") as image_file:
             self.image = Image(image_file)
 
         assert self.image.has_exif
@@ -29,20 +29,29 @@ class TestUserComment(unittest.TestCase):
         self.image.user_comment = "Updated user comment."
         self.assertEqual(self.image.user_comment, Baseline("""Updated user comment."""))
 
-        segment_hex = binascii.hexlify(self.image._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
-        self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
-                         MODIFY_USER_COMMENT_BASELINE)
+        segment_hex = (
+            binascii.hexlify(self.image._segments["APP1"].get_segment_bytes())
+            .decode("utf-8")
+            .upper()
+        )
+        self.assertEqual(
+            "\n".join(textwrap.wrap(segment_hex, 90)), MODIFY_USER_COMMENT_BASELINE
+        )
 
     def test_handle_ascii_too_long(self):
         """Verify that writing a longer string to an ASCII tag raises a ValueError."""
-        with self.assertRaisesRegex(ValueError, "comment must be no longer than original"):
-            self.image.user_comment = ("This image shall be used in a package regression/unit test to verify reading "
-                                       "this user comment attribute which I'm making longer by adding this extra text.")
+        with self.assertRaisesRegex(
+            ValueError, "comment must be no longer than original"
+        ):
+            self.image.user_comment = (
+                "This image shall be used in a package regression/unit test to verify reading "
+                "this user comment attribute which I'm making longer by adding this extra text."
+            )
 
     def test_read(self):
         """Test reading a user comment."""
         self.assertEqual(
             self.image.user_comment,
             "This image shall be used in a package regression/unit test to verify reading this "
-            "user comment attribute."
+            "user comment attribute.",
         )

@@ -5,10 +5,37 @@ from plum import unpack_from
 from plum.int.big import UInt16
 
 from exif._add_tag_utils import value_fits_in_ifd_tag
-from exif._constants import ATTRIBUTE_ID_MAP, ATTRIBUTE_NAME_MAP, ATTRIBUTE_TYPE_MAP, ERROR_IMG_NO_ATTR, ExifMarkers
-from exif._datatypes import ExifType, ExifTypeLe, Ifd, IfdLe, IfdTag, IfdTagLe, TiffByteOrder, TiffHeader
+from exif._constants import (
+    ATTRIBUTE_ID_MAP,
+    ATTRIBUTE_NAME_MAP,
+    ATTRIBUTE_TYPE_MAP,
+    ERROR_IMG_NO_ATTR,
+    ExifMarkers,
+)
+from exif._datatypes import (
+    ExifType,
+    ExifTypeLe,
+    Ifd,
+    IfdLe,
+    IfdTag,
+    IfdTagLe,
+    TiffByteOrder,
+    TiffHeader,
+)
 from exif.ifd_tag import (
-    Ascii, BaseIfdTag, Byte, ExifVersion, Long, Rational, Short, Slong, Srational, Sshort, UserComment, WindowsXp)
+    Ascii,
+    BaseIfdTag,
+    Byte,
+    ExifVersion,
+    Long,
+    Rational,
+    Short,
+    Slong,
+    Srational,
+    Sshort,
+    UserComment,
+    WindowsXp,
+)
 from exif.ifd_tag._rational import RationalDtype
 from exif.ifd_tag._srational import SrationalDtype
 from exif.ifd_tag._user_comment import USER_COMMENT_CHARACTER_CODE_LEN_BYTES
@@ -32,8 +59,8 @@ class App1MetaData:
             exif_type_cls = ExifTypeLe
             ifd_cls = IfdLe
 
-        new_app1_bytes = self.body_bytes[:self.ifd_pointers[1]]
-        bytes_after_new_ifd = self.body_bytes[self.ifd_pointers[1]:]
+        new_app1_bytes = self.body_bytes[: self.ifd_pointers[1]]
+        bytes_after_new_ifd = self.body_bytes[self.ifd_pointers[1] :]
 
         # Inert empty IFD.
         empty_ifd = Ifd(tags=[], next=0)
@@ -49,7 +76,10 @@ class App1MetaData:
         for tag_index in range(ifd1.count):
             tag_t = ifd1.tags[tag_index]
             is_value_in_ifd_tag_itself = value_fits_in_ifd_tag(tag_t, exif_type_cls)
-            if tag_t.tag_id in [ATTRIBUTE_ID_MAP["jpeg_interchange_format"]] or not is_value_in_ifd_tag_itself:
+            if (
+                tag_t.tag_id in [ATTRIBUTE_ID_MAP["jpeg_interchange_format"]]
+                or not is_value_in_ifd_tag_itself
+            ):
                 tag_t.value_offset += empty_ifd.nbytes
             ifd1.tags[tag_index] = tag_t
         ifd1.pack_into(bytes_after_new_ifd, offset=0)
@@ -59,14 +89,20 @@ class App1MetaData:
         self._parse_ifd_segments()
 
         # Adjust the size of the APP1 header to reflect the new length.
-        app1_len = UInt16.view(self.header_bytes, offset=2)  # 2 bytes into the header, i.e., right after the marker
+        app1_len = UInt16.view(
+            self.header_bytes, offset=2
+        )  # 2 bytes into the header, i.e., right after the marker
         app1_len += empty_ifd.nbytes
 
         # Add pointer tag to IFD 0.
-        offset_of_new_ifd = self.ifd_pointers[1]  # IFD 1 is pushed back to after the new IFD tag that takes its place
+        offset_of_new_ifd = self.ifd_pointers[
+            1
+        ]  # IFD 1 is pushed back to after the new IFD tag that takes its place
         self._add_tag("_gps_ifd_pointer", offset_of_new_ifd)
 
-    def _add_tag(self, tag, value):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
+    def _add_tag(
+        self, tag, value
+    ):  # pylint: disable=too-many-locals, too-many-branches, too-many-statements
         # FUTURE: This method could likely use some future cleanup and abstraction.
         try:
             tag_type, ifd_number = ATTRIBUTE_TYPE_MAP[tag]
@@ -86,10 +122,18 @@ class App1MetaData:
             self._add_empty_ifd(ifd_number)
 
         # Make a list of all IFDs that will need to be re-packed with touched up pointers.
-        subsequent_ifd_names = [ifd for ifd, offset in self.ifd_pointers.items()
-                                if offset > self.ifd_pointers[ifd_number]]
-        subsequent_ifd_offsets = sorted([offset for offset in self.ifd_pointers.values()
-                                         if offset > self.ifd_pointers[ifd_number]])
+        subsequent_ifd_names = [
+            ifd
+            for ifd, offset in self.ifd_pointers.items()
+            if offset > self.ifd_pointers[ifd_number]
+        ]
+        subsequent_ifd_offsets = sorted(
+            [
+                offset
+                for offset in self.ifd_pointers.values()
+                if offset > self.ifd_pointers[ifd_number]
+            ]
+        )
 
         # Determine the number of bytes that will be injected.
         added_bytes = ifd_tag_cls.nbytes
@@ -114,16 +158,20 @@ class App1MetaData:
             # Value count stays at 1 since EXIF specification does not define multi-valued SRATIONAL tags.
             pointer_value_bytes = value_count * SrationalDtype.nbytes
 
-        if tag == "user_comment":  # character code header followed by null-terminated ASCII string
+        if (
+            tag == "user_comment"
+        ):  # character code header followed by null-terminated ASCII string
             value_count = USER_COMMENT_CHARACTER_CODE_LEN_BYTES + len(value) + 1
 
             if len(value) >= 4:
-                pointer_value_bytes = USER_COMMENT_CHARACTER_CODE_LEN_BYTES + len(value) + 1
+                pointer_value_bytes = (
+                    USER_COMMENT_CHARACTER_CODE_LEN_BYTES + len(value) + 1
+                )
 
         added_bytes += pointer_value_bytes
 
         # Keep all bytes prior to the IFD where the new tag will be added.
-        new_app1_bytes = self.body_bytes[:self.ifd_pointers[ifd_number]]
+        new_app1_bytes = self.body_bytes[: self.ifd_pointers[ifd_number]]
 
         # If IFD 1 occurs after that added tag, adjust the pointer to it from IFD 0.
         if ifd_number != 0:
@@ -135,10 +183,14 @@ class App1MetaData:
             for tag_index in range(ifd_zero.count):
                 tag_t = ifd_zero.tags[tag_index]
 
-                is_ifd_pointer_to_adjust = (tag_t.tag_id == ATTRIBUTE_ID_MAP["_gps_ifd_pointer"]
-                                            and "gps" in subsequent_ifd_names)
-                is_ifd_pointer_to_adjust |= (tag_t.tag_id == ATTRIBUTE_ID_MAP["_exif_ifd_pointer"]
-                                             and "exif" in subsequent_ifd_names)
+                is_ifd_pointer_to_adjust = (
+                    tag_t.tag_id == ATTRIBUTE_ID_MAP["_gps_ifd_pointer"]
+                    and "gps" in subsequent_ifd_names
+                )
+                is_ifd_pointer_to_adjust |= (
+                    tag_t.tag_id == ATTRIBUTE_ID_MAP["_exif_ifd_pointer"]
+                    and "exif" in subsequent_ifd_names
+                )
 
                 if is_ifd_pointer_to_adjust:
                     tag_t.value_offset += added_bytes
@@ -152,13 +204,18 @@ class App1MetaData:
         target_ifd = unpack_from(ifd_cls, self.body_bytes, offset=target_ifd_offset)
 
         if subsequent_ifd_offsets:
-            orig_ifd_values = self.body_bytes[target_ifd_offset + target_ifd.nbytes:subsequent_ifd_offsets[0]]
+            orig_ifd_values = self.body_bytes[
+                target_ifd_offset + target_ifd.nbytes : subsequent_ifd_offsets[0]
+            ]
         else:
-            orig_ifd_values = self.body_bytes[target_ifd_offset + target_ifd.nbytes:]
+            orig_ifd_values = self.body_bytes[target_ifd_offset + target_ifd.nbytes :]
 
         # Determine if a pointer to a value is necessary, and if so, find it.
-        if (tag_type == exif_type_cls.ASCII and len(value) >= 4) or tag_type in [
-                exif_type_cls.RATIONAL, exif_type_cls.SRATIONAL] or (tag == "user_comment" and len(value) >= 4):
+        if (
+            (tag_type == exif_type_cls.ASCII and len(value) >= 4)
+            or tag_type in [exif_type_cls.RATIONAL, exif_type_cls.SRATIONAL]
+            or (tag == "user_comment" and len(value) >= 4)
+        ):
             if subsequent_ifd_offsets:
                 value_pointer = subsequent_ifd_offsets[0] + ifd_tag_cls.nbytes
             else:
@@ -174,10 +231,14 @@ class App1MetaData:
         for tag_index in range(target_ifd.count):
             tag_t = target_ifd.tags[tag_index]
 
-            is_ifd_pointer_to_adjust = (tag_t.tag_id == ATTRIBUTE_ID_MAP["_gps_ifd_pointer"]
-                                        and "gps" in subsequent_ifd_names)
-            is_ifd_pointer_to_adjust |= (tag_t.tag_id == ATTRIBUTE_ID_MAP["_exif_ifd_pointer"]
-                                         and "exif" in subsequent_ifd_names)
+            is_ifd_pointer_to_adjust = (
+                tag_t.tag_id == ATTRIBUTE_ID_MAP["_gps_ifd_pointer"]
+                and "gps" in subsequent_ifd_names
+            )
+            is_ifd_pointer_to_adjust |= (
+                tag_t.tag_id == ATTRIBUTE_ID_MAP["_exif_ifd_pointer"]
+                and "exif" in subsequent_ifd_names
+            )
 
             is_value_in_ifd_tag_itself = value_fits_in_ifd_tag(tag_t, exif_type_cls)
             if is_ifd_pointer_to_adjust:
@@ -189,8 +250,14 @@ class App1MetaData:
 
         # Add the new tag to the IFD.
         target_ifd.count += 1
-        target_ifd.tags.append(ifd_tag_cls(
-            tag_id=ATTRIBUTE_ID_MAP[tag], type=tag_type, value_count=value_count, value_offset=value_pointer))
+        target_ifd.tags.append(
+            ifd_tag_cls(
+                tag_id=ATTRIBUTE_ID_MAP[tag],
+                type=tag_type,
+                value_count=value_count,
+                value_offset=value_pointer,
+            )
+        )
 
         # If necessary, touch up the pointer to the next IFD.
         if target_ifd.next:
@@ -205,17 +272,26 @@ class App1MetaData:
         # FUTURE: This could likely be better abstracted!
         while subsequent_ifd_offsets:
             current_ifd_offset = subsequent_ifd_offsets.pop(0)
-            target_ifd = unpack_from(ifd_cls, self.body_bytes, offset=current_ifd_offset)
+            target_ifd = unpack_from(
+                ifd_cls, self.body_bytes, offset=current_ifd_offset
+            )
 
             if subsequent_ifd_offsets:
-                orig_ifd_values = self.body_bytes[current_ifd_offset + target_ifd.nbytes:subsequent_ifd_offsets[0]]
+                orig_ifd_values = self.body_bytes[
+                    current_ifd_offset + target_ifd.nbytes : subsequent_ifd_offsets[0]
+                ]
             else:
-                orig_ifd_values = self.body_bytes[current_ifd_offset + target_ifd.nbytes:]
+                orig_ifd_values = self.body_bytes[
+                    current_ifd_offset + target_ifd.nbytes :
+                ]
 
             for tag_index in range(target_ifd.count):
                 tag_t = target_ifd.tags[tag_index]
                 is_value_in_ifd_tag_itself = value_fits_in_ifd_tag(tag_t, exif_type_cls)
-                if tag_t.tag_id in [ATTRIBUTE_ID_MAP["jpeg_interchange_format"]] or not is_value_in_ifd_tag_itself:
+                if (
+                    tag_t.tag_id in [ATTRIBUTE_ID_MAP["jpeg_interchange_format"]]
+                    or not is_value_in_ifd_tag_itself
+                ):
                     tag_t.value_offset += added_bytes
 
                 target_ifd.tags[tag_index] = tag_t
@@ -227,7 +303,9 @@ class App1MetaData:
             new_app1_bytes += orig_ifd_values
 
         # Finally, adjust the size of the APP1 header to reflect the new length.
-        app1_len = UInt16.view(self.header_bytes, offset=2)  # 2 bytes into the header, i.e., right after the marker
+        app1_len = UInt16.view(
+            self.header_bytes, offset=2
+        )  # 2 bytes into the header, i.e., right after the marker
         app1_len += added_bytes
 
         # Reload to pick up on new bytes arrangement and then modify the currently-zero value.
@@ -249,7 +327,9 @@ class App1MetaData:
             ifd_cls = Ifd
         else:
             ifd_cls = IfdLe
-        orig_ifd = unpack_from(ifd_cls, self.body_bytes, offset=corresponding_ifd_offset)
+        orig_ifd = unpack_from(
+            ifd_cls, self.body_bytes, offset=corresponding_ifd_offset
+        )
 
         # Construct a new IFD section datatype containing all tags but the deletion target.
         preserved_tags = [tag for tag in orig_ifd.tags if tag.tag_id != attribute_id]
@@ -258,7 +338,9 @@ class App1MetaData:
         # Pack in new IFD bytes with null bytes (i.e., an empty IFD tag) appended to preserve pointers.
         # Note: The pack_into method overrides the pre-existing bytes.
         new_ifd.pack_into(self.body_bytes, offset=corresponding_ifd_offset)
-        IfdTag(0, 0, 0, 0).pack_into(self.body_bytes, offset=corresponding_ifd_offset + new_ifd.nbytes)
+        IfdTag(0, 0, 0, 0).pack_into(
+            self.body_bytes, offset=corresponding_ifd_offset + new_ifd.nbytes
+        )
 
         # Remove tag from parser tag dictionary.
         del self.ifd_tags[attribute_id]
@@ -269,7 +351,7 @@ class App1MetaData:
 
     def _extract_thumbnail(self):
         if 1 in self.ifd_pointers:  # IFD segment 1 contains thumbnail (if present)
-            hex_after_ifd1 = self.body_bytes[self.ifd_pointers[1]:]
+            hex_after_ifd1 = self.body_bytes[self.ifd_pointers[1] :]
             try:
                 start_index = hex_after_ifd1.index(ExifMarkers.SOI)
                 end_index = hex_after_ifd1.index(ExifMarkers.EOI) + len(ExifMarkers.EOI)
@@ -278,13 +360,8 @@ class App1MetaData:
             else:
                 self.thumbnail_bytes = hex_after_ifd1[start_index:end_index]
 
-    def get_segment_bytes(self):
-        """Get equivalent APP1 segment bytes.
-
-        :returns: segment bytes
-        :rtype: bytes
-
-        """
+    def get_segment_bytes(self) -> bytes:
+        """Get equivalent APP1 segment bytes."""
         return bytes(self.header_bytes) + bytes(self.body_bytes)
 
     def get_tag_list(self):
@@ -294,8 +371,10 @@ class App1MetaData:
         :rtype: list of str
 
         """
-        return [ATTRIBUTE_NAME_MAP.get(key, "<unknown EXIF tag {0}>".format(key))
-                for key in self.ifd_tags]
+        return [
+            ATTRIBUTE_NAME_MAP.get(key, "<unknown EXIF tag {0}>".format(key))
+            for key in self.ifd_tags
+        ]
 
     def _iter_ifd_tags(self, ifd_key):
         ifd_offset = self.ifd_pointers[ifd_key]
@@ -310,7 +389,9 @@ class App1MetaData:
             tag_t = ifd_t.tags[tag_index]
             tag_py_ins = self._tag_factory(tag_t, tag_offset)
 
-            if ifd_key != 1 or tag_t.tag_id not in self.ifd_tags:  # don't let thumbnail tags override base image tags
+            if (
+                ifd_key != 1 or tag_t.tag_id not in self.ifd_tags
+            ):  # don't let thumbnail tags override base image tags
                 self.ifd_tags[tag_t.tag_id] = tag_py_ins
                 self.tag_parent_ifd[tag_t.tag_id] = ifd_key
 
@@ -346,9 +427,15 @@ class App1MetaData:
         else:
             exif_type_cls = ExifTypeLe
 
-        if ATTRIBUTE_ID_MAP["xp_title"] <= tag_t.tag_id <= ATTRIBUTE_ID_MAP["xp_subject"]:  # legacy Windows XP tags
+        if (
+            ATTRIBUTE_ID_MAP["xp_title"]
+            <= tag_t.tag_id
+            <= ATTRIBUTE_ID_MAP["xp_subject"]
+        ):  # legacy Windows XP tags
             cls = WindowsXp
-        elif ATTRIBUTE_ID_MAP["exif_version"] == tag_t.tag_id:  # custom ASCII encoding without termination character
+        elif (
+            ATTRIBUTE_ID_MAP["exif_version"] == tag_t.tag_id
+        ):  # custom ASCII encoding without termination character
             cls = ExifVersion
         elif ATTRIBUTE_ID_MAP["user_comment"] == tag_t.tag_id:
             cls = UserComment

@@ -15,10 +15,15 @@ class TestGetFile(unittest.TestCase):
 
     def test_list_attributes_photo(self):
         """Verify that calling dir() on a camera photo lists the expected EXIF attributes."""
-        with open(os.path.join(os.path.dirname(__file__), 'grand_canyon.jpg'), 'rb') as image_file:
+        with open(
+            os.path.join(os.path.dirname(__file__), "grand_canyon.jpg"), "rb"
+        ) as image_file:
             image = Image(image_file)
-        dunder_dir_text = '\n'.join(textwrap.wrap(repr(sorted(dir(image))), 90))
-        self.assertEqual(dunder_dir_text, Baseline("""
+        dunder_dir_text = "\n".join(textwrap.wrap(repr(sorted(dir(image))), 90))
+        self.assertEqual(
+            dunder_dir_text,
+            Baseline(
+                """
             ['<unknown EXIF tag 59932>', '<unknown EXIF tag 59933>', '_exif_ifd_pointer',
             '_gps_ifd_pointer', '_segments', 'aperture_value', 'brightness_value', 'color_space',
             'components_configuration', 'compression', 'datetime', 'datetime_digitized',
@@ -35,16 +40,25 @@ class TestGetFile(unittest.TestCase):
             'scene_capture_type', 'scene_type', 'sensing_method', 'shutter_speed_value', 'software',
             'subject_area', 'subsec_time_digitized', 'subsec_time_original', 'white_balance',
             'x_resolution', 'y_and_c_positioning', 'y_resolution']
-            """))
+            """
+            ),
+        )
 
     def test_list_attributes_simple(self):
         """Verify that calling dir() on a simple image lists the expected EXIF attributes."""
-        with open(os.path.join(os.path.dirname(__file__), 'noise.jpg'), 'rb') as image_file:
+        with open(
+            os.path.join(os.path.dirname(__file__), "noise.jpg"), "rb"
+        ) as image_file:
             image = Image(image_file)
-        dunder_dir_text = '\n'.join(textwrap.wrap(repr(sorted(dir(image))), 90))
-        self.assertEqual(dunder_dir_text, Baseline("""
+        dunder_dir_text = "\n".join(textwrap.wrap(repr(sorted(dir(image))), 90))
+        self.assertEqual(
+            dunder_dir_text,
+            Baseline(
+                """
             ['_exif_ifd_pointer', '_segments', 'color_space', 'compression', 'datetime', 'delete',
             'delete_all', 'get', 'get_file', 'get_thumbnail', 'has_exif', 'jpeg_interchange_format',
             'jpeg_interchange_format_length', 'orientation', 'pixel_x_dimension', 'pixel_y_dimension',
             'resolution_unit', 'software', 'x_resolution', 'y_resolution']
-            """))
+            """
+            ),
+        )

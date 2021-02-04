@@ -51,15 +51,27 @@ py39:
       - .tox/py39/tmp
     when: always
 
+black:
+  stage: lint
+  image: python:3.9
+  script:
+    - tox -vv -e black
+
+mypy:
+  stage: lint
+  image: python:3.9
+  script:
+    - tox -vv -e mypy
+
 pylint:
   stage: lint
-  image: python:3.7
+  image: python:3.9
   script:
     - tox -vv -e pylint
 
 docs:
   stage: build
-  image: python:3.7
+  image: python:3.9
   script:
     - tox -vv -e docs
   artifacts:
@@ -69,7 +81,7 @@ docs:
 
 packages:
   stage: build
-  image: python:3.7
+  image: python:3.9
   script:
     - pip install setuptools wheel
     - python setup.py sdist bdist_wheel
@@ -80,7 +92,7 @@ packages:
 
 pypi:
   stage: release
-  image: python:3.7
+  image: python:3.9
   variables:
     TWINE_USERNAME: $PYPI_USERNAME
     TWINE_PASSWORD: $PYPI_PASSWORD

@@ -7,10 +7,17 @@ from plum.int.big import UInt16, UInt32
 from plum.int.bitfields import BitFields, BitField
 from plum.int.little import UInt16 as UInt16_L, UInt32 as UInt32_L
 from plum.int.enum import Enum
-from plum.structure import DimsMember, Member, Structure, TypeMember, VariableDimsMember, VariableTypeMember
+from plum.structure import (
+    DimsMember,
+    Member,
+    Structure,
+    TypeMember,
+    VariableDimsMember,
+    VariableTypeMember,
+)
 
 
-class TiffByteOrder(Enum, nbytes=2):
+class TiffByteOrder(Enum, nbytes=2):  # type: ignore
 
     """TIFF Header Byte Order Indicator"""
 
@@ -22,12 +29,15 @@ class TiffHeader(Structure):
 
     """TIFF Header"""
 
-    byte_order: int = TypeMember(cls=TiffByteOrder, mapping={TiffByteOrder.LITTLE: UInt32_L, TiffByteOrder.BIG: UInt32})
+    byte_order: int = TypeMember(
+        cls=TiffByteOrder,
+        mapping={TiffByteOrder.LITTLE: UInt32_L, TiffByteOrder.BIG: UInt32},
+    )
     reserved: int = Member(cls=UInt16)
     ifd_offset: int = VariableTypeMember(type_member=byte_order)
 
 
-class ExifType(Enum, nbytes=2, byteorder="big"):
+class ExifType(Enum, nbytes=2, byteorder="big"):  # type: ignore
 
     """EXIF Tag Types"""
 
@@ -43,7 +53,7 @@ class ExifType(Enum, nbytes=2, byteorder="big"):
     SRATIONAL = 10
 
 
-class ExifTypeLe(Enum, nbytes=2, byteorder="little"):
+class ExifTypeLe(Enum, nbytes=2, byteorder="little"):  # type: ignore
 
     """EXIF Tag Types (Little Endian)"""
 
@@ -79,12 +89,12 @@ class IfdTagLe(Structure):
     value_offset: int = Member(cls=UInt32_L)
 
 
-class IfdTagArray(Array, item_cls=IfdTag):
+class IfdTagArray(Array, item_cls=IfdTag):  # type: ignore
 
     """IFD Tag Array"""
 
 
-class IfdTagArrayLe(Array, item_cls=IfdTagLe):
+class IfdTagArrayLe(Array, item_cls=IfdTagLe):  # type: ignore
 
     """IFD Tag Array (Little Endian)"""
 
@@ -127,7 +137,7 @@ class FlashMode(IntFlag):
     AUTO_MODE = 3
 
 
-class Flash(BitFields, nbytes=1):
+class Flash(BitFields, nbytes=1):  # type: ignore
 
     """Status of the camera's flash when the image was taken. (Reported by the ``flash`` tag.)"""
 

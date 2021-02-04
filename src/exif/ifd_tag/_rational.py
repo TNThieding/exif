@@ -53,8 +53,13 @@ class Rational(BaseIfdTag):
             value = (value,)
 
         for rational_index in range(self.tag_view.value_count.get()):
-            current_offset = self.tag_view.value_offset.get() + rational_index * self.rational_dtype_cls.nbytes
-            rational_view = self.rational_dtype_cls.view(self._app1_ref.body_bytes, current_offset)
+            current_offset = (
+                self.tag_view.value_offset.get()
+                + rational_index * self.rational_dtype_cls.nbytes
+            )
+            rational_view = self.rational_dtype_cls.view(
+                self._app1_ref.body_bytes, current_offset
+            )
 
             if isinstance(value[rational_index], int) and value[rational_index] == 0:
                 # EXIF 2.3 Specification: "When a value is unknown, the notation is 0/0" (e.g., lens specification).
@@ -75,8 +80,13 @@ class Rational(BaseIfdTag):
         retvals = []
 
         for rational_index in range(self.tag_view.value_count.get()):
-            current_offset = self.tag_view.value_offset.get() + rational_index * self.rational_dtype_cls.nbytes
-            rational_view = self.rational_dtype_cls.view(self._app1_ref.body_bytes, current_offset)
+            current_offset = (
+                self.tag_view.value_offset.get()
+                + rational_index * self.rational_dtype_cls.nbytes
+            )
+            rational_view = self.rational_dtype_cls.view(
+                self._app1_ref.body_bytes, current_offset
+            )
 
             if rational_view.numerator == 0 and rational_view.denominator == 0:
                 # EXIF 2.3 Specification: "When a value is unknown, the notation is 0/0" (e.g., lens specification).
@@ -94,8 +104,13 @@ class Rational(BaseIfdTag):
     def wipe(self):
         """Wipe value pointer target bytes to null."""
         for rational_index in range(self.tag_view.value_count.get()):
-            current_offset = self.tag_view.value_offset.get() + rational_index * self.rational_dtype_cls.nbytes
-            rational_view = self.rational_dtype_cls.view(self._app1_ref.body_bytes, current_offset)
+            current_offset = (
+                self.tag_view.value_offset.get()
+                + rational_index * self.rational_dtype_cls.nbytes
+            )
+            rational_view = self.rational_dtype_cls.view(
+                self._app1_ref.body_bytes, current_offset
+            )
 
             rational_view.numerator.set(0)
             rational_view.denominator.set(0)
