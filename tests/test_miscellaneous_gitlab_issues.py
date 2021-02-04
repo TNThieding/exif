@@ -14,12 +14,18 @@ def test_gitlab_issue_23():
     Verify reading ASCII tags containing a smaller length value than specified by the size field.
 
     """
-    image_under_test = Image(os.path.join(os.path.dirname(__file__), "excess_ascii_null_bytes.jpg"))
+    image_under_test = Image(
+        os.path.join(os.path.dirname(__file__), "excess_ascii_null_bytes.jpg")
+    )
 
-    with pytest.warns(RuntimeWarning, match="ASCII tag contains 2 fewer bytes than specified"):
+    with pytest.warns(
+        RuntimeWarning, match="ASCII tag contains 2 fewer bytes than specified"
+    ):
         assert image_under_test.model == Baseline("""iPhone""")
 
-    with pytest.warns(RuntimeWarning, match="ASCII tag contains 13 fewer bytes than specified"):
+    with pytest.warns(
+        RuntimeWarning, match="ASCII tag contains 13 fewer bytes than specified"
+    ):
         assert image_under_test.software == Baseline("""Photoshop Express""")
 
 
@@ -29,7 +35,9 @@ def test_gitlab_issue_26():
     Verify reading lens specification where value is 0 (encoded as 0/0) does not raise ZeroDivisionError.
 
     """
-    image_under_test = Image(os.path.join(os.path.dirname(__file__), "gitlab_issue_26.jpg"))
+    image_under_test = Image(
+        os.path.join(os.path.dirname(__file__), "gitlab_issue_26.jpg")
+    )
 
     # Check initial value.
     assert image_under_test.lens_specification == (50.0, 50.0, 0, 0)
@@ -46,7 +54,12 @@ def test_gitlab_issue_28():
     Verify support for signed short EXIF tags.
 
     """
-    image_under_test = Image(os.path.join(os.path.dirname(__file__), "gitlab_issue_28.jpg"))
+    image_under_test = Image(
+        os.path.join(os.path.dirname(__file__), "gitlab_issue_28.jpg")
+    )
 
     # Check initial value.
-    assert repr(image_under_test.exposure_program) == '<ExposureProgram.APERTURE_PRIORITY: 3>'
+    assert (
+        repr(image_under_test.exposure_program)
+        == "<ExposureProgram.APERTURE_PRIORITY: 3>"
+    )

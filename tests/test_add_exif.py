@@ -23,9 +23,9 @@ class TestAddExif(unittest.TestCase):
 
     def setUp(self):
         """Open sample image file in binary mode for use in test cases."""
-        florida = os.path.join(os.path.dirname(__file__), 'florida_beach.jpg')
-        little_endian = os.path.join(os.path.dirname(__file__), 'little_endian.jpg')
-        noise = os.path.join(os.path.dirname(__file__), 'noise.jpg')
+        florida = os.path.join(os.path.dirname(__file__), "florida_beach.jpg")
+        little_endian = os.path.join(os.path.dirname(__file__), "little_endian.jpg")
+        noise = os.path.join(os.path.dirname(__file__), "noise.jpg")
         self.image = Image(florida)
         self.image_alt = Image(noise)
         self.image_le = Image(little_endian)
@@ -43,9 +43,12 @@ class TestAddExif(unittest.TestCase):
         assert self.image_alt.make == "Test Make"
         assert self.image_alt.model == "Test Model"
 
-        segment_hex = binascii.hexlify(self.image_alt._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
-        self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
-                         ADD_ASCII_BASELINE)
+        segment_hex = (
+            binascii.hexlify(self.image_alt._segments["APP1"].get_segment_bytes())
+            .decode("utf-8")
+            .upper()
+        )
+        self.assertEqual("\n".join(textwrap.wrap(segment_hex, 90)), ADD_ASCII_BASELINE)
 
     def test_add_ascii_le(self):
         """Test adding new ASCII tags to a little endian image."""
@@ -57,9 +60,14 @@ class TestAddExif(unittest.TestCase):
         assert self.image_le.datetime_original == "2020:07:09 21:09:53"
         assert self.image_le.datetime_digitized == "2020:07:09 21:09:53"
 
-        segment_hex = binascii.hexlify(self.image_alt._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
-        self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
-                         ADD_ASCII_LE_BASELINE)
+        segment_hex = (
+            binascii.hexlify(self.image_alt._segments["APP1"].get_segment_bytes())
+            .decode("utf-8")
+            .upper()
+        )
+        self.assertEqual(
+            "\n".join(textwrap.wrap(segment_hex, 90)), ADD_ASCII_LE_BASELINE
+        )
 
     def test_add_gps(self):
         """Test adding GPS-related tags to an image."""
@@ -77,18 +85,26 @@ class TestAddExif(unittest.TestCase):
         assert self.image_alt.gps_altitude == 2189.9896907216494
         assert self.image_alt.gps_altitude_ref == GpsAltitudeRef.ABOVE_SEA_LEVEL
 
-        segment_hex = binascii.hexlify(self.image_alt._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
-        self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
-                         ADD_GPS_BASELINE)
+        segment_hex = (
+            binascii.hexlify(self.image_alt._segments["APP1"].get_segment_bytes())
+            .decode("utf-8")
+            .upper()
+        )
+        self.assertEqual("\n".join(textwrap.wrap(segment_hex, 90)), ADD_GPS_BASELINE)
 
     def test_add_rational(self):
         """Test adding new RATIONAL tags to an image."""
         self.image_alt.focal_length = 123.45
         assert self.image_alt.focal_length == 123.45
 
-        segment_hex = binascii.hexlify(self.image_alt._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
-        self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
-                         ADD_RATIONAL_BASELINE)
+        segment_hex = (
+            binascii.hexlify(self.image_alt._segments["APP1"].get_segment_bytes())
+            .decode("utf-8")
+            .upper()
+        )
+        self.assertEqual(
+            "\n".join(textwrap.wrap(segment_hex, 90)), ADD_RATIONAL_BASELINE
+        )
 
     def test_add_shorts(self):
         """Test adding two new SHORT tags to an image."""
@@ -102,9 +118,12 @@ class TestAddExif(unittest.TestCase):
         for attribute, func, value in read_attributes_florida_beach:
             assert func(getattr(self.image, attribute)) == value
 
-        segment_hex = binascii.hexlify(self.image._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
-        self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
-                         ADD_SHORT_BASELINE)
+        segment_hex = (
+            binascii.hexlify(self.image._segments["APP1"].get_segment_bytes())
+            .decode("utf-8")
+            .upper()
+        )
+        self.assertEqual("\n".join(textwrap.wrap(segment_hex, 90)), ADD_SHORT_BASELINE)
 
     def test_add_shorts_and_srational_le(self):
         """Test adding two new SHORT tags and an SRATIONAL to a little endian image."""
@@ -120,14 +139,19 @@ class TestAddExif(unittest.TestCase):
         for attribute, func, value in read_attributes_little_endian:
             assert func(getattr(self.image_le, attribute)) == value
 
-        segment_hex = binascii.hexlify(self.image_le._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
-        self.assertEqual('\n'.join(textwrap.wrap(segment_hex, 90)),
-                         ADD_SHORT_LE_BASELINE)
+        segment_hex = (
+            binascii.hexlify(self.image_le._segments["APP1"].get_segment_bytes())
+            .decode("utf-8")
+            .upper()
+        )
+        self.assertEqual(
+            "\n".join(textwrap.wrap(segment_hex, 90)), ADD_SHORT_LE_BASELINE
+        )
 
 
 def test_add_to_scanner_image():
     """Test adding metadata to a scanner-produced JPEG without any pre-existing APP1 or EXIF."""
-    image = Image(os.path.join(os.path.dirname(__file__), 'scanner_without_app1.jpg'))
+    image = Image(os.path.join(os.path.dirname(__file__), "scanner_without_app1.jpg"))
     assert not image.has_exif
     image.gps_latitude = (41.0, 29.0, 57.48)
     image.gps_latitude_ref = "N"
@@ -154,7 +178,13 @@ def test_add_to_scanner_image():
     assert image.datetime_original == "1999:12:31 23:49:12"
     assert image.datetime_digitized == "2020:07:11 10:11:37"
     assert image.brightness_value == 10.9876  # provides coverage for SRATIONAL
-    assert image.user_comment == "This image was scanned in from an old photo album."  # provides coverage for user comment
+    assert (
+        image.user_comment == "This image was scanned in from an old photo album."
+    )  # provides coverage for user comment
 
-    segment_hex = binascii.hexlify(image._segments['APP1'].get_segment_bytes()).decode("utf-8").upper()
-    assert '\n'.join(textwrap.wrap(segment_hex, 90)) == ADD_TO_SCANNED_IMAGE_BASELINE
+    segment_hex = (
+        binascii.hexlify(image._segments["APP1"].get_segment_bytes())
+        .decode("utf-8")
+        .upper()
+    )
+    assert "\n".join(textwrap.wrap(segment_hex, 90)) == ADD_TO_SCANNED_IMAGE_BASELINE

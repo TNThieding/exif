@@ -16,8 +16,8 @@ class TestGitHubIssue12(unittest.TestCase):
 
     def setUp(self):
         """Open sample image file in binary mode for use in test cases."""
-        test_image_path = os.path.join(os.path.dirname(__file__), 'github_issue_12.jpg')
-        with open(test_image_path, 'rb') as image_file:
+        test_image_path = os.path.join(os.path.dirname(__file__), "github_issue_12.jpg")
+        with open(test_image_path, "rb") as image_file:
             self.image = Image(image_file)
 
         assert self.image.has_exif
