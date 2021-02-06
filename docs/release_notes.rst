@@ -2,6 +2,19 @@
 Release Notes
 #############
 
+******************************************************************
+[1.2.0] Add ``get_all()`` and ``list_all()`` methods. (2021-02-06)
+******************************************************************
+
+Add ``list_all()`` method that returns a list of all EXIF tags in an image (without including method names and unknown
+tags like ``dir()`` includes). Similarly, add ``get_all()`` method that generates a dictionary mapping each tag names to
+its value.
+
+This patch addresses the following GitLab user issue:
+
+* API for retrieving all EXIF tags. (https://gitlab.com/TNThieding/exif/-/issues/32)
+
+
 **************************************************
 [1.1.0] Add type hints to public API. (2021-02-04)
 **************************************************

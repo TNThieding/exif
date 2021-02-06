@@ -1,7 +1,8 @@
 """APP1 metadata interface module for EXIF tags."""
 
-from plum import unpack_from
+from typing import List
 
+from plum import unpack_from
 from plum.int.big import UInt16
 
 from exif._add_tag_utils import value_fits_in_ifd_tag
@@ -364,17 +365,24 @@ class App1MetaData:
         """Get equivalent APP1 segment bytes."""
         return bytes(self.header_bytes) + bytes(self.body_bytes)
 
-    def get_tag_list(self):
-        """Get a list of EXIF tag attributes present in the image object.
+    def get_tag_list(self, include_unknown: bool = True) -> List[str]:
+        """Get a list of EXIF tag attributes present in the image object."""
+        if include_unknown:
+            tag_list = [
+                ATTRIBUTE_NAME_MAP.get(key, "<unknown EXIF tag {0}>".format(key))
+                for key in self.ifd_tags
+            ]
 
-        :returns: image EXIF tag names
-        :rtype: list of str
+        else:
+            tag_list = []
 
-        """
-        return [
-            ATTRIBUTE_NAME_MAP.get(key, "<unknown EXIF tag {0}>".format(key))
-            for key in self.ifd_tags
-        ]
+            for key in self.ifd_tags:
+                try:
+                    tag_list.append(ATTRIBUTE_NAME_MAP[key])
+                except KeyError:
+                    pass
+
+        return tag_list
 
     def _iter_ifd_tags(self, ifd_key):
         ifd_offset = self.ifd_pointers[ifd_key]

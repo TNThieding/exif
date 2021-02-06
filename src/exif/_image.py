@@ -84,9 +84,11 @@ class Image:
             "delete",
             "delete_all",
             "get",
+            "get_all",
             "get_file",
             "get_thumbnail",
             "has_exif",
+            "list_all",
             "_segments",
         ]
 
@@ -151,7 +153,7 @@ class Image:
             self._parse_segments(self.get_file())
 
     def get(self, attribute: str, default: Any = None) -> Any:
-        """Return the value of the specified attribute.
+        """Return the value of the specified tag.
 
         If the attribute is not available or set, return the value specified by the ``default``
         keyword argument.
@@ -168,6 +170,20 @@ class Image:
             retval = default
 
         return retval
+
+    def get_all(self) -> Dict[str, Any]:
+        """Return dictionary containing all EXIF tag values keyed by tag name."""
+        all_tags = {}
+
+        for tag_name in self.list_all():
+            try:
+                tag_value = self.__getattr__(tag_name)
+            except (AttributeError, NotImplementedError):
+                pass
+            else:
+                all_tags[tag_name] = tag_value
+
+        return all_tags
 
     def get_file(self) -> bytes:
         """Generate equivalent binary file contents.
@@ -201,8 +217,8 @@ class Image:
         except KeyError:
             pass
         else:
-            if isinstance(app1_segment, App1MetaData):
-                thumbnail_bytes = app1_segment.thumbnail_bytes
+            assert isinstance(app1_segment, App1MetaData)
+            thumbnail_bytes = app1_segment.thumbnail_bytes
 
         if not thumbnail_bytes:
             raise RuntimeError("image does not contain thumbnail")
@@ -213,6 +229,16 @@ class Image:
     def has_exif(self) -> bool:
         """Report whether or not the image currently has EXIF metadata."""
         return self._has_exif
+
+    def list_all(self) -> List[str]:
+        """List all EXIF tags contained in the image."""
+        tags_list = []
+
+        if self._has_exif:
+            assert isinstance(self._segments["APP1"], App1MetaData)
+            tags_list += self._segments["APP1"].get_tag_list(include_unknown=False)
+
+        return tags_list
 
     def set(self, attribute: str, value) -> None:
         """Set the value of the specified attribute.

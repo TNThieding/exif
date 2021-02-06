@@ -183,3 +183,95 @@ def test_read_bytes(attribute, func, value):
         image = Image(image_file.read())
 
     assert func(getattr(image, attribute)) == value
+
+
+@pytest.mark.parametrize(
+    "attribute, func, value",
+    read_attributes_florida_beach,
+    ids=[params[0] for params in read_attributes_florida_beach],
+)
+def test_get_all_member(attribute, func, value):
+    """Verify value of tags reported by ``get_all()`` method."""
+    with open(
+        os.path.join(os.path.dirname(__file__), "florida_beach.jpg"), "rb"
+    ) as image_file:
+        image = Image(image_file.read())
+
+    assert func(image.get_all()[attribute]) == value
+
+
+FLORIDA_TAG_LIST = [
+    "make",
+    "model",
+    "orientation",
+    "x_resolution",
+    "y_resolution",
+    "resolution_unit",
+    "software",
+    "datetime",
+    "y_and_c_positioning",
+    "_exif_ifd_pointer",
+    "_gps_ifd_pointer",
+    "compression",
+    "jpeg_interchange_format",
+    "jpeg_interchange_format_length",
+    "exposure_time",
+    "f_number",
+    "exposure_program",
+    "photographic_sensitivity",
+    "exif_version",
+    "datetime_original",
+    "datetime_digitized",
+    "components_configuration",
+    "shutter_speed_value",
+    "aperture_value",
+    "brightness_value",
+    "exposure_bias_value",
+    "metering_mode",
+    "flash",
+    "focal_length",
+    "subject_area",
+    "maker_note",
+    "subsec_time_original",
+    "subsec_time_digitized",
+    "flashpix_version",
+    "color_space",
+    "pixel_x_dimension",
+    "pixel_y_dimension",
+    "sensing_method",
+    "scene_type",
+    "exposure_mode",
+    "white_balance",
+    "focal_length_in_35mm_film",
+    "scene_capture_type",
+    "image_unique_id",
+    "lens_specification",
+    "lens_make",
+    "lens_model",
+    "gps_version_id",
+    "gps_latitude_ref",
+    "gps_latitude",
+    "gps_longitude_ref",
+    "gps_longitude",
+    "gps_altitude_ref",
+    "gps_altitude",
+    "gps_timestamp",
+    "gps_speed_ref",
+    "gps_speed",
+    "gps_img_direction_ref",
+    "gps_img_direction",
+    "gps_dest_bearing_ref",
+    "gps_dest_bearing",
+    "gps_datestamp",
+    "gps_horizontal_positioning_error",
+]
+
+
+def test_list_all():
+    """Test listing all EXIF tags in an image."""
+    with open(
+        os.path.join(os.path.dirname(__file__), "florida_beach.jpg"), "rb"
+    ) as image_file:
+        image = Image(image_file.read())
+
+    assert image.list_all() == FLORIDA_TAG_LIST
