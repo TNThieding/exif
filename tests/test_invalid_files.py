@@ -55,7 +55,7 @@ class TestInvalidFiles(unittest.TestCase):
             str(dir(my_image)),
             Baseline(
                 """
-            ['_segments', 'delete', 'delete_all', 'get', 'get_file', 'get_thumbnail', 'has_exif']
+            ['_segments', 'delete', 'delete_all', 'get', 'get_all', 'get_file', 'get_thumbnail', 'has_exif', 'list_all']
             """
             ),
         )

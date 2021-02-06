@@ -19,9 +19,11 @@ Image
     .. automethod:: exif.Image.delete
     .. automethod:: exif.Image.delete_all
     .. automethod:: exif.Image.get
+    .. automethod:: exif.Image.get_all
     .. automethod:: exif.Image.get_file
     .. automethod:: exif.Image.get_thumbnail
-    .. autoattribute:: exif.Image.has_exif
+    .. autoproperty:: exif.Image.has_exif
+    .. automethod:: exif.Image.list_all
     .. automethod:: exif.Image.set
 
 **********

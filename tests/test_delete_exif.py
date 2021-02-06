@@ -55,8 +55,8 @@ class TestDeleteExif(unittest.TestCase):
             dunder_dir_text,
             Baseline(
                 """
-            ['<unknown EXIF tag 59932>', '_segments', 'delete', 'delete_all', 'get', 'get_file',
-            'get_thumbnail', 'has_exif']
+            ['<unknown EXIF tag 59932>', '_segments', 'delete', 'delete_all', 'get', 'get_all',
+            'get_file', 'get_thumbnail', 'has_exif', 'list_all']
             """
             ),
         )
