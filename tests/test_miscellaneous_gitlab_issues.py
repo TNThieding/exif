@@ -1,11 +1,13 @@
 """Regression tests for miscellaneous GitLab issues."""
 
+import binascii
 import os
+import textwrap
 
 import pytest
 from baseline import Baseline
 
-from exif import Image
+from exif import Image, ColorSpace
 
 
 def test_gitlab_issue_23():
@@ -63,3 +65,21 @@ def test_gitlab_issue_28():
         repr(image_under_test.exposure_program)
         == "<ExposureProgram.APERTURE_PRIORITY: 3>"
     )
+
+
+def test_gitlab_issue_33():
+    """Regression test for GitLab issue 33.
+
+    Smoke test to verify support for adding tags after calling ``delete_all()`` method.
+
+    """
+    image_under_test = Image(
+        os.path.join(os.path.dirname(__file__), "florida_beach.jpg")
+    )
+
+    image_under_test.delete_all()
+    assert not hasattr(image_under_test, "color_space")
+
+    image_under_test.color_space = ColorSpace.UNCALIBRATED
+    assert hasattr(image_under_test, "color_space")
+    assert image_under_test.color_space == ColorSpace.UNCALIBRATED
