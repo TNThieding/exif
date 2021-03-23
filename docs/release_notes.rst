@@ -2,6 +2,20 @@
 Release Notes
 #############
 
+******************************************************************************
+[1.2.1] Preserve empty IFDs and EXIF version in ``delete_all()``. (2021-03-23)
+******************************************************************************
+
+Previously, attempting to re-add EXIF tags to an image after calling ``delete_all()`` on it raised a ``RuntimeError``
+since it removed the EXIF version tag and the IFD structure. Now, ``delete_all()`` still removes user-facing tags but
+preserves the EXIF version number and the empty IFD structures and their pointers. This enables users to add tags back
+to an image after using ``delete_all()``.
+
+This patch addresses the following GitLab user issue:
+
+* ``RuntimeError`` when adding tags after calling ``delete_all()``. (https://gitlab.com/TNThieding/exif/-/issues/33)
+
+
 ******************************************************************
 [1.2.0] Add ``get_all()`` and ``list_all()`` methods. (2021-02-06)
 ******************************************************************

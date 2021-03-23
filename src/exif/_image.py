@@ -145,10 +145,11 @@ class Image:
         ):  # iterate twice to delete thumbnail tags the second time around
             assert isinstance(self._segments["APP1"], App1MetaData)
             for tag in self._segments["APP1"].get_tag_list():
-                try:
-                    self.__delattr__(tag)
-                except AttributeError:
-                    warnings.warn("could not delete tag " + tag, RuntimeWarning)
+                if not tag in ["_exif_ifd_pointer", "_gps_ifd_pointer", "exif_version"]:
+                    try:
+                        self.__delattr__(tag)
+                    except AttributeError:
+                        warnings.warn("could not delete tag " + tag, RuntimeWarning)
 
             self._parse_segments(self.get_file())
 
