@@ -1,11 +1,14 @@
 """Test reading EXIF attributes."""
 
 import os
+import sys
 
 import pytest
 from baseline import Baseline
 
 from exif import Image
+
+from ._utils import check_value
 
 # pylint: disable=pointless-statement
 
@@ -72,13 +75,6 @@ read_attributes_grand_canyon = [
     ("color_space", repr, "<ColorSpace.UNCALIBRATED: 65535>"),
     ("datetime", str, "2018:03:12 10:12:07"),
     ("exif_version", str, "0221"),
-    (
-        "flash",
-        str,
-        "Flash(flash_fired=False, flash_return=FlashReturn.NO_STROBE_RETURN_DETECTION_FUNCTION, "
-        "flash_mode=FlashMode.COMPULSORY_FLASH_SUPPRESSION, flash_function_not_present=False, "
-        "red_eye_reduction_supported=False, reserved=0)",
-    ),
     ("gps_altitude", rounded_str, "2189.98969072"),
     ("gps_altitude_ref", repr, "<GpsAltitudeRef.ABOVE_SEA_LEVEL: 0>"),
     ("gps_latitude", str, "(36.0, 3.0, 11.08)"),
@@ -98,6 +94,18 @@ read_attributes_grand_canyon = [
     ("y_resolution", str, "72.0"),
 ]
 
+# FUTURE: Remove this temporary 3.10 workaround after fix for https://gitlab.com/dangass/plum/-/issues/129 is available.
+if not (sys.version_info.major == 3 and sys.version_info.minor == 10):
+    read_attributes_grand_canyon.append(
+        (
+            "flash",
+            str,
+            "Flash(flash_fired=False, flash_return=FlashReturn.NO_STROBE_RETURN_DETECTION_FUNCTION, "
+            "flash_mode=FlashMode.COMPULSORY_FLASH_SUPPRESSION, flash_function_not_present=False, "
+            "red_eye_reduction_supported=False, reserved=0)",
+        )
+    )
+
 
 # pylint: disable=line-too-long
 @pytest.mark.parametrize(
@@ -112,7 +120,7 @@ def test_read_file_object(attribute, func, value):
     ) as image_file:
         image = Image(image_file)
 
-    assert func(getattr(image, attribute)) == value
+    assert check_value(func(getattr(image, attribute)), value)
 
 
 read_attributes_grayson_highlands = [
@@ -142,7 +150,7 @@ read_attributes_grayson_highlands = [
 def test_read_file_path(attribute, func, value):
     """Test reading tags and compare to known baseline values."""
     image = Image(os.path.join(os.path.dirname(__file__), "grayson_highlands.jpg"))
-    assert func(getattr(image, attribute)) == value
+    assert check_value(func(getattr(image, attribute)), value)
 
 
 read_attributes_florida_beach = [
@@ -150,13 +158,6 @@ read_attributes_florida_beach = [
     ("brightness_value", rounded_str, "9.46831050228"),
     ("color_space", repr, "<ColorSpace.UNCALIBRATED: 65535>"),
     ("datetime", str, "2019:03:26 19:33:47"),
-    (
-        "flash",
-        str,
-        "Flash(flash_fired=False, flash_return=FlashReturn.NO_STROBE_RETURN_DETECTION_FUNCTION, "
-        "flash_mode=FlashMode.AUTO_MODE, flash_function_not_present=False, "
-        "red_eye_reduction_supported=False, reserved=0)",
-    ),
     ("gps_altitude", rounded_str, "1.02077865606"),
     ("gps_altitude_ref", repr, "<GpsAltitudeRef.ABOVE_SEA_LEVEL: 0>"),
     ("gps_version_id", str, "2"),
@@ -167,6 +168,18 @@ read_attributes_florida_beach = [
     ("resolution_unit", repr, "<ResolutionUnit.INCHES: 2>"),
     ("white_balance", repr, "<WhiteBalance.AUTO: 0>"),
 ]
+
+# FUTURE: Remove this temporary 3.10 workaround after fix for https://gitlab.com/dangass/plum/-/issues/129 is available.
+if not (sys.version_info.major == 3 and sys.version_info.minor == 10):
+    read_attributes_florida_beach.append(
+        (
+            "flash",
+            str,
+            "Flash(flash_fired=False, flash_return=FlashReturn.NO_STROBE_RETURN_DETECTION_FUNCTION, "
+            "flash_mode=FlashMode.AUTO_MODE, flash_function_not_present=False, "
+            "red_eye_reduction_supported=False, reserved=0)",
+        )
+    )
 
 
 # pylint: disable=line-too-long
@@ -182,7 +195,7 @@ def test_read_bytes(attribute, func, value):
     ) as image_file:
         image = Image(image_file.read())
 
-    assert func(getattr(image, attribute)) == value
+    assert check_value(func(getattr(image, attribute)), value)
 
 
 @pytest.mark.parametrize(
@@ -197,7 +210,7 @@ def test_get_all_member(attribute, func, value):
     ) as image_file:
         image = Image(image_file.read())
 
-    assert func(image.get_all()[attribute]) == value
+    assert check_value(func(image.get_all()[attribute]), value)
 
 
 FLORIDA_TAG_LIST = [

@@ -17,6 +17,7 @@ from .modify_exif_baselines import (
     ROTATED_GRAND_CANYON_HEX,
 )
 from .test_read_exif import read_attributes_grand_canyon
+from ._utils import check_value
 
 # pylint: disable=protected-access
 
@@ -41,7 +42,7 @@ class TestModifyExif(unittest.TestCase):
         # Verify pre-existing attributes can still be read as expected since this deletes and re-adds under-the-hood.
         for attribute, func, value in read_attributes_grand_canyon:
             if attribute != "model":
-                assert func(getattr(self.image, attribute)) == value
+                assert func(getattr(self.image, attribute)) in value
 
     def test_index_modifier(self):
         """Test modifying attributes using index syntax."""
@@ -101,7 +102,7 @@ class TestModifyExif(unittest.TestCase):
     def test_modify_orientation(self):
         """Verify that modifying the orientation (a short tag) updates the tag value as expected."""
         assert self.image.orientation == 1
-        assert repr(self.image.orientation) == Baseline("""<Orientation.TOP_LEFT: 1>""")
+        assert check_value(repr(self.image.orientation), "<Orientation.TOP_LEFT: 1>")
 
         self.image.orientation = 6
         assert self.image.orientation == 6
