@@ -51,6 +51,17 @@ py39:
       - .tox/py39/tmp
     when: always
 
+py310:
+  stage: test
+  image: python:3.10-rc
+  coverage: '/TOTAL\s+\d+\s+\d+\s+\d+\s+\d+\s+(\d+)%/'
+  script:
+    - tox -vv -e py310
+  artifacts:
+    paths:
+      - .tox/py310/tmp
+    when: always
+
 black:
   stage: lint
   image: python:3.9

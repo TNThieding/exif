@@ -8,7 +8,9 @@ import pytest
 from baseline import Baseline
 
 from exif import Image
+
 from .little_endian_baselines import LITTLE_ENDIAN_MODIFY_BASELINE
+from ._utils import check_value
 
 # pylint: disable=pointless-statement, protected-access
 
@@ -64,4 +66,4 @@ def test_read(attribute, func, value):
     ) as image_file:
         image = Image(image_file)
 
-    assert func(getattr(image, attribute)) == value
+    assert check_value(func(getattr(image, attribute)), value)

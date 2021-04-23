@@ -9,6 +9,8 @@ from baseline import Baseline
 
 from exif import Image, ColorSpace
 
+from ._utils import check_value
+
 
 def test_gitlab_issue_23():
     """Regression test for GitLab issue 23.
@@ -61,9 +63,9 @@ def test_gitlab_issue_28():
     )
 
     # Check initial value.
-    assert (
-        repr(image_under_test.exposure_program)
-        == "<ExposureProgram.APERTURE_PRIORITY: 3>"
+    assert check_value(
+        repr(image_under_test.exposure_program),
+        "<ExposureProgram.APERTURE_PRIORITY: 3>",
     )
 
 

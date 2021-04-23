@@ -1,9 +1,11 @@
 """Package EXIF-specific datatypes."""
 
+import sys
+import warnings
 from enum import IntFlag
 
 from plum.array import Array
-from plum.int.big import UInt16, UInt32
+from plum.int.big import UInt8, UInt16, UInt32
 from plum.int.bitfields import BitFields, BitField
 from plum.int.little import UInt16 as UInt16_L, UInt32 as UInt32_L
 from plum.int.enum import Enum
@@ -14,6 +16,12 @@ from plum.structure import (
     TypeMember,
     VariableDimsMember,
     VariableTypeMember,
+)
+
+
+FLASH_WARNING_MSG = (
+    "exif package reads flash attribute as an 8-bit integer rather than unpacking bits in Python 3.10 due to an "
+    "upstream issue with plum-py"
 )
 
 
@@ -137,13 +145,20 @@ class FlashMode(IntFlag):
     AUTO_MODE = 3
 
 
-class Flash(BitFields, nbytes=1):  # type: ignore
+# FUTURE: Remove this temporary 3.10 workaround after fix for https://gitlab.com/dangass/plum/-/issues/129 is available.
+if sys.version_info.major == 3 and sys.version_info.minor == 10:
+    warnings.warn(FLASH_WARNING_MSG, RuntimeWarning)
+    Flash = UInt8
 
-    """Status of the camera's flash when the image was taken. (Reported by the ``flash`` tag.)"""
+else:
 
-    flash_fired: bool = BitField(size=1)
-    flash_return: FlashReturn = BitField(size=2)
-    flash_mode: FlashMode = BitField(size=2)
-    flash_function_not_present: bool = BitField(size=1)
-    red_eye_reduction_supported: bool = BitField(size=1)
-    reserved: int = BitField(size=1)
+    class Flash(BitFields, nbytes=1):  # type: ignore
+
+        """Status of the camera's flash when the image was taken. (Reported by the ``flash`` tag.)"""
+
+        flash_fired: bool = BitField(size=1)
+        flash_return: FlashReturn = BitField(size=2)
+        flash_mode: FlashMode = BitField(size=2)
+        flash_function_not_present: bool = BitField(size=1)
+        red_eye_reduction_supported: bool = BitField(size=1)
+        reserved: int = BitField(size=1)

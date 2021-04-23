@@ -2,6 +2,17 @@
 Release Notes
 #############
 
+****************************************************
+[1.2.2] Late-April 2021 bug fix rollup. (2021-04-23)
+****************************************************
+
+This patch addresses the following GitLab user issues:
+
+* Add a workaround for ``flash`` attribute in Python 3.10 to temporarily address bit field ``TypeError``.
+  (Upstream ``plum-py`` Issue: https://gitlab.com/dangass/plum/-/issues/129)
+* ``UnpackError`` occurs when reading a bad IFD. (https://gitlab.com/TNThieding/exif/-/issues/38)
+
+
 ******************************************************************************
 [1.2.1] Preserve empty IFDs and EXIF version in ``delete_all()``. (2021-03-23)
 ******************************************************************************
