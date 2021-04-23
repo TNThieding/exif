@@ -19,6 +19,12 @@ from plum.structure import (
 )
 
 
+FLASH_WARNING_MSG = (
+    "exif package reads flash attribute as an 8-bit integer rather than unpacking bits in Python 3.10 due to an "
+    "upstream issue with plum-py"
+)
+
+
 class TiffByteOrder(Enum, nbytes=2):  # type: ignore
 
     """TIFF Header Byte Order Indicator"""
@@ -141,11 +147,7 @@ class FlashMode(IntFlag):
 
 # FUTURE: Remove this temporary 3.10 workaround after fix for https://gitlab.com/dangass/plum/-/issues/129 is available.
 if sys.version_info.major == 3 and sys.version_info.minor == 10:
-    warning_msg = (
-        "exif package reads flash attribute as an 8-bit integer rather than unpacking bits in Python 3.10 due to an "
-        "upstream issue with plum-py"
-    )
-    warnings.warn(warning_msg, RuntimeWarning)
+    warnings.warn(FLASH_WARNING_MSG, RuntimeWarning)
     Flash = UInt8
 
 else:

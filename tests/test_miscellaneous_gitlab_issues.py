@@ -63,7 +63,10 @@ def test_gitlab_issue_28():
     )
 
     # Check initial value.
-    assert check_value(repr(image_under_test.exposure_program), "<ExposureProgram.APERTURE_PRIORITY: 3>")
+    assert check_value(
+        repr(image_under_test.exposure_program),
+        "<ExposureProgram.APERTURE_PRIORITY: 3>",
+    )
 
 
 def test_gitlab_issue_33():
