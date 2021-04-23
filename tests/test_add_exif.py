@@ -6,6 +6,7 @@ import textwrap
 import unittest
 
 from exif import GpsAltitudeRef, Image
+
 from .add_exif_baselines.add_short import ADD_SHORT_BASELINE, ADD_SHORT_LE_BASELINE
 from .add_exif_baselines.add_ascii import ADD_ASCII_BASELINE, ADD_ASCII_LE_BASELINE
 from .add_exif_baselines.add_rational import ADD_RATIONAL_BASELINE
@@ -13,6 +14,7 @@ from .add_exif_baselines.add_gps import ADD_GPS_BASELINE
 from .add_exif_baselines.add_to_scan import ADD_TO_SCANNED_IMAGE_BASELINE
 from .test_little_endian import read_attributes as read_attributes_little_endian
 from .test_read_exif import read_attributes_florida_beach
+from ._utils import check_value
 
 # pylint: disable=protected-access
 
@@ -116,7 +118,7 @@ class TestAddExif(unittest.TestCase):
 
         # Verify pre-existing attributes can still be read as expected.
         for attribute, func, value in read_attributes_florida_beach:
-            assert func(getattr(self.image, attribute)) == value
+            assert check_value(func(getattr(self.image, attribute)), value)
 
         segment_hex = (
             binascii.hexlify(self.image._segments["APP1"].get_segment_bytes())
@@ -137,7 +139,7 @@ class TestAddExif(unittest.TestCase):
 
         # Verify pre-existing attributes can still be read as expected.
         for attribute, func, value in read_attributes_little_endian:
-            assert func(getattr(self.image_le, attribute)) == value
+            assert func(getattr(self.image_le, attribute)) in value
 
         segment_hex = (
             binascii.hexlify(self.image_le._segments["APP1"].get_segment_bytes())
