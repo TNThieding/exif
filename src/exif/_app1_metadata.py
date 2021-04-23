@@ -1,8 +1,9 @@
 """APP1 metadata interface module for EXIF tags."""
 
+import warnings
 from typing import List
 
-from plum import unpack_from
+from plum import unpack_from, UnpackError
 from plum.int.big import UInt16
 
 from exif._add_tag_utils import value_fits_in_ifd_tag
@@ -388,28 +389,38 @@ class App1MetaData:
         ifd_offset = self.ifd_pointers[ifd_key]
 
         if self.endianness == TiffByteOrder.BIG:
-            ifd_t = unpack_from(Ifd, self.body_bytes, offset=ifd_offset)
+            ifd_cls = Ifd
         else:
-            ifd_t = unpack_from(IfdLe, self.body_bytes, offset=ifd_offset)
+            ifd_cls = IfdLe
 
-        for tag_index in range(ifd_t.count):
-            tag_offset = ifd_offset + 2 + tag_index * IfdTag.nbytes  # count is 2 bytes
-            tag_t = ifd_t.tags[tag_index]
-            tag_py_ins = self._tag_factory(tag_t, tag_offset)
+        try:
+            ifd_t = unpack_from(ifd_cls, self.body_bytes, offset=ifd_offset)
+        except UnpackError:
+            warnings.warn(f"skipping bad IFD {ifd_key}", RuntimeWarning)
+            next_ifd_offset = 0
+        else:
+            for tag_index in range(ifd_t.count):
+                tag_offset = (
+                    ifd_offset + 2 + tag_index * IfdTag.nbytes
+                )  # count is 2 bytes
+                tag_t = ifd_t.tags[tag_index]
+                tag_py_ins = self._tag_factory(tag_t, tag_offset)
 
-            if (
-                ifd_key != 1 or tag_t.tag_id not in self.ifd_tags
-            ):  # don't let thumbnail tags override base image tags
-                self.ifd_tags[tag_t.tag_id] = tag_py_ins
-                self.tag_parent_ifd[tag_t.tag_id] = ifd_key
+                if (
+                    ifd_key != 1 or tag_t.tag_id not in self.ifd_tags
+                ):  # don't let thumbnail tags override base image tags
+                    self.ifd_tags[tag_t.tag_id] = tag_py_ins
+                    self.tag_parent_ifd[tag_t.tag_id] = ifd_key
 
-            if tag_t.tag_id == ATTRIBUTE_ID_MAP["_exif_ifd_pointer"]:
-                self.ifd_pointers["exif"] = tag_t.value_offset
+                if tag_t.tag_id == ATTRIBUTE_ID_MAP["_exif_ifd_pointer"]:
+                    self.ifd_pointers["exif"] = tag_t.value_offset
 
-            if tag_t.tag_id == ATTRIBUTE_ID_MAP["_gps_ifd_pointer"]:
-                self.ifd_pointers["gps"] = tag_t.value_offset
+                if tag_t.tag_id == ATTRIBUTE_ID_MAP["_gps_ifd_pointer"]:
+                    self.ifd_pointers["gps"] = tag_t.value_offset
 
-        return ifd_t.next
+            next_ifd_offset = ifd_t.next
+
+        return next_ifd_offset
 
     def _parse_ifd_segments(self):
         tiff_header = unpack_from(TiffHeader, self.body_bytes)

@@ -8,7 +8,9 @@ Release Notes
 
 This patch addresses the following GitLab user issues:
 
-* Add a workaround for ``flash`` attribute in Python 3.10 to temporarily address bit field ``TypeError``. (https://gitlab.com/dangass/plum/-/issues/129)
+* Add a workaround for ``flash`` attribute in Python 3.10 to temporarily address bit field ``TypeError``.
+  (Upstream ``plum-py`` Issue: https://gitlab.com/dangass/plum/-/issues/129)
+* ``UnpackError`` occurs when reading a bad IFD. (https://gitlab.com/TNThieding/exif/-/issues/38)
 
 
 ******************************************************************************
