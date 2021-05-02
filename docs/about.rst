@@ -11,6 +11,7 @@ Contributors
 + Justin Saunders (Support Signed Short Integers)
 + RKrahl (``setup.py`` Tweaks)
 + chbndrhnns (Allow Read File in Instantiation)
++ Rune Monzel (Example Code for Use with NumPy and OpenCV)
 
 ***********
 Development

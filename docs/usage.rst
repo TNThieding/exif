@@ -173,3 +173,52 @@ image (e.g., from a scanner)::
     >>> image.datetime_original = datetime_taken.strftime(DATETIME_STR_FORMAT)
     >>> image.datetime_digitized = datetime_scanned.strftime(DATETIME_STR_FORMAT)
     >>> # Then, save image to desired location using code discussed above.
+
+Use with NumPy and OpenCV Image Encoder
++++++++++++++++++++++++++++++++++++++++
+
+*This sample script was provided by Rune Monzel.*
+
+It demonstrates how to use this package with NumPy and an image encoder, specifically
+OpenCV in this case::
+
+    import exif
+    import cv2
+    import numpy as np
+
+    # Create a random 2D array within range [0 255]
+    image = (np.random.rand(800, 1200) * 255).astype(np.uint8)
+
+    # decode to the appropriate format
+    # jpg -> compressed with information loss)
+    status, image_jpg_coded = cv2.imencode('.jpg', image)
+    print('successful jpg encoding: %s' % status)
+    # tif -> no compression, no information loss
+    status, image_tif_coded = cv2.imencode('.jpg', image)
+    print('successful tif encoding: %s' % status)
+
+    # to a byte string
+    image_jpg_coded_bytes = image_jpg_coded.tobytes()
+    image_tif_coded_bytes = image_tif_coded.tobytes()
+
+    # using the exif format to add information
+    exif_jpg = exif.Image(image_jpg_coded_bytes)
+    exif_tif = exif.Image(image_tif_coded_bytes)
+
+    # providing some information
+    user_comment = "random image"
+    software = "created in python with numpy"
+    author = "Rune Monzel"
+
+    # adding information to exif files:
+    exif_jpg["software"] = exif_tif["software"] = software
+    exif_jpg["user_comment"] = exif_tif["user_comment"] = user_comment
+
+    # show existing tags
+    print(exif_jpg.list_all())
+
+    # save image
+    with open(r'random.tif', 'wb') as new_image_file:
+        new_image_file.write(exif_tif.get_file())
+    with open(r'random.jpg', 'wb') as new_image_file:
+        new_image_file.write(exif_jpg.get_file())
