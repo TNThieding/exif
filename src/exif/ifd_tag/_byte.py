@@ -1,7 +1,7 @@
 """IFD BYTE tag structure parser module."""
 
-from plum.int.big import UInt8
-from plum.int.little import UInt8 as UInt8_L
+from plum.bigendian import uint8
+from plum.littleendian import uint8 as uint8_le
 
 from exif._constants import ATTRIBUTE_ID_MAP, GpsAltitudeRef
 from exif._datatypes import TiffByteOrder
@@ -20,9 +20,9 @@ class Byte(BaseIfdTag):
         super().__init__(tag_offset, app1_ref)
 
         if self._app1_ref.endianness == TiffByteOrder.BIG:
-            self._uint8_cls = UInt8
+            self._uint8_cls = uint8
         else:
-            self._uint8_cls = UInt8_L
+            self._uint8_cls = uint8_le
 
     def modify(self, value):
         """Modify tag value.
@@ -48,9 +48,11 @@ class Byte(BaseIfdTag):
         :rtype: corresponding Python type
 
         """
-        retval = self._uint8_cls.view(
-            self._app1_ref.body_bytes, self.tag_view.value_offset.__offset__
-        ).get()
+        retval = int(
+            self._uint8_cls.view(
+                self._app1_ref.body_bytes, self.tag_view.value_offset.__offset__
+            )
+        )
 
         if int(self.tag_view.tag_id) in self.ENUMS_MAP:
             retval = self.ENUMS_MAP[int(self.tag_view.tag_id)](retval)

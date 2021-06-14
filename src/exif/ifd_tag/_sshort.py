@@ -1,7 +1,7 @@
 """IFD SSHORT tag structure parser module."""
 
-from plum.int.big import SInt16
-from plum.int.little import SInt16 as SInt16_L
+from plum.bigendian import sint16
+from plum.littleendian import sint16 as sint16_le
 
 from exif._datatypes import TiffByteOrder
 from exif.ifd_tag._short import Short
@@ -18,9 +18,9 @@ class Sshort(BaseIfdTag):
         super().__init__(tag_offset, app1_ref)
 
         if self._app1_ref.endianness == TiffByteOrder.BIG:
-            self._int16_cls = SInt16
+            self._int16_cls = sint16
         else:
-            self._int16_cls = SInt16_L
+            self._int16_cls = sint16_le
 
     def modify(self, value):  # pragma: no cover
         """Modify tag value.
@@ -45,9 +45,11 @@ class Sshort(BaseIfdTag):
         :rtype: corresponding Python type
 
         """
-        retval = self._int16_cls.view(
-            self._app1_ref.body_bytes, self.tag_view.value_offset.__offset__
-        ).get()
+        retval = int(
+            self._int16_cls.view(
+                self._app1_ref.body_bytes, self.tag_view.value_offset.__offset__
+            )
+        )
 
         if int(self.tag_view.tag_id) in self.ENUMS_MAP:
             retval = self.ENUMS_MAP[int(self.tag_view.tag_id)](retval)

@@ -10,6 +10,4 @@ This package contains the following known limitations:
   However, GPS IFDs can be inserted if there's a subsequent IFD 1 segment. When
   adding metadata to a previously non-APP1 image, this is not a concern since
   the package adds empty 0, EXIF, and GPS IFDs.
-- In Python 3.10, this package unpacks the flash attribute as an 8-bit integer instead of a ``BitFields`` type due to an
-  upstream issue with the ``plum-py`` bytes interface dependency.
 - Modifying Windows XP tags is not supported.

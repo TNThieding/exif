@@ -1,6 +1,6 @@
 """IFD EXIF version tag structure parser module."""
 
-from plum.str import AsciiStr
+from plum.str import StrX
 
 from exif.ifd_tag._base import Base as BaseIfdTag
 
@@ -25,4 +25,6 @@ class ExifVersion(BaseIfdTag):
         :rtype: corresponding Python type
 
         """
-        return AsciiStr.unpack(self.tag_view.value_offset.pack())
+        return StrX("ascii_str", encoding="ascii").unpack(
+            self.tag_view.value_offset.pack()
+        )

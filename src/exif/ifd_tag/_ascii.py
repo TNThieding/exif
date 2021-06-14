@@ -2,19 +2,23 @@
 
 import warnings
 
-from plum import getbytes
-from plum import UnpackError
-from plum.int.big import UInt32
-from plum.int.little import UInt32 as UInt32_L
-from plum.str import Str, AsciiStr, AsciiZeroTermStr
+from plum.exceptions import UnpackError
+from plum.bigendian import uint32
+from plum.dump import Record
+from plum.littleendian import uint32 as uint32_le
+from plum.str import StrX
+from plum.utilities import getbytes
 
 from exif._datatypes import TiffByteOrder
 from exif.ifd_tag._base import Base as BaseIfdTag
 
-
-class IntraIfdAsciiStr(Str, encoding="ascii", nbytes=4):  # type: ignore
-
-    """ASCII string data that fits within an IFD tag."""
+ascii_str = StrX("ascii_str", encoding="ascii")
+ascii_zero_term_str = StrX(
+    "ascii_str", encoding="ascii", zero_termination=True, pad=b"\x00"
+)
+intra_ifd_ascii_str = StrX(
+    "intra_ifd_ascii_str", encoding="ascii", nbytes=4, pad=b"\x00"
+)
 
 
 class Ascii(BaseIfdTag):
@@ -24,9 +28,9 @@ class Ascii(BaseIfdTag):
         super().__init__(tag_offset, app1_ref)
 
         if self._app1_ref.endianness == TiffByteOrder.BIG:
-            self._uint32_cls = UInt32
+            self._uint32_cls = uint32
         else:
-            self._uint32_cls = UInt32_L
+            self._uint32_cls = uint32_le
 
     def modify(self, value):
         """Modify tag value.
@@ -41,23 +45,21 @@ class Ascii(BaseIfdTag):
             raise ValueError("string must be no longer than original")
 
         if self.tag_view.value_count <= 4:
-            ascii_str_bytes = IntraIfdAsciiStr(value).pack()
+            ascii_str_bytes = intra_ifd_ascii_str.pack(value)
             self.tag_view.value_offset = self._uint32_cls.unpack(ascii_str_bytes)
 
         else:  # existing ASCII value offset is a pointer
-
-            class IfdTagStrTarget(
-                Str,
+            ifd_tag_str_target = StrX(
+                "ifd_tag_str_target",
                 encoding="ascii",
                 zero_termination=True,
                 nbytes=self.tag_view.value_count,
-            ):
-
-                """Target string datatype class sized to IFD tag's specification."""
+                pad=b"\x00",
+            )
 
             if len(value) < 4:  # put into IFD tag instead
                 # Wipe existing value at pointer-specified offset.
-                ascii_str_bytes = IfdTagStrTarget().pack()  # empty bytes
+                ascii_str_bytes = bytearray(b"\x00" * self.tag_view.value_count)
                 ascii_replace_stop_index = (
                     self.tag_view.value_offset + self.tag_view.value_count
                 )
@@ -66,11 +68,11 @@ class Ascii(BaseIfdTag):
                 ] = ascii_str_bytes
 
                 # Generate intra-IFD tag bytes.
-                ascii_str_bytes = IntraIfdAsciiStr(value).pack()
+                ascii_str_bytes = intra_ifd_ascii_str.pack(value)
                 self.tag_view.value_offset = self._uint32_cls.unpack(ascii_str_bytes)
 
             else:  # modify existing ASCII string at offset
-                ascii_str_bytes = IfdTagStrTarget(value).pack()
+                ascii_str_bytes = ifd_tag_str_target.pack(value)
                 ascii_replace_stop_index = (
                     self.tag_view.value_offset + self.tag_view.value_count
                 )
@@ -94,21 +96,23 @@ class Ascii(BaseIfdTag):
         if self.tag_view.value_count <= 4:
             # Value fits into the 4 bytes within IFD tag itself.
             value_bytes, _ = getbytes(
-                self._app1_ref.body_bytes,
-                self.tag_view.value_offset.__offset__,
-                nbytes=self.tag_view.value_count.get(),
+                buffer=self._app1_ref.body_bytes,
+                offset=self.tag_view.value_offset.__offset__,
+                dump=Record(),
+                nbytes=int(self.tag_view.value_count),
             )
 
         else:
             # Value is too large to fit in the IFD tag itself, so it's a pointer.
             value_bytes, _ = getbytes(
-                self._app1_ref.body_bytes,
-                self.tag_view.value_offset.get(),
-                nbytes=self.tag_view.value_count.get(),
+                buffer=self._app1_ref.body_bytes,
+                offset=int(self.tag_view.value_offset),
+                dump=Record(),
+                nbytes=int(self.tag_view.value_count),
             )
 
         try:
-            unpacked_value = AsciiZeroTermStr.unpack(value_bytes)
+            unpacked_value = ascii_zero_term_str.unpack(value_bytes)
         except UnpackError:
             value_bytes_no_null_terms = value_bytes.rstrip(b"\x00")
             excess_null_bytes_in_tag = (
@@ -123,7 +127,7 @@ class Ascii(BaseIfdTag):
                 stacklevel=4,
             )
 
-            unpacked_value = AsciiStr.unpack(value_bytes_no_null_terms)
+            unpacked_value = ascii_str.unpack(value_bytes_no_null_terms)
 
         return unpacked_value
 

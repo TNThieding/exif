@@ -7,17 +7,6 @@ stages:
 before_script:
   - pip install tox
 
-py36:
-  stage: test
-  image: python:3.6
-  coverage: '/TOTAL\s+\d+\s+\d+\s+\d+\s+\d+\s+(\d+)%/'
-  script:
-    - tox -vv -e py36
-  artifacts:
-    paths:
-      - .tox/py36/tmp
-    when: always
-
 py37:
   stage: test
   image: python:3.7
@@ -54,7 +43,6 @@ py39:
 py310:
   stage: test
   image: python:3.10-rc
-  coverage: '/TOTAL\s+\d+\s+\d+\s+\d+\s+\d+\s+(\d+)%/'
   script:
     - tox -vv -e py310
   artifacts:

@@ -1,6 +1,6 @@
 """Utility to create empty APP1 metadata bytes."""
 
-from plum.int.big import UInt16
+from plum.bigendian import uint16
 
 from exif._constants import ATTRIBUTE_ID_MAP, ExifMarkers
 from exif._datatypes import ExifType, Ifd, IfdTag, TiffByteOrder, TiffHeader
@@ -54,14 +54,15 @@ def generate_empty_app1_bytes():
     )  # IFD 0 --> GPS
     # pylint: enable=unsubscriptable-object
 
-    body_bytes = bytearray(tiff_header.pack())
-    body_bytes += ifd0.pack()
-    body_bytes += exif_ifd.pack()
-    body_bytes += gps_ifd.pack()
+    body_bytes = bytearray(tiff_header.ipack())
+    body_bytes += ifd0.ipack()
+    body_bytes += exif_ifd.ipack()
+    body_bytes += gps_ifd.ipack()
 
     # Adjust the APP1 length (2 bytes into header).
-    UInt16(
+    app1_length_view = uint16.view(header_bytes, offset=2)
+    app1_length_view.set(
         len(header_bytes + body_bytes) - HEADER_BYTES_EXCLUDED_FROM_LENGTH
-    ).pack_into(header_bytes, offset=2)
+    )
 
     return header_bytes + body_bytes

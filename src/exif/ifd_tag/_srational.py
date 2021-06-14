@@ -2,9 +2,9 @@
 
 from fractions import Fraction
 
-from plum.int.big import SInt32
-from plum.int.little import SInt32 as SInt32Le
-from plum.structure import Member, Structure
+from plum.bigendian import sint32
+from plum.littleendian import sint32 as sint32_le
+from plum.structure import member, Structure
 
 from exif._datatypes import TiffByteOrder
 from exif.ifd_tag._base import Base as BaseIfdTag
@@ -14,16 +14,16 @@ class SrationalDtype(Structure):
 
     """SRATIONAL Datatype"""
 
-    numerator: int = Member(cls=SInt32)
-    denominator: int = Member(cls=SInt32)
+    numerator: int = member(fmt=sint32)
+    denominator: int = member(fmt=sint32)
 
 
 class SrationalDtypeLe(Structure):
 
     """SRATIONAL Datatype (Little Endian)"""
 
-    numerator: int = Member(cls=SInt32Le)
-    denominator: int = Member(cls=SInt32Le)
+    numerator: int = member(fmt=sint32_le)
+    denominator: int = member(fmt=sint32_le)
 
 
 class Srational(BaseIfdTag):
@@ -51,7 +51,7 @@ class Srational(BaseIfdTag):
         fraction = Fraction(value).limit_denominator()
 
         srational_view = self.srational_dtype_cls.view(
-            self._app1_ref.body_bytes, self.tag_view.value_offset.get()
+            self._app1_ref.body_bytes, int(self.tag_view.value_offset)
         )
         srational_view.numerator.set(fraction.numerator)
         srational_view.denominator.set(fraction.denominator)
@@ -67,14 +67,14 @@ class Srational(BaseIfdTag):
 
         """
         srational_view = self.srational_dtype_cls.view(
-            self._app1_ref.body_bytes, self.tag_view.value_offset.get()
+            self._app1_ref.body_bytes, int(self.tag_view.value_offset)
         )
         return srational_view.numerator / srational_view.denominator
 
     def wipe(self):
         """Wipe value pointer target bytes to null."""
         srational_view = self.srational_dtype_cls.view(
-            self._app1_ref.body_bytes, self.tag_view.value_offset.get()
+            self._app1_ref.body_bytes, int(self.tag_view.value_offset)
         )
         srational_view.numerator.set(0)
         srational_view.denominator.set(0)
