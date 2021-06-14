@@ -1,6 +1,7 @@
 """Legacy Windows XP style tag structure parser module."""
 
-from plum import getbytes
+from plum.dump import Record
+from plum.utilities import getbytes
 
 from exif.ifd_tag._base import Base as BaseIfdTag
 
@@ -31,9 +32,10 @@ class WindowsXp(BaseIfdTag):
 
         """
         dereferenced_bytes, _ = getbytes(
-            self._app1_ref.body_bytes,
-            self.tag_view.value_offset.get(),
-            nbytes=self.tag_view.value_count.get(),
+            buffer=self._app1_ref.body_bytes,
+            offset=int(self.tag_view.value_offset),
+            dump=Record(),
+            nbytes=int(self.tag_view.value_count),
         )
 
         cursor = 0

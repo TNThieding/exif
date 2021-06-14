@@ -2,6 +2,14 @@
 Release Notes
 #############
 
+***********************************************************
+[1.3.0] Consume latest version of ``plum-py``. (2021-06-13)
+***********************************************************
+
+Overhaul package internals to leverage ``plum-py`` version ``0.5.0`` and higher. Since the ``plum-py`` package only
+supports Python 3.7 and higher, this release drops support for Python 3.6.
+
+
 ****************************************************
 [1.2.2] Late-April 2021 bug fix rollup. (2021-04-23)
 ****************************************************

@@ -4,8 +4,7 @@ import os
 import warnings
 from typing import Any, BinaryIO, Dict, List, Union
 
-from plum import unpack
-from plum.int.big import UInt16
+from plum.bigendian import uint16
 
 from exif._constants import ATTRIBUTE_ID_MAP, ExifMarkers
 from exif._app1_create import generate_empty_app1_bytes
@@ -37,8 +36,8 @@ class Image:
 
         if self._has_exif:
             # Determine the expected length of the APP1 segment.
-            app1_len = unpack(
-                UInt16, img_bytes[app1_start_index + 2 : app1_start_index + 4]
+            app1_len = uint16.unpack(
+                img_bytes[app1_start_index + 2 : app1_start_index + 4]
             )
             cursor += app1_len + 1
 

@@ -1,31 +1,20 @@
 """Package EXIF-specific datatypes."""
 
-import sys
-import warnings
-from enum import IntFlag
+from enum import IntEnum, IntFlag
 
-from plum.array import Array
-from plum.int.big import UInt8, UInt16, UInt32
-from plum.int.bitfields import BitFields, BitField
-from plum.int.little import UInt16 as UInt16_L, UInt32 as UInt32_L
-from plum.int.enum import Enum
+from plum.array import ArrayX
+from plum.bigendian import uint16, uint32
+from plum.bitfields import BitFields, bitfield
+from plum.enum import EnumX
+from plum.littleendian import uint16 as uint16_l, uint32 as uint32_l
 from plum.structure import (
-    DimsMember,
-    Member,
+    member,
+    sized_member,
     Structure,
-    TypeMember,
-    VariableDimsMember,
-    VariableTypeMember,
 )
 
 
-FLASH_WARNING_MSG = (
-    "exif package reads flash attribute as an 8-bit integer rather than unpacking bits in Python 3.10 due to an "
-    "upstream issue with plum-py"
-)
-
-
-class TiffByteOrder(Enum, nbytes=2):  # type: ignore
+class TiffByteOrder(IntEnum):
 
     """TIFF Header Byte Order Indicator"""
 
@@ -33,19 +22,27 @@ class TiffByteOrder(Enum, nbytes=2):  # type: ignore
     BIG = 0x4D4D
 
 
+tiff_byte_order = EnumX(
+    "tiff_byte_order",
+    TiffByteOrder,
+    nbytes=2,
+    byteorder="big",
+    signed=False,
+    strict=True,
+)
+BYTE_ORDER_MAP = {TiffByteOrder.LITTLE: uint32_l, TiffByteOrder.BIG: uint32}
+
+
 class TiffHeader(Structure):
 
     """TIFF Header"""
 
-    byte_order: int = TypeMember(
-        cls=TiffByteOrder,
-        mapping={TiffByteOrder.LITTLE: UInt32_L, TiffByteOrder.BIG: UInt32},
-    )
-    reserved: int = Member(cls=UInt16)
-    ifd_offset: int = VariableTypeMember(type_member=byte_order)
+    byte_order: int = member(fmt=tiff_byte_order)
+    reserved: int = member(fmt=uint16)
+    ifd_offset: int = member(fmt=BYTE_ORDER_MAP.__getitem__, fmt_arg=byte_order)  # type: ignore
 
 
-class ExifType(Enum, nbytes=2, byteorder="big"):  # type: ignore
+class ExifType(IntEnum):
 
     """EXIF Tag Types"""
 
@@ -61,68 +58,50 @@ class ExifType(Enum, nbytes=2, byteorder="big"):  # type: ignore
     SRATIONAL = 10
 
 
-class ExifTypeLe(Enum, nbytes=2, byteorder="little"):  # type: ignore
-
-    """EXIF Tag Types (Little Endian)"""
-
-    EMPTY = 0
-    BYTE = 1
-    ASCII = 2
-    SHORT = 3
-    LONG = 4
-    RATIONAL = 5
-    UNDEFINED = 7
-    SSHORT = 8
-    SLONG = 9
-    SRATIONAL = 10
+exif_type = EnumX("exif_type", ExifType, nbytes=2, byteorder="big", signed=False)
+exif_type_le = EnumX("exif_type", ExifType, nbytes=2, byteorder="little", signed=False)
 
 
 class IfdTag(Structure):
 
     """IFD Tag"""
 
-    tag_id: int = Member(cls=UInt16)
-    type: int = Member(cls=ExifType)
-    value_count: int = Member(cls=UInt32)
-    value_offset: int = Member(cls=UInt32)
+    tag_id: int = member(fmt=uint16)
+    type: int = member(fmt=exif_type)
+    value_count: int = member(fmt=uint32)
+    value_offset: int = member(fmt=uint32)
 
 
 class IfdTagLe(Structure):
 
     """IFD Tag (Little Endian)"""
 
-    tag_id: int = Member(cls=UInt16_L)
-    type: int = Member(cls=ExifTypeLe)
-    value_count: int = Member(cls=UInt32_L)
-    value_offset: int = Member(cls=UInt32_L)
+    tag_id: int = member(fmt=uint16_l)
+    type: int = member(fmt=exif_type_le)
+    value_count: int = member(fmt=uint32_l)
+    value_offset: int = member(fmt=uint32_l)
 
 
-class IfdTagArray(Array, item_cls=IfdTag):  # type: ignore
-
-    """IFD Tag Array"""
-
-
-class IfdTagArrayLe(Array, item_cls=IfdTagLe):  # type: ignore
-
-    """IFD Tag Array (Little Endian)"""
+ifd_tag_array = ArrayX("ifd_tag", fmt=IfdTag)
+ifd_tag_array_le = ArrayX("ifd_tag_le", fmt=IfdTagLe)
 
 
 class Ifd(Structure):
 
     """IFD Segment"""
 
-    count: int = DimsMember(cls=UInt16)
-    tags: list = VariableDimsMember(dims_member=count, cls=IfdTagArray)
-    next: int = Member(cls=UInt32)
+    count: int = member(fmt=uint16, compute=True)  # type: ignore
+    tags: list = sized_member(size=count, fmt=ifd_tag_array, ratio=IfdTag.nbytes)  # type: ignore
+    next: int = member(fmt=uint32)
 
 
 class IfdLe(Structure):
 
     """IFD Segment (Little Endian)"""
 
-    count: int = DimsMember(cls=UInt16_L)
-    tags: list = VariableDimsMember(dims_member=count, cls=IfdTagArrayLe)
-    next: int = Member(cls=UInt32_L)
+    count: int = member(fmt=uint16_l, compute=True)  # type: ignore
+    tags: list = sized_member(size=count, fmt=ifd_tag_array_le, ratio=IfdTagLe.nbytes)  # type: ignore
+    next: int = member(fmt=uint32_l)
 
 
 class FlashReturn(IntFlag):
@@ -145,20 +124,13 @@ class FlashMode(IntFlag):
     AUTO_MODE = 3
 
 
-# FUTURE: Remove this temporary 3.10 workaround after fix for https://gitlab.com/dangass/plum/-/issues/129 is available.
-if sys.version_info.major == 3 and sys.version_info.minor == 10:
-    warnings.warn(FLASH_WARNING_MSG, RuntimeWarning)
-    Flash = UInt8
+class Flash(BitFields, nbytes=1):  # type: ignore
 
-else:
+    """Status of the camera's flash when the image was taken. (Reported by the ``flash`` tag.)"""
 
-    class Flash(BitFields, nbytes=1):  # type: ignore
-
-        """Status of the camera's flash when the image was taken. (Reported by the ``flash`` tag.)"""
-
-        flash_fired: bool = BitField(size=1)
-        flash_return: FlashReturn = BitField(size=2)
-        flash_mode: FlashMode = BitField(size=2)
-        flash_function_not_present: bool = BitField(size=1)
-        red_eye_reduction_supported: bool = BitField(size=1)
-        reserved: int = BitField(size=1)
+    flash_fired: bool = bitfield(typ=bool, size=1)
+    flash_return: FlashReturn = bitfield(typ=FlashReturn, size=2)
+    flash_mode: FlashMode = bitfield(typ=FlashMode, size=2)
+    flash_function_not_present: bool = bitfield(typ=bool, size=1)
+    red_eye_reduction_supported: bool = bitfield(typ=bool, size=1)
+    reserved: int = bitfield(typ=int, size=1)

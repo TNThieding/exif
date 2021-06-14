@@ -2,9 +2,9 @@
 
 from fractions import Fraction
 
-from plum.int.big import UInt32
-from plum.int.little import UInt32 as UInt32Le
-from plum.structure import Member, Structure
+from plum.bigendian import uint32
+from plum.littleendian import uint32 as uint32_le
+from plum.structure import member, Structure
 
 from exif._datatypes import TiffByteOrder
 from exif.ifd_tag._base import Base as BaseIfdTag
@@ -14,16 +14,16 @@ class RationalDtype(Structure):
 
     """RATIONAL Datatype"""
 
-    numerator: int = Member(cls=UInt32)
-    denominator: int = Member(cls=UInt32)
+    numerator: int = member(fmt=uint32)
+    denominator: int = member(fmt=uint32)
 
 
 class RationalDtypeLe(Structure):
 
     """RATIONAL Datatype (Little Endian)"""
 
-    numerator: int = Member(cls=UInt32Le)
-    denominator: int = Member(cls=UInt32Le)
+    numerator: int = member(fmt=uint32_le)
+    denominator: int = member(fmt=uint32_le)
 
 
 class Rational(BaseIfdTag):
@@ -47,14 +47,14 @@ class Rational(BaseIfdTag):
         """
         # If IFD tag contains multiple values, ensure value is a tuple of appropriate length.
         if isinstance(value, tuple):
-            assert len(value) == self.tag_view.value_count.get()
+            assert len(value) == int(self.tag_view.value_count)
         else:
-            assert self.tag_view.value_count.get() == 1
+            assert int(self.tag_view.value_count) == 1
             value = (value,)
 
-        for rational_index in range(self.tag_view.value_count.get()):
+        for rational_index in range(int(self.tag_view.value_count)):
             current_offset = (
-                self.tag_view.value_offset.get()
+                int(self.tag_view.value_offset)
                 + rational_index * self.rational_dtype_cls.nbytes
             )
             rational_view = self.rational_dtype_cls.view(
@@ -79,9 +79,9 @@ class Rational(BaseIfdTag):
         """
         retvals = []
 
-        for rational_index in range(self.tag_view.value_count.get()):
+        for rational_index in range(int(self.tag_view.value_count)):
             current_offset = (
-                self.tag_view.value_offset.get()
+                int(self.tag_view.value_offset)
                 + rational_index * self.rational_dtype_cls.nbytes
             )
             rational_view = self.rational_dtype_cls.view(
@@ -103,9 +103,9 @@ class Rational(BaseIfdTag):
 
     def wipe(self):
         """Wipe value pointer target bytes to null."""
-        for rational_index in range(self.tag_view.value_count.get()):
+        for rational_index in range(int(self.tag_view.value_count)):
             current_offset = (
-                self.tag_view.value_offset.get()
+                int(self.tag_view.value_offset)
                 + rational_index * self.rational_dtype_cls.nbytes
             )
             rational_view = self.rational_dtype_cls.view(

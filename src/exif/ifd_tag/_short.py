@@ -1,7 +1,7 @@
 """IFD SHORT tag structure parser module."""
 
-from plum.int.big import UInt16
-from plum.int.little import UInt16 as UInt16_L
+from plum.bigendian import uint16
+from plum.littleendian import uint16 as uint16_le
 
 from exif._constants import (
     ATTRIBUTE_ID_MAP,
@@ -26,11 +26,14 @@ class Short(BaseIfdTag):
 
     """IFD SHORT tag structure parser class."""
 
+    CUSTOM_TYPES_MAP = {
+        ATTRIBUTE_ID_MAP["flash"]: Flash,
+    }
+
     ENUMS_MAP = {
         ATTRIBUTE_ID_MAP["color_space"]: ColorSpace,
         ATTRIBUTE_ID_MAP["exposure_mode"]: ExposureMode,
         ATTRIBUTE_ID_MAP["exposure_program"]: ExposureProgram,
-        ATTRIBUTE_ID_MAP["flash"]: Flash,
         ATTRIBUTE_ID_MAP["metering_mode"]: MeteringMode,
         ATTRIBUTE_ID_MAP["light_source"]: LightSource,
         ATTRIBUTE_ID_MAP["orientation"]: Orientation,
@@ -46,9 +49,9 @@ class Short(BaseIfdTag):
         super().__init__(tag_offset, app1_ref)
 
         if self._app1_ref.endianness == TiffByteOrder.BIG:
-            self._uint16_cls = UInt16
+            self._uint16_cls = uint16
         else:
-            self._uint16_cls = UInt16_L
+            self._uint16_cls = uint16_le
 
     def modify(self, value):
         """Modify tag value.
@@ -74,11 +77,22 @@ class Short(BaseIfdTag):
         :rtype: corresponding Python type
 
         """
-        retval = self._uint16_cls.view(
-            self._app1_ref.body_bytes, self.tag_view.value_offset.__offset__
-        ).get()
+        as_int = int(
+            self._uint16_cls.view(
+                self._app1_ref.body_bytes, self.tag_view.value_offset.__offset__
+            )
+        )
 
-        if int(self.tag_view.tag_id) in self.ENUMS_MAP:
-            retval = self.ENUMS_MAP[int(self.tag_view.tag_id)](retval)
+        try:
+            enum_type = self.ENUMS_MAP[int(self.tag_view.tag_id)]
+        except KeyError:
+            try:
+                custom_type = self.CUSTOM_TYPES_MAP[int(self.tag_view.tag_id)]
+            except KeyError:
+                retval = as_int  # leave return value as-is
+            else:
+                retval = custom_type.unpack(bytes([as_int]))
+        else:
+            retval = enum_type(as_int)
 
         return retval

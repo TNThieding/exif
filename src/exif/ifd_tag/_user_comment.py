@@ -1,7 +1,8 @@
 """IFD user comment tag structure parser module."""
 
-from plum import getbytes
-from plum.str import Str, AsciiStr
+from plum.dump import Record
+from plum.str import StrX
+from plum.utilities import getbytes
 
 from exif.ifd_tag._base import Base as BaseIfdTag
 
@@ -25,18 +26,17 @@ class UserComment(BaseIfdTag):
         ):
             raise ValueError("comment must be no longer than original")
 
-        class IfdTagStrTarget(
-            Str,
+        ifd_tag_str_target = StrX(
+            "ifd_tag_str_target",
             encoding="ascii",
             zero_termination=True,
             nbytes=self.tag_view.value_count - USER_COMMENT_CHARACTER_CODE_LEN_BYTES,
-        ):
+            pad=b"\x00",
+        )
 
-            """Target string datatype class sized to IFD tag's specification."""
-
-        ascii_str_bytes = IfdTagStrTarget(value).pack()
+        ascii_str_bytes = ifd_tag_str_target.pack(value)
         ascii_replace_start_index = (
-            self.tag_view.value_offset.get() + USER_COMMENT_CHARACTER_CODE_LEN_BYTES
+            int(self.tag_view.value_offset) + USER_COMMENT_CHARACTER_CODE_LEN_BYTES
         )
         ascii_replace_stop_index = (
             ascii_replace_start_index
@@ -61,22 +61,25 @@ class UserComment(BaseIfdTag):
         """
         # The string value (not null-terminated) occurs after the character code designation. (All decodable as ASCII.)
         string_value_offset = (
-            self.tag_view.value_offset.get() + USER_COMMENT_CHARACTER_CODE_LEN_BYTES
+            int(self.tag_view.value_offset) + USER_COMMENT_CHARACTER_CODE_LEN_BYTES
         )
         string_len = (
-            self.tag_view.value_count.get() - USER_COMMENT_CHARACTER_CODE_LEN_BYTES
+            int(self.tag_view.value_count) - USER_COMMENT_CHARACTER_CODE_LEN_BYTES
         )
 
         value_bytes, _ = getbytes(
-            self._app1_ref.body_bytes, string_value_offset, nbytes=string_len
+            buffer=self._app1_ref.body_bytes,
+            offset=string_value_offset,
+            dump=Record(),
+            nbytes=string_len,
         )
-        return AsciiStr.unpack(value_bytes)
+        return StrX("ascii_str", encoding="ascii").unpack(value_bytes)
 
     def set_character_code_to_ascii(self):
         """Set the character code header to ASCII."""
-        header_replace_start_index = self.tag_view.value_offset.get()
+        header_replace_start_index = int(self.tag_view.value_offset)
         header_replace_stop_index = (
-            self.tag_view.value_offset.get() + USER_COMMENT_CHARACTER_CODE_LEN_BYTES
+            int(self.tag_view.value_offset) + USER_COMMENT_CHARACTER_CODE_LEN_BYTES
         )
         self._app1_ref.body_bytes[
             header_replace_start_index:header_replace_stop_index
