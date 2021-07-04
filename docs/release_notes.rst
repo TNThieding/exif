@@ -2,6 +2,18 @@
 Release Notes
 #############
 
+*******************************************************************
+[1.3.1] Fix value of ``SceneCaptureType.NIGHT_SCENE``. (2021-07-03)
+*******************************************************************
+
+Previously, ``SceneCaptureType.NIGHT_SCENE`` erroneously had a value of ``2``. Now, it has a value of ``3`` in
+accordance with the EXIF specification.
+
+This patch contains changes submitted via GitLab merge request by the following user:
+
+* Alex Mykyta (amykyta3)
+
+
 ***********************************************************
 [1.3.0] Consume latest version of ``plum-py``. (2021-06-13)
 ***********************************************************

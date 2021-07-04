@@ -100,8 +100,8 @@ if not (sys.version_info.major == 3 and sys.version_info.minor == 10):
         (
             "flash",
             str,
-            "Flash(flash_fired=False, flash_return=FlashReturn.NO_STROBE_RETURN_DETECTION_FUNCTION, "
-            "flash_mode=FlashMode.COMPULSORY_FLASH_SUPPRESSION, flash_function_not_present=False, "
+            "Flash(flash_fired=False, flash_return=<FlashReturn.NO_STROBE_RETURN_DETECTION_FUNCTION: 0>, "
+            "flash_mode=<FlashMode.COMPULSORY_FLASH_SUPPRESSION: 2>, flash_function_not_present=False, "
             "red_eye_reduction_supported=False, reserved=0)",
         )
     )
@@ -175,8 +175,8 @@ if not (sys.version_info.major == 3 and sys.version_info.minor == 10):
         (
             "flash",
             str,
-            "Flash(flash_fired=False, flash_return=FlashReturn.NO_STROBE_RETURN_DETECTION_FUNCTION, "
-            "flash_mode=FlashMode.AUTO_MODE, flash_function_not_present=False, "
+            "Flash(flash_fired=False, flash_return=<FlashReturn.NO_STROBE_RETURN_DETECTION_FUNCTION: 0>, "
+            "flash_mode=<FlashMode.AUTO_MODE: 3>, flash_function_not_present=False, "
             "red_eye_reduction_supported=False, reserved=0)",
         )
     )
