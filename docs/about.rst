@@ -12,6 +12,7 @@ Contributors
 + RKrahl (``setup.py`` Tweaks)
 + chbndrhnns (Allow Read File in Instantiation)
 + Rune Monzel (Example Code for Use with NumPy and OpenCV)
++ Alex Mykyta (Fix Value of ``SceneCaptureType.NIGHT_SCENE``)
 
 ***********
 Development

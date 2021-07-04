@@ -43,7 +43,8 @@ from exif.ifd_tag._srational import SrationalDtype
 from exif.ifd_tag._user_comment import USER_COMMENT_CHARACTER_CODE_LEN_BYTES
 
 # FUTURE: There's quite a few spots where a new Plum Buffer is created for the APP1 body bytes. Consider cleaning this
-# up to share the same buffer reference.
+# up to share the same buffer reference. Also, fix the false positive no-member Pylint errors.
+# pylint: disable=no-member
 
 
 class App1MetaData:
@@ -560,14 +561,14 @@ class App1MetaData:
             else:
                 try:
                     ifd_tag.modify(value)
-                except ValueError as exec:  # e.g., if doesn't fit into tag, try deleting and re-adding
+                except ValueError as exc:  # e.g., if doesn't fit into tag, try deleting and re-adding
                     try:
                         attr_exif_type = ATTRIBUTE_TYPE_MAP[key][0]
                     except KeyError:
-                        raise exec
+                        raise exc
 
                     if attr_exif_type == ExifType.ASCII:
                         self._delete_ifd_tag(attribute_id)
                         self._add_tag(key, value)
                     else:
-                        raise exec
+                        raise exc

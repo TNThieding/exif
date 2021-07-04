@@ -296,7 +296,7 @@ class SceneCaptureType(IntEnum):
     PORTRAIT = 2
     """Portrait"""
 
-    NIGHT_SCENE = 2
+    NIGHT_SCENE = 3
     """Night Scene"""
 
 
