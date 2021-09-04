@@ -2,6 +2,24 @@
 Release Notes
 #############
 
+**********************************************************
+[1.3.2] Add support for writing various tags. (2021-09-04)
+**********************************************************
+
+Previously, attempting to add the following tags to an image raised an ``AttributeError``:
+
+* Body Serial Number
+* ISO Speed
+* Lens Specification
+* Lens Make
+* Lens Model
+* Lens Serial Number
+
+This patch addresses the following GitLab user issue:
+
+* Trouble setting tags. (https://gitlab.com/TNThieding/exif/-/issues/48)
+
+
 *******************************************************************
 [1.3.1] Fix value of ``SceneCaptureType.NIGHT_SCENE``. (2021-07-03)
 *******************************************************************
