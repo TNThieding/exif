@@ -2,6 +2,16 @@
 Release Notes
 #############
 
+*******************************************************************
+[1.3.3] Omit unknown values from ``get_all()`` method. (2021-11-07)
+*******************************************************************
+
+Previously, ``get_all()`` did not catch exceptions when reading each EXIF tag. If a single
+attribute had an incorrectly-encoded value, the ``get_all()`` method raised an exception.
+Now, the ``get_all()`` method catches exceptions due to unknown or unreadable values and
+logs them as a warning.
+
+
 **********************************************************
 [1.3.2] Add support for writing various tags. (2021-09-04)
 **********************************************************
