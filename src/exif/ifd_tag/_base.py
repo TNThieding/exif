@@ -21,7 +21,7 @@ class Base:
         )
 
     def __repr__(self):  # pragma: no cover
-        return "exif.ifd_tag.Base(tag_offset={})".format(self._tag_offset)
+        return f"exif.ifd_tag.Base(tag_offset={self._tag_offset})"
 
     def modify(self, value):  # pragma: no cover
         """Modify tag value.

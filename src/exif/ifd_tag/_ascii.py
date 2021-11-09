@@ -120,9 +120,7 @@ class Ascii(BaseIfdTag):
             )  # -1 for orig. null term.
 
             warnings.warn(
-                "ASCII tag contains {0} fewer bytes than specified".format(
-                    excess_null_bytes_in_tag
-                ),
+                f"ASCII tag contains {excess_null_bytes_in_tag} fewer bytes than specified",
                 RuntimeWarning,
                 stacklevel=4,
             )

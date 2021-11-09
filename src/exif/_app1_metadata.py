@@ -53,7 +53,7 @@ class App1MetaData:
 
     def _add_empty_ifd(self, ifd):
         if not ifd == "gps":
-            raise RuntimeError("only can add GPS IFD to image, not {0}".format(ifd))
+            raise RuntimeError(f"only can add GPS IFD to image, not {ifd}")
 
         if 1 not in self.ifd_pointers:
             raise RuntimeError("can't yet add to images without a subsequent IFD 1")
@@ -120,7 +120,7 @@ class App1MetaData:
         try:
             tag_type, ifd_number = ATTRIBUTE_TYPE_MAP[tag]
         except KeyError:
-            raise AttributeError("cannot add attribute {0} to image".format(tag))
+            raise AttributeError(f"cannot add attribute {tag} to image")
 
         if self.endianness == TiffByteOrder.BIG:
             ifd_cls = Ifd
@@ -394,7 +394,7 @@ class App1MetaData:
         """Get a list of EXIF tag attributes present in the image object."""
         if include_unknown:
             tag_list = [
-                ATTRIBUTE_NAME_MAP.get(key, "<unknown EXIF tag {0}>".format(key))
+                ATTRIBUTE_NAME_MAP.get(key, f"<unknown EXIF tag {key}>")
                 for key in self.ifd_tags
             ]
 
@@ -536,7 +536,7 @@ class App1MetaData:
         try:
             attribute_id = ATTRIBUTE_ID_MAP[item.lower()]
         except KeyError:
-            raise AttributeError("unknown image attribute {0}".format(item))
+            raise AttributeError(f"unknown image attribute {item}")
 
         try:
             ifd_tag = self.ifd_tags[attribute_id]
