@@ -42,7 +42,7 @@ py39:
 
 py310:
   stage: test
-  image: python:3.10-rc
+  image: python:3.10
   script:
     - tox -vv -e py310
   artifacts:
