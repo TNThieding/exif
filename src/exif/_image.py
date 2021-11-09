@@ -1,5 +1,6 @@
 """Image EXIF metadata interface module."""
 
+import logging
 import os
 import warnings
 from typing import Any, BinaryIO, Dict, List, Union
@@ -9,6 +10,8 @@ from plum.bigendian import uint16
 from exif._constants import ATTRIBUTE_ID_MAP, ExifMarkers
 from exif._app1_create import generate_empty_app1_bytes
 from exif._app1_metadata import App1MetaData
+
+logger = logging.getLogger(__name__)
 
 
 class Image:
@@ -178,8 +181,8 @@ class Image:
         for tag_name in self.list_all():
             try:
                 tag_value = self.__getattr__(tag_name)
-            except (AttributeError, NotImplementedError):
-                pass
+            except Exception:  # pylint: disable=broad-except
+                logger.warning("unable to read tag %r", tag_name)
             else:
                 all_tags[tag_name] = tag_value
 
