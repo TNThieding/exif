@@ -11,6 +11,11 @@ attribute had an incorrectly-encoded value, the ``get_all()`` method raised an e
 Now, the ``get_all()`` method catches exceptions due to unknown or unreadable values and
 logs them as a warning.
 
+This patch addresses the following GitLab user issue:
+
+* ``ValueError: 0 is not a valid Orientation`` returned from the ``Image.get_all()``
+  method (https://gitlab.com/TNThieding/exif/-/issues/52)
+
 
 **********************************************************
 [1.3.2] Add support for writing various tags. (2021-09-04)
