@@ -24,8 +24,8 @@ class WindowsXp(BaseIfdTag):
     def read(self):
         """Read tag value.
 
-        In string types, the count refers to how many characters exist in the string. In Windows XP type tags, every
-        other byte is null for some reason, so skip over them.
+        In string types, the count refers to how many characters exist in the string. Windows XP tags are encoded in
+        UCS2/UTF-16, not ASCII.
 
         :returns: tag value
         :rtype: corresponding Python type
@@ -38,17 +38,4 @@ class WindowsXp(BaseIfdTag):
             nbytes=int(self.tag_view.value_count),
         )
 
-        cursor = 0
-        ascii_string = ""
-
-        for byte in dereferenced_bytes[
-            :-2
-        ]:  # discard final null termination bytes (2 for Windows XP tags)
-            if (
-                cursor % 2 == 0
-            ):  # is at an even position and is therefore part of the string
-                ascii_string += chr(byte)
-
-            cursor += 1
-
-        return ascii_string
+        return dereferenced_bytes.decode("utf-16")[:-1]  # discard null terminator

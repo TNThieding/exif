@@ -8,9 +8,9 @@ from exif import Image
 
 read_attributes = [
     ("xp_author", "XP-Style Author"),
-    ("xp_comment", "XP-Style Comment"),
+    ("xp_comment", "XP-Style Comment ⛷"),
     ("xp_keywords", "XP-Style Keywords"),
-    ("xp_subject", "XP-Style Subject"),
+    ("xp_subject", "XP-Style Subject 🤓"),
     ("xp_title", "XP-Style Title"),
 ]
 
