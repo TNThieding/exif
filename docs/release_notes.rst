@@ -2,6 +2,19 @@
 Release Notes
 #############
 
+************************************************************
+[1.3.4] Decode Windows XP style tags as UTF-16. (2021-12-09)
+************************************************************
+
+Previously, the package decoded ASCII characters within Windows XP style tags. Now, the
+package decodes Windows XP style tags as UTF-16.
+
+This patch addresses the following GitLab user issue:
+
+* ``xp_comment`` and other Windows XP tags don't handle Unicode strings correctly.
+  (https://gitlab.com/TNThieding/exif/-/issues/53)
+
+
 *******************************************************************
 [1.3.3] Omit unknown values from ``get_all()`` method. (2021-11-07)
 *******************************************************************
@@ -13,7 +26,7 @@ logs them as a warning.
 
 This patch addresses the following GitLab user issue:
 
-* ``ValueError: 0 is not a valid Orientation`` returned from the ``Image.get_all()``
+* ``ValueError: 0 is not a valid Orientation`` returned from the ``Image.get_all()``.
   method (https://gitlab.com/TNThieding/exif/-/issues/52)
 
 
