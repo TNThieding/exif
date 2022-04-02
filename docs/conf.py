@@ -20,9 +20,9 @@ sys.path.insert(0, os.path.abspath(".."))
 
 # -- Project information -----------------------------------------------------
 
-project = u"exif"
-copyright = u"2021, Tyler N. Thieding"
-author = u"Tyler N. Thieding"
+project = "exif"
+copyright = "2021, Tyler N. Thieding"
+author = "Tyler N. Thieding"
 
 # The short X.Y version
 with open("../version", "r") as fh:
@@ -64,7 +64,7 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path .
-exclude_patterns = [u"_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
@@ -126,7 +126,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, "exif.tex", u"exif Documentation", u"Tyler N. Thieding", "manual"),
+    (master_doc, "exif.tex", "exif Documentation", "Tyler N. Thieding", "manual"),
 ]
 
 
@@ -134,7 +134,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, "exif", u"exif Documentation", [author], 1)]
+man_pages = [(master_doc, "exif", "exif Documentation", [author], 1)]
 
 
 # -- Options for Texinfo output ----------------------------------------------
@@ -146,7 +146,7 @@ texinfo_documents = [
     (
         master_doc,
         "exif",
-        u"exif Documentation",
+        "exif Documentation",
         author,
         "exif",
         "One line description of project.",
