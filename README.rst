@@ -22,6 +22,16 @@
 Read and modify image EXIF metadata using Python without any third-party software
 dependencies. For example, batch process image metadata using a Python script.
 
+.. note::
+
+    I developed this package in 2018 as a hobby; however, I no longer have the same bandwidth
+    to work on this project. As always, contributions and bug fixes are welcome and appreciated.
+    If this package does not suit your needs in its current form, I encourage you to investigate
+    alternative packages such as piexif_, Pillow_, or the like.
+
+    .. _piexif: https://pypi.org/project/piexif/
+    .. _Pillow: https://pypi.org/project/Pillow/
+
 ***********
 Quick Start
 ***********
