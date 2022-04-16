@@ -12,12 +12,12 @@ from plum.utilities import getbytes
 from exif._datatypes import TiffByteOrder
 from exif.ifd_tag._base import Base as BaseIfdTag
 
-ascii_str = StrX("ascii_str", encoding="ascii")
+ascii_str = StrX(encoding="ascii", name="ascii_str")
 ascii_zero_term_str = StrX(
-    "ascii_str", encoding="ascii", zero_termination=True, pad=b"\x00"
+    encoding="ascii", zero_termination=True, pad=b"\x00", name="ascii_str"
 )
 intra_ifd_ascii_str = StrX(
-    "intra_ifd_ascii_str", encoding="ascii", nbytes=4, pad=b"\x00"
+    encoding="ascii", nbytes=4, pad=b"\x00", name="intra_ifd_ascii_str"
 )
 
 
@@ -50,11 +50,11 @@ class Ascii(BaseIfdTag):
 
         else:  # existing ASCII value offset is a pointer
             ifd_tag_str_target = StrX(
-                "ifd_tag_str_target",
                 encoding="ascii",
                 zero_termination=True,
                 nbytes=self.tag_view.value_count,
                 pad=b"\x00",
+                name="ifd_tag_str_target",
             )
 
             if len(value) < 4:  # put into IFD tag instead

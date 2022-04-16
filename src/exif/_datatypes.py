@@ -23,12 +23,12 @@ class TiffByteOrder(IntEnum):
 
 
 tiff_byte_order = EnumX(
-    "tiff_byte_order",
-    TiffByteOrder,
+    enum=TiffByteOrder,
     nbytes=2,
     byteorder="big",
     signed=False,
     strict=True,
+    name="tiff_byte_order",
 )
 BYTE_ORDER_MAP = {TiffByteOrder.LITTLE: uint32_l, TiffByteOrder.BIG: uint32}
 
@@ -58,8 +58,16 @@ class ExifType(IntEnum):
     SRATIONAL = 10
 
 
-exif_type = EnumX("exif_type", ExifType, nbytes=2, byteorder="big", signed=False)
-exif_type_le = EnumX("exif_type", ExifType, nbytes=2, byteorder="little", signed=False)
+exif_type = EnumX(
+    enum=ExifType,
+    nbytes=2,
+    byteorder="big",
+    signed=False,
+    name="exif_type",
+)
+exif_type_le = EnumX(
+    enum=ExifType, nbytes=2, byteorder="little", signed=False, name="exif_type"
+)
 
 
 class IfdTag(Structure):
@@ -82,8 +90,8 @@ class IfdTagLe(Structure):
     value_offset: int = member(fmt=uint32_l)
 
 
-ifd_tag_array = ArrayX("ifd_tag", fmt=IfdTag)
-ifd_tag_array_le = ArrayX("ifd_tag_le", fmt=IfdTagLe)
+ifd_tag_array = ArrayX(fmt=IfdTag, name="ifd_tag")
+ifd_tag_array_le = ArrayX(fmt=IfdTagLe, name="ifd_tag_le")
 
 
 class Ifd(Structure):
