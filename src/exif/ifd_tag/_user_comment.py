@@ -27,11 +27,11 @@ class UserComment(BaseIfdTag):
             raise ValueError("comment must be no longer than original")
 
         ifd_tag_str_target = StrX(
-            "ifd_tag_str_target",
             encoding="ascii",
             zero_termination=True,
             nbytes=self.tag_view.value_count - USER_COMMENT_CHARACTER_CODE_LEN_BYTES,
             pad=b"\x00",
+            name="ifd_tag_str_target",
         )
 
         ascii_str_bytes = ifd_tag_str_target.pack(value)
@@ -73,7 +73,7 @@ class UserComment(BaseIfdTag):
             dump=Record(),
             nbytes=string_len,
         )
-        return StrX("ascii_str", encoding="ascii").unpack(value_bytes)
+        return StrX(encoding="ascii", name="ascii_str").unpack(value_bytes)
 
     def set_character_code_to_ascii(self):
         """Set the character code header to ASCII."""
