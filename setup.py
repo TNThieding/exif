@@ -9,7 +9,7 @@ with open("version", "r") as fh:
 setup(
     python_requires=">=3.7",
     install_requires=[
-        "plum-py>=0.5.0",
+        "plum-py>=0.5.0,<2.0.0",
     ],
     include_package_data=True,
     name="exif",
