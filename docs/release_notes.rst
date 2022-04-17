@@ -3,10 +3,10 @@ Release Notes
 #############
 
 *******************************************************************
-[1.3.5] Consume initial stable release of ``plum-py``. (2022-04-16)
+[1.3.5] Support initial stable release of ``plum-py``. (2022-04-17)
 *******************************************************************
 
-Update package to consume the initial stable release of its ``plum-py`` dependency.
+Update package to support the initial stable release of its ``plum-py`` dependency.
 
 
 ************************************************************
