@@ -533,6 +533,8 @@ ATTRIBUTE_TYPE_MAP = (
         "focal_length": (int(ExifTypes.RATIONAL), "exif"),
         "focal_length_in_35mm_film": (int(ExifTypes.SHORT), "exif"),
         "focal_plane_resolution_unit": (int(ExifTypes.SHORT), "exif"),
+        "focal_plane_x_resolution": (int(ExifTypes.RATIONAL), "exif"),
+        "focal_plane_y_resolution": (int(ExifTypes.RATIONAL), "exif"),
         "gain_control": (int(ExifTypes.RATIONAL), "exif"),
         "gps_altitude": (int(ExifTypes.RATIONAL), "gps"),
         "gps_altitude_ref": (int(ExifTypes.BYTE), "gps"),
