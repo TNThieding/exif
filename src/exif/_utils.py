@@ -1,6 +1,5 @@
 """Utility functions."""
 
-from exif._constants import ATTRIBUTE_ID_MAP
 from exif._datatypes import ExifType
 
 
@@ -17,15 +16,29 @@ def value_fits_in_ifd_tag(tag_dt):
     :rtype: bool
 
     """
-    is_value_in_ifd_tag_itself = (
+    is_value_in_ifd_tag_itself = False
+    is_value_in_ifd_tag_itself |= tag_dt.type == ExifType.EMPTY
+    is_value_in_ifd_tag_itself |= (
+        tag_dt.type == ExifType.BYTE and tag_dt.value_count <= 4
+    )
+    is_value_in_ifd_tag_itself |= (
         tag_dt.type == ExifType.ASCII and tag_dt.value_count <= 4
     )
-    is_value_in_ifd_tag_itself |= tag_dt.type == ExifType.BYTE
-    is_value_in_ifd_tag_itself |= tag_dt.type == ExifType.SHORT
-    is_value_in_ifd_tag_itself |= tag_dt.type == ExifType.SSHORT
-    is_value_in_ifd_tag_itself |= tag_dt.type == ExifType.LONG
-    is_value_in_ifd_tag_itself |= tag_dt.type == ExifType.SLONG
-    is_value_in_ifd_tag_itself |= tag_dt.tag_id == ATTRIBUTE_ID_MAP["exif_version"]
-    is_value_in_ifd_tag_itself |= tag_dt.tag_id == ATTRIBUTE_ID_MAP["flashpix_version"]
+    is_value_in_ifd_tag_itself |= (
+        tag_dt.type == ExifType.UNDEFINED and tag_dt.value_count <= 4
+    )
+    is_value_in_ifd_tag_itself |= (
+        tag_dt.type == ExifType.SHORT and tag_dt.value_count <= 2
+    )
+    is_value_in_ifd_tag_itself |= (
+        tag_dt.type == ExifType.SSHORT and tag_dt.value_count <= 2
+    )
+    is_value_in_ifd_tag_itself |= (
+        tag_dt.type == ExifType.LONG and tag_dt.value_count <= 1
+    )
+    is_value_in_ifd_tag_itself |= (
+        tag_dt.type == ExifType.SLONG and tag_dt.value_count <= 1
+    )
+    # RATIONAL and SRATIONAL are never in ifd tag itself
 
     return is_value_in_ifd_tag_itself
