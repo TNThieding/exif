@@ -42,10 +42,10 @@ class Image:
             app1_len = uint16.unpack(
                 img_bytes[app1_start_index + 2 : app1_start_index + 4]
             )
-            cursor += app1_len + 1
+            cursor += app1_len + 2  # skip APP1 marker and all data
 
             # If the expected length stops early, keep traversing until another section is found.
-            while img_bytes[cursor - 2 : cursor - 1] != ExifMarkers.SEG_PREFIX:
+            while img_bytes[cursor : cursor + 1] != ExifMarkers.SEG_PREFIX:
                 cursor += 1
                 # raise IOError("no subsequent EXIF segment found, is this an EXIF-encoded JPEG?")
                 if cursor > len(img_bytes):
@@ -138,7 +138,7 @@ class Image:
         :param attribute: image EXIF attribute name
 
         """
-        self.__delattr__(attribute)
+        delattr(self, attribute)
 
     def delete_all(self) -> None:
         """Remove all EXIF tags from the image."""
@@ -149,7 +149,7 @@ class Image:
             for tag in self._segments["APP1"].get_tag_list():
                 if not tag in ["_exif_ifd_pointer", "_gps_ifd_pointer", "exif_version"]:
                     try:
-                        self.__delattr__(tag)
+                        delattr(self, tag)
                     except AttributeError:
                         warnings.warn("could not delete tag " + tag, RuntimeWarning)
 
@@ -168,7 +168,7 @@ class Image:
 
         """
         try:
-            retval = self.__getattr__(attribute)
+            retval = getattr(self, attribute)
         except (AttributeError, NotImplementedError):
             retval = default
 
@@ -180,7 +180,7 @@ class Image:
 
         for tag_name in self.list_all():
             try:
-                tag_value = self.__getattr__(tag_name)
+                tag_value = getattr(self, tag_name)
             except Exception:  # pylint: disable=broad-except
                 logger.warning("unable to read tag %r", tag_name)
             else:
@@ -251,4 +251,4 @@ class Image:
         :type value: corresponding Python type
 
         """
-        self.__setattr__(attribute, value)
+        setattr(self, attribute, value)
