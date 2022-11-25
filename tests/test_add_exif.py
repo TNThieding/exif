@@ -87,6 +87,9 @@ class TestAddExif(unittest.TestCase):
         assert self.image_alt.gps_altitude == 2189.9896907216494
         assert self.image_alt.gps_altitude_ref == GpsAltitudeRef.ABOVE_SEA_LEVEL
 
+        # next offset of EXIF IFD should be 0
+        assert self.image_alt._segments["APP1"]._iter_ifd_tags("exif") == 0
+
         segment_hex = (
             binascii.hexlify(self.image_alt._segments["APP1"].get_segment_bytes())
             .decode("utf-8")

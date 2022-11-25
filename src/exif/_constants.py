@@ -600,6 +600,7 @@ ATTRIBUTE_TYPE_MAP = (
         "white_balance": (int(ExifTypes.SHORT), "exif"),
         "_exif_ifd_pointer": (int(ExifTypes.LONG), 0),
         "_gps_ifd_pointer": (int(ExifTypes.LONG), 0),
+        "_interoperability_ifd_Pointer": (int(ExifTypes.LONG), "exif"),
     }
 )
 
