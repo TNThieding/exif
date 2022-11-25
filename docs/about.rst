@@ -13,8 +13,8 @@ Contributors
 + chbndrhnns
 + Rune Monzel
 + Alex Mykyta
-* Patrick (buergi)
-* simonschindler
++ Patrick (buergi)
++ simonschindler
 
 
 ***********
