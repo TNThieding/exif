@@ -41,40 +41,76 @@ class Srational(BaseIfdTag):
     def modify(self, value):
         """Modify tag value.
 
-        This method does not contain logic for unpacking multiple values since the EXIF standard (v2.2) does not list
-        any IFD tags of SRATIONAL type with a count greater than 1.
-
         :param value: new tag value
         :type value: corresponding Python type
 
         """
-        fraction = Fraction(value).limit_denominator()
+        # If IFD tag contains multiple values, ensure value is a tuple of appropriate length.
+        if isinstance(value, tuple):
+            assert len(value) == int(self.tag_view.value_count)
+        else:
+            assert int(self.tag_view.value_count) == 1
+            value = (value,)
 
-        srational_view = self.srational_dtype_cls.view(
-            self._app1_ref.body_bytes, int(self.tag_view.value_offset)
-        )
-        srational_view.numerator.set(fraction.numerator)
-        srational_view.denominator.set(fraction.denominator)
+        for rational_index in range(int(self.tag_view.value_count)):
+            current_offset = (
+                int(self.tag_view.value_offset)
+                + rational_index * self.srational_dtype_cls.nbytes
+            )
+            rational_view = self.srational_dtype_cls.view(
+                self._app1_ref.body_bytes, current_offset
+            )
+
+            if isinstance(value[rational_index], int) and value[rational_index] == 0:
+                # EXIF 2.3 Specification: "When a value is unknown, the notation is 0/0" (e.g., lens specification).
+                rational_view.numerator.set(0)
+                rational_view.denominator.set(0)
+            else:
+                fraction = Fraction(value[rational_index]).limit_denominator()
+                rational_view.numerator.set(fraction.numerator)
+                rational_view.denominator.set(fraction.denominator)
 
     def read(self):
         """Read tag value.
-
-        This method does not contain logic for unpacking multiple values since the EXIF standard (v2.2) does not list
-        any IFD tags of SRATIONAL type with a count greater than 1.
 
         :returns: tag value
         :rtype: corresponding Python type
 
         """
-        srational_view = self.srational_dtype_cls.view(
-            self._app1_ref.body_bytes, int(self.tag_view.value_offset)
-        )
-        return srational_view.numerator / srational_view.denominator
+        retvals = []
+
+        for rational_index in range(int(self.tag_view.value_count)):
+            current_offset = (
+                int(self.tag_view.value_offset)
+                + rational_index * self.srational_dtype_cls.nbytes
+            )
+            rational_view = self.srational_dtype_cls.view(
+                self._app1_ref.body_bytes, current_offset
+            )
+
+            if rational_view.numerator == 0 and rational_view.denominator == 0:
+                # EXIF 2.3 Specification: "When a value is unknown, the notation is 0/0" (e.g., lens specification).
+                retvals.append(0)
+            else:
+                retvals.append(rational_view.numerator / rational_view.denominator)
+
+        if len(retvals) == 1:
+            retval = retvals[0]
+        else:
+            retval = tuple(retvals)
+
+        return retval
 
     def wipe(self):
         """Wipe value pointer target bytes to null."""
-        srational_view = self.srational_dtype_cls.view(
-            self._app1_ref.body_bytes, int(self.tag_view.value_offset)
-        )
-        srational_view.numerator.set(0)
-        srational_view.denominator.set(0)
+        for rational_index in range(int(self.tag_view.value_count)):
+            current_offset = (
+                int(self.tag_view.value_offset)
+                + rational_index * self.srational_dtype_cls.nbytes
+            )
+            rational_view = self.srational_dtype_cls.view(
+                self._app1_ref.body_bytes, current_offset
+            )
+
+            rational_view.numerator.set(0)
+            rational_view.denominator.set(0)
