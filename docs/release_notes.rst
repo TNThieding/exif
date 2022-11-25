@@ -2,6 +2,23 @@
 Release Notes
 #############
 
+*************************************************************
+[1.4.0] Late-November 2022 merge request rollup. (2022-11-25)
+*************************************************************
+
+This release includes community-contributed merge requests:
+
+* Add ``focal_plane_x_resolution`` and ``focal_plane_y_resolution`` to the attribute mapping. (https://gitlab.com/TNThieding/exif/merge_requests/55)
+* Fix incorrect determination of APP1 size. (https://gitlab.com/TNThieding/exif/-/merge_requests/56)
+* Fix wrong offset of newly-created ITD. (https://gitlab.com/TNThieding/exif/-/merge_requests/59)
+* Add support for multi-valued signed rationals. (https://gitlab.com/TNThieding/exif/-/merge_requests/60)
+
+Thank you to the following users for their contributions:
+
+* Patrick (buergi)
+* simonschindler
+
+
 *******************************************************************
 [1.3.5] Support initial stable release of ``plum-py``. (2022-04-17)
 *******************************************************************
