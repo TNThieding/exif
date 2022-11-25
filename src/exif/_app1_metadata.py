@@ -108,9 +108,8 @@ class App1MetaData:
         app1_len += empty_ifd.nbytes
 
         # Add pointer tag to IFD 0.
-        offset_of_new_ifd = self.ifd_pointers[
-            1
-        ]  # IFD 1 is pushed back to after the new IFD tag that takes its place
+        # new IFD bytes were appended directly in front of IFD 1, need to point to beginning of new block
+        offset_of_new_ifd = self.ifd_pointers[1] - empty_ifd.nbytes
         self._add_tag("_gps_ifd_pointer", offset_of_new_ifd)
 
     def _add_tag(
@@ -215,6 +214,30 @@ class App1MetaData:
                 datatype=ifd_zero, buffer=new_app1_bytes, offset=self.ifd_pointers[0]
             )
 
+        # Adjust InteropOffset in EXIF IFD if needed
+        if "interopt" in subsequent_ifd_names and "exif" not in subsequent_ifd_names:
+            new_app1_buffer = Buffer(new_app1_bytes)
+            new_app1_buffer.offset = self.ifd_pointers["exif"]
+            ifd_exif = new_app1_buffer.unpack(ifd_cls)
+
+            for tag_index in range(ifd_exif.count):
+                tag_t = ifd_exif.tags[tag_index]
+                is_ifd_pointer_to_adjust = (
+                    tag_t.tag_id == ATTRIBUTE_ID_MAP["_interoperability_ifd_Pointer"]
+                    and "interopt" in subsequent_ifd_names
+                )
+
+                if is_ifd_pointer_to_adjust:
+                    tag_t.value_offset += added_bytes
+
+                ifd_exif.tags[tag_index] = tag_t
+
+            pack_into(
+                datatype=ifd_exif,
+                buffer=new_app1_bytes,
+                offset=self.ifd_pointers["exif"],
+            )
+
         # Unpack the original bytes of the IFD to which the new tag will be added to.
         target_ifd_offset = self.ifd_pointers[ifd_number]
         body_bytes_buffer = Buffer(self.body_bytes)
@@ -241,6 +264,8 @@ class App1MetaData:
                 value_pointer = len(self.body_bytes) + ifd_tag_cls.nbytes
         elif tag == "_gps_ifd_pointer":
             # Must set pointer values now or else they'll incorrectly point to 0x00 when parsing.
+            # Also add number of inserted bytes by which the target location is now shifted back
+            value += added_bytes
             value_pointer = value
         else:
             value_pointer = 0
@@ -313,6 +338,10 @@ class App1MetaData:
                     tag_t.tag_id in [ATTRIBUTE_ID_MAP["jpeg_interchange_format"]]
                     or not is_value_in_ifd_tag_itself
                 ):
+                    tag_t.value_offset += added_bytes
+                elif tag_t.tag_id in [
+                    ATTRIBUTE_ID_MAP["_interoperability_ifd_Pointer"]
+                ]:
                     tag_t.value_offset += added_bytes
 
                 target_ifd.tags[tag_index] = tag_t
@@ -443,6 +472,9 @@ class App1MetaData:
 
                 if tag_t.tag_id == ATTRIBUTE_ID_MAP["_gps_ifd_pointer"]:
                     self.ifd_pointers["gps"] = tag_t.value_offset
+
+                if tag_t.tag_id == ATTRIBUTE_ID_MAP["_interoperability_ifd_Pointer"]:
+                    self.ifd_pointers["interopt"] = tag_t.value_offset
 
             next_ifd_offset = ifd_t.next
 
