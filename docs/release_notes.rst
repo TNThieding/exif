@@ -2,6 +2,23 @@
 Release Notes
 #############
 
+**************************************************************************
+[1.4.1] Fix logic for checking if a value fits in an IFD tag. (2022-12-23)
+**************************************************************************
+
+Previously, modifying EXIF attribute values unintentionally changed untouched attributes
+(e.g., ``components_configuration`` and ``subject_area``) due to a bug within the helper
+function ``value_fits_in_ifd_tag``.
+
+This patch addresses the following GitLab user issue:
+
+* Modifying EXIF changes untouched attributes. (https://gitlab.com/TNThieding/exif/-/issues/68)
+
+This patch contains changes submitted via GitLab merge request by the following user:
+
+* Patrick (buergi)
+
+
 *************************************************************
 [1.4.0] Late-November 2022 merge request rollup. (2022-11-25)
 *************************************************************

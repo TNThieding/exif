@@ -50,6 +50,16 @@ py310:
       - .tox/py310/tmp
     when: always
 
+py311:
+  stage: test
+  image: python:3.11
+  script:
+    - tox -vv -e py311
+  artifacts:
+    paths:
+      - .tox/py311/tmp
+    when: always
+
 black:
   stage: lint
   image: python:3.9
