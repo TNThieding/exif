@@ -69,7 +69,6 @@ black:
 mypy:
   stage: lint
   image: python:3.9
-  allow_failure: true
   script:
     - tox -vv -e mypy
 
