@@ -2,6 +2,19 @@
 Release Notes
 #############
 
+***********************************************************
+[1.4.2] Improve data packing when adding tags. (2022-12-28)
+***********************************************************
+
+Previously, new tags added to an image were always placed at the end of the metadata section. Now, new tags are inserted
+directly after the last tag value block and not just at the end of the metadata section. Therefore, the data is inserted
+before the trailing unused bytes.
+
+This patch contains changes submitted via GitLab merge request by the following user:
+
+* Patrick (buergi)
+
+
 **************************************************************************
 [1.4.1] Fix logic for checking if a value fits in an IFD tag. (2022-12-23)
 **************************************************************************
