@@ -244,12 +244,37 @@ class App1MetaData:
         body_bytes_buffer.offset = target_ifd_offset
         target_ifd = body_bytes_buffer.unpack(ifd_cls)
 
-        if subsequent_ifd_offsets:
-            orig_ifd_values = self.body_bytes[
-                target_ifd_offset + target_ifd.nbytes : subsequent_ifd_offsets[0]
-            ]
-        else:
-            orig_ifd_values = self.body_bytes[target_ifd_offset + target_ifd.nbytes :]
+        # Find the end of the data block
+        # in well structured EXIF blocks this should be identical to
+        # len(self.body_bytes) or subsequent_ifd_offsets[0]
+        target_ifd_end = (
+            subsequent_ifd_offsets[0]
+            if subsequent_ifd_offsets
+            else len(self.body_bytes)
+        )
+        # size of this itd without data
+        target_ifd_tail_start = target_ifd_offset + 2 + target_ifd.count * 12 + 4
+        # now iterate throw values and check for appended data
+        for tag_index in range(target_ifd.count):
+            tag_t = target_ifd.tags[tag_index]
+            is_value_in_ifd_tag_itself = value_fits_in_ifd_tag(tag_t)
+            if (
+                tag_t.tag_id in [ATTRIBUTE_ID_MAP["jpeg_interchange_format"]]
+                or not is_value_in_ifd_tag_itself
+            ):
+                itemsize = 1
+                if tag_t.type == ExifType.RATIONAL:
+                    itemsize = RationalDtype.nbytes
+                if tag_t.type == ExifType.SRATIONAL:
+                    itemsize = SrationalDtype.nbytes
+                tag_data_end = tag_t.value_offset + tag_t.value_count * itemsize
+                target_ifd_tail_start = max(target_ifd_tail_start, tag_data_end)
+
+        # store ifd data before and after insert position
+        orig_ifd_values = self.body_bytes[
+            target_ifd_offset + target_ifd.nbytes : target_ifd_tail_start
+        ]
+        orig_ifd_values_tail = self.body_bytes[target_ifd_tail_start:target_ifd_end]
 
         # Determine if a pointer to a value is necessary, and if so, find it.
         if (
@@ -257,11 +282,7 @@ class App1MetaData:
             or tag_type in [ExifType.RATIONAL, ExifType.SRATIONAL]
             or (tag == "user_comment" and len(value) >= 4)
         ):
-            if subsequent_ifd_offsets:
-                value_pointer = subsequent_ifd_offsets[0] + ifd_tag_cls.nbytes
-            else:
-                # Can put at end since if EXIF or GPS is the last IFD, there must not be a thumbnail and IFD 1.
-                value_pointer = len(self.body_bytes) + ifd_tag_cls.nbytes
+            value_pointer = target_ifd_tail_start + ifd_tag_cls.nbytes
         elif tag == "_gps_ifd_pointer":
             # Must set pointer values now or else they'll incorrectly point to 0x00 when parsing.
             # Also add number of inserted bytes by which the target location is now shifted back
@@ -312,6 +333,7 @@ class App1MetaData:
         ] = target_ifd.ipack()
         new_app1_bytes += orig_ifd_values
         new_app1_bytes += b"\x00" * pointer_value_bytes
+        new_app1_bytes += orig_ifd_values_tail
 
         # Touch up pointers in any subsequent IFDs.
         # FUTURE: This could likely be better abstracted!
