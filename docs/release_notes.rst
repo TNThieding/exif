@@ -2,6 +2,17 @@
 Release Notes
 #############
 
+**************************************************************
+[1.5.0] Support ``photographic_sensitivity`` tag. (2023-01-09)
+**************************************************************
+
+Now, users can read and write the ``photographic_sensitivity`` EXIF tag.
+
+This release contains changes submitted via GitHub merge request by the following user:
+
+* Luca Di Leo (HeDo88TH)
+
+
 ***********************************************************
 [1.4.2] Improve data packing when adding tags. (2022-12-28)
 ***********************************************************

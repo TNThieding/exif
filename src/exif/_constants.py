@@ -587,6 +587,7 @@ ATTRIBUTE_TYPE_MAP = (
         "software": (int(ExifTypes.ASCII), 0),
         "sharpness": (int(ExifTypes.SHORT), "exif"),
         "spectral_sensitivity": (int(ExifTypes.ASCII), "exif"),
+        "photographic_sensitivity": (int(ExifTypes.SHORT), "exif"),
         "subsec_time": (int(ExifTypes.ASCII), "exif"),
         "subsec_time_original": (int(ExifTypes.ASCII), "exif"),
         "subsec_time_digitized": (int(ExifTypes.ASCII), "exif"),
