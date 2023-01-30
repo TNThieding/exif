@@ -15,6 +15,8 @@ Contributors
 + Alex Mykyta
 + Patrick (buergi)
 + simonschindler
++ Luca Di Leo (HeDo88TH)
++ Gerald Triendl (TriG81)
 
 
 ***********

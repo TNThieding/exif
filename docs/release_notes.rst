@@ -2,6 +2,17 @@
 Release Notes
 #############
 
+*******************************************************
+[1.6.0] Support ``rating`` and ``rating_percent`` tags.
+*******************************************************
+
+Now, users can access the ``rating`` and ``rating_percent`` EXIF tags.
+
+This release contains changes submitted via GitLab merge request by the following user:
+
+* Gerald Triendl (TriG81)
+
+
 **************************************************************
 [1.5.0] Support ``photographic_sensitivity`` tag. (2023-01-09)
 **************************************************************
