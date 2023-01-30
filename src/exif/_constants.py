@@ -383,6 +383,8 @@ ATTRIBUTE_ID_MAP = {
     "software": 305,
     "artist": 315,
     "copyright": 33432,
+    "rating": 18246,
+    "rating_percent": 18249,
     # EXIF Tags
     "exposure_time": 33434,
     "f_number": 33437,
@@ -577,6 +579,8 @@ ATTRIBUTE_TYPE_MAP = (
         "max_aperture_value": (int(ExifTypes.RATIONAL), 0),
         "metering_mode": (int(ExifTypes.SHORT), "exif"),
         "model": (int(ExifTypes.ASCII), 0),
+        "rating": (int(ExifTypes.SHORT), "exif"),
+        "rating_percent": (int(ExifTypes.SHORT), "exif"),
         "orientation": (int(ExifTypes.SHORT), 0),
         "pixel_x_dimension": (int(ExifTypes.SHORT), "exif"),
         "pixel_y_dimension": (int(ExifTypes.SHORT), "exif"),
